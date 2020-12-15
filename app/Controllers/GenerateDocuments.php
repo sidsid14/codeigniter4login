@@ -150,40 +150,52 @@ class GenerateDocuments extends BaseController
 				if (trim($json['cp-icon']) != "") {
 					$documentIconImage = $json['cp-icon'];
 				}else{
-					$documentIconImage = 'https://info.viosrdtest.in/assets/images/muRata.png';
+					$documentIconImage = base_url().'/assets/images/vios_logo.jpg';
 				}
 			}
 			if($documentFooterMsg == ''){
 				$documentFooterMsg = 'Murata Vios CONFIDENTIAL';
 			}
-			$subsequent->addImage($documentIconImage, array('width' => 110, 'height' => 50));
+			// $subsequent->addImage($documentIconImage, array('width' => 110, 'height' => 50));
 		
 			//Footer for all pages
 			$footer = $section->addFooter();
 			$footer->addPreserveText($documentFooterMsg.'                              Page {PAGE} of {NUMPAGES}                             ' . $json['cp-line4'] . ' ' . $json['cp-line5'], null, array('alignment' => \PhpOffice\PhpWord\SimpleType\Jc::LEFT));
 
+			//#-2: Adding iamge at first page header line
+			$section->addTextBreak();
+			$section->addTextBreak();
+			$path = base_url().'/assets/images/vios_logo.jpg';
+			$section->addImage($path, array('width' => 277, 'height' => 200, 'align' => 'center'));
+			$section->addTextBreak();
+			
 			// Inline font style
-			$fontStyle['name'] = $json['section-font'];
-			$fontStyle['size'] = 14;
+			$fontStyle['name'] = 'Arial';
+			$fontStyle['size'] = 16;
 			$fontStyle['bold'] = TRUE;
 			//Handling the header section form config | JSON data
+			/* //Not Required right now
 			if($documentTitle == '' || $documentTitle == null){
 				$section->addText($json['cp-line1'], $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);
 				$section->addText($json['cp-line2'], $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);	
 			}else{
 				$section->addText($documentTitle, $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);
 			}
-			$section->addTextBreak();
-			$section->addTextBreak();
+			*/
+
 			$cp_line3 = $json['cp-line3'];
-			$fontStyle['name'] = $json['section-font'];
-			$fontStyle['size'] = 14;
+			$fontStyle['name'] = 'Arial';
+			$fontStyle['size'] = 16;
 			$fontStyle['bold'] = TRUE;		
-			$section->addText($json['cp-line3'], $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);
-			$section->addText($json['cp-line4'], $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);
-			$section->addText($json['cp-line5'], $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);
+			$firstHeaderStyles = array( 
+				'spaceBefore' => 215, 'spaceAfter' => 8, 'align' => 'center'
+			);
+			$DocID = 'Doc ID: '.$json['cp-line4'];
+			$section->addText($json['cp-line3'], $fontStyle, $firstHeaderStyles);
+			$section->addText($DocID, $fontStyle, $firstHeaderStyles);
 			$section->addTextBreak();
 
+			/*//Approval Matrix not required now so commented
 			$fontStyle['name'] = $json['section-font'];
 			$fontStyle['size'] = $json['section-font-size'];
 			$fontStyle['bold'] = TRUE;
@@ -194,6 +206,7 @@ class GenerateDocuments extends BaseController
 			$fontStyle['bold'] = FALSE;
 			$section->addText($json['cp-approval-matrix'], $fontStyle);
 			$section->addTextBreak();
+			*/
 
 			$fontStyle['name'] = $json['section-font'];
 			$fontStyle['size'] = $json['section-font-size'];
@@ -219,7 +232,7 @@ class GenerateDocuments extends BaseController
 			$phpWord->addTitleStyle(3, array('size' => $json['section-font'], 'italic' => true));
 			$phpWord->addTitleStyle(4, array('size' => $json['section-font']));
 			// Add text elements
-			$section->addTitle('Table of contents', 0);
+			$section->addTitle('TABLE OF CONTENTS', 0);
 			$section->addTextBreak(2);
 
 			// Add TOC #1
@@ -230,7 +243,7 @@ class GenerateDocuments extends BaseController
 			$section = $phpWord->addSection();
 			try{
 				for ($i = 0; $i < count($json['sections']); $i++) {
-					$section->addTitle($i + 1 . ". " . $json['sections'][$i]['title']);
+					$section->addTitle($i + 1 . ". " . strtoupper($json['sections'][$i]['title']));
 					$contentSection = '<b></b>';
 					$org = $json['sections'][$i]['content'];
 					$contentSection = $pandoc->convert($org, "gfm", "html5");
