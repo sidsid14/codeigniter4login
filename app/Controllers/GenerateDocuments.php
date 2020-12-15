@@ -127,7 +127,7 @@ class GenerateDocuments extends BaseController
 			$phpWord->setDefaultParagraphStyle(
 					array(
 						'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH,
-						'spaceAfter' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(12),
+						'spaceAfter' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(0),
 						'spacing' => 100,
 					)
 			);
@@ -168,6 +168,7 @@ class GenerateDocuments extends BaseController
 			$path = base_url().'/assets/images/vios_logo.jpg';
 			$section->addImage($path, array('width' => 150, 'height' => 100, 'align' => 'center'));
 			$section->addTextBreak();
+			$section->addTextBreak();
 			
 
 			// Inline font style
@@ -194,6 +195,8 @@ class GenerateDocuments extends BaseController
 			$DocID = 'Doc ID: '.$json['cp-line4'];
 			$section->addText($json['cp-line3'], $fontStyle, $firstHeaderStyles);
 			$section->addText($DocID, $fontStyle, $firstHeaderStyles);
+			$section->addTextBreak();
+			$section->addTextBreak();
 			$section->addTextBreak();
 
 			/*//Approval Matrix not required now so commented
