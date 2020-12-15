@@ -166,9 +166,10 @@ class GenerateDocuments extends BaseController
 			$section->addTextBreak();
 			$section->addTextBreak();
 			$path = base_url().'/assets/images/vios_logo.jpg';
-			$section->addImage($path, array('width' => 277, 'height' => 200, 'align' => 'center'));
+			$section->addImage($path, array('width' => 150, 'height' => 100, 'align' => 'center'));
 			$section->addTextBreak();
 			
+
 			// Inline font style
 			$fontStyle['name'] = 'Arial';
 			$fontStyle['size'] = 16;
@@ -232,7 +233,8 @@ class GenerateDocuments extends BaseController
 			$phpWord->addTitleStyle(3, array('size' => $json['section-font'], 'italic' => true));
 			$phpWord->addTitleStyle(4, array('size' => $json['section-font']));
 			// Add text elements
-			$section->addTitle('TABLE OF CONTENTS', 0);
+			$section->addText('TABLE OF CONTENTS', $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);
+			// $section->addTitle('TABLE OF CONTENTS', 0);
 			$section->addTextBreak(2);
 
 			// Add TOC #1
