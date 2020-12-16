@@ -9,7 +9,7 @@
          var simplemde = new SimpleMDE({
             element: this,
             status: false,
-            spellChecker: false,
+            spellChecker: true,
             // status: [{
             //          className: "characters",
             //          defaultValue: function(el) {
