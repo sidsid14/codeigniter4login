@@ -241,9 +241,8 @@ class GenerateDocuments extends BaseController
 			$section->addTextBreak(2);
 
 			// Add TOC #1
-			$toc = $section->addTOC($fontStyle12);
+			$toc = $section->addTOC($fontStyle12, 'tabLeader');
 			$section->addTextBreak(2);
-
 
 			$section = $phpWord->addSection();
 			try{

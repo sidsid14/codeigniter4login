@@ -11,7 +11,7 @@
  * contributors, visit https://github.com/PHPOffice/PHPWord/contributors.
  *
  * @see         https://github.com/PHPOffice/PHPWord
- * @copyright   2010-2018 PHPWord contributors
+ * @copyright   2010-2017 PHPWord contributors
  * @license     http://www.gnu.org/licenses/lgpl.txt LGPL version 3
  */
 
@@ -87,7 +87,7 @@ class TOC extends AbstractElement
 
         // Hyperlink
         $xmlWriter->startElement('w:hyperlink');
-        $xmlWriter->writeAttribute('w:anchor', "_Toc{$rId}");
+        $xmlWriter->writeAttribute('w:anchor', "$rId");
         $xmlWriter->writeAttribute('w:history', '1');
 
         // Title text
@@ -114,7 +114,7 @@ class TOC extends AbstractElement
         $xmlWriter->startElement('w:r');
         $xmlWriter->startElement('w:instrText');
         $xmlWriter->writeAttribute('xml:space', 'preserve');
-        $xmlWriter->text("PAGEREF _Toc{$rId} \h");
+        $xmlWriter->text("PAGEREF $rId \p");
         $xmlWriter->endElement();
         $xmlWriter->endElement();
 
