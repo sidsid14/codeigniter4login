@@ -984,13 +984,11 @@ function generatePreview(e, id) {
             if (response == "no data") {
                 showPopUp("Project Documents", "No file is available to download");
             } else {
-                var listTags = 5;
-                if (response.indexOf('title-block-header-display') > 0) {
-                    listTags = 4;
-                }
+                var listTags = 3;
                 var el = '.bootbox-body p:lt(' + listTags + ')';
                 showPreview("PREVIEW", response, 'lg');
-                $(el).css('text-align', 'center');
+                $(el).css('text-align', 'center').addClass('first-header-tags');
+                $('.first-header-tags img').css({'width':'250px', 'height':'150px'});
                 setTimeout(() => {
                     $('.bootbox-alert').scrollTop(0);
                 }, 500);
@@ -1035,7 +1033,7 @@ function showPreview(title, message, width) {
 }
 
 .preview-modal img{
-    max-width: 245px;
+    max-width: 250px;
 }
 
 .pandoc-mark-css {

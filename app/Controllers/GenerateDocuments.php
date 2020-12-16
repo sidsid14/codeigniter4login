@@ -166,7 +166,7 @@ class GenerateDocuments extends BaseController
 			$section->addTextBreak();
 			$section->addTextBreak();
 			$path = base_url().'/assets/images/vios_logo.jpg';
-			$section->addImage($path, array('width' => 150, 'height' => 100, 'align' => 'center'));
+			$section->addImage($documentIconImage, array('width' => 150, 'height' => 100, 'align' => 'center'));
 			$section->addTextBreak();
 			$section->addTextBreak();
 			
