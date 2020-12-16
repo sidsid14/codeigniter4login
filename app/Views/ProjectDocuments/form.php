@@ -1034,6 +1034,10 @@ function showPreview(title, message, width) {
     width: 200% !important;
 }
 
+.preview-modal img{
+    max-width: 245px;
+}
+
 .pandoc-mark-css {
     font-family: 'Arial, sans-serif';
     border-spacing: 0 10px;
