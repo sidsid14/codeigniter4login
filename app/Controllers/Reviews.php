@@ -503,17 +503,12 @@ class Reviews extends BaseController
 
     public function delete()
     {
-        if (session()->get('is-admin')) {
-            $id = $this->returnParams();
+        $id = $this->returnParams();
 
-            $model = new ReviewModel();
-            $model->delete($id);
-            $response = array('success' => "True");
-            echo json_encode($response);
-        } else {
-            $response = array('success' => "False");
-            echo json_encode($response);
-        }
+        $model = new ReviewModel();
+        $model->delete($id);
+        $response = array('success' => "True");
+        echo json_encode($response);
     }
 
 }
