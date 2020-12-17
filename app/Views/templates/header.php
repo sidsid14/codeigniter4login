@@ -187,15 +187,16 @@
 
         <div class="l-navbar" id="navbar">
             <nav class="my_nav">
-                <div>
+                <div class="text-center">
+                        <a href="/projects" class="nav__logo" title="Documents on the go." title="DocsGo">
+                            <img src="/Docsgo-Logo.png" height="50px" alt="DocsGo" >
+                        </a>
                     <div class="nav__brand">
                         <div class="nav__icon">
                             <img src="/assets/images/menu-outline.svg" style="margin-left: 10px;cursor: pointer;" class="icon__image"
                                 id="nav-toggle">
                         </div>
-                        <a href="/projects" class="nav__logo" title="Project Data Reporting Tool" title="DocsGo">
-                            <img src="/Docsgo-Logo.png" height="80px" alt="DocsGo">
-                        </a>
+                        
                     </div>
                     <div class="nav__list">
                         <a href="/projects" title="Projects"
