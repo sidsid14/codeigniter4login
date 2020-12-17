@@ -44,7 +44,7 @@
                 <div class="card-header" style="border:0px !important;">
                     <div class="row p-2">
                         <div class="">
-                            <h3 style="width: 638px;" class="truncate" data-toggle="popover" data-placement="top"
+                            <h3 style="width: 600px;" class="truncate" data-toggle="popover" data-placement="top"
                                 data-content="<?= $formTitle ?>"><?= $formTitle ?></h3>
                         </div>
                         <div class="ml-auto">
@@ -338,7 +338,7 @@ function addLineToComment() {
     const parentElement = element.parent().siblings("td");
     const diff = parentElement.find(".d2h-code-line-ctn");
     const codeLine = "`" + diff.text().trim() + "`";
-    const message = `**Line ${element.text().trim()}** ${filePath} ${codeLine}`;
+    const message = `**Line ${element.text().trim()}** ${filePath}\n\n ${codeLine}`;
 
     const $codemirror = $('textarea[name="description"]').nextAll('.CodeMirror')[0].CodeMirror;
     const existingVal = $codemirror.getDoc().getValue();
