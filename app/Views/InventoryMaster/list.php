@@ -1,7 +1,7 @@
 <?php
   $uri = service('uri');
 ?>
-  <div class="row p-2 p-md-4 mb-3">
+  <div class="row p-md-3">
     <div class="col-12">
         <div class="btn-group btn-group-toggle">
           <a href="/inventory-master" 
@@ -24,7 +24,7 @@
     </div>
   </div>
 
-  <div class="row p-0 p-md-4">
+  <div class="row p-0 p-md-3">
     <?php if (count($data) == 0): ?>
     <div class="col-12">
       <div class="alert alert-warning" role="alert">
@@ -40,6 +40,7 @@
         <thead class="thead-dark">
           <tr>
             <th scope="col">#</th>
+            <th scope="col" style="width:35px">ID</th>
             <th scope="col">Item</th>
             <th scope="col">Type</th>
             <th scope="col">Description</th>
@@ -48,13 +49,14 @@
             <th scope="col">Serial</th>
             <th scope="col">Cal Due</th>
             <th scope="col">Used By</th>
-            <th scope="col" style="width:125px">Action</th>
+            <th scope="col" style="width:80px">Action</th>
           </tr>
         </thead>
         <tbody class="bg-white">
           <?php foreach ($data as $key=>$row): ?>
               <tr scope="row" id="<?php echo $row['id'];?>">
                   <td><?php echo $key+1; ?></td>
+                  <td>I-<?php echo $row['id']; ?></td>
                   <td><?php echo $row['item'];?> </td>
                   <td><?php echo $row['type'];?> </td>
                   <td><?php echo $row['description'];?> </td>

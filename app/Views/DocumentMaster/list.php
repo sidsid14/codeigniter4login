@@ -16,18 +16,20 @@
         <thead>
           <tr>
             <th scope="col">#</th>
+            <th scope="col" style="width:35px">ID</th>
             <th scope="col">Name</th>
             <th scope="col">Reference</th>
             <th scope="col">Category</th>
             <th scope="col">Version</th>
             <th scope="col">Status</th>
-            <th scope="col">Actions</th>
+            <th scope="col"  style="width:80px">Actions</th>
           </tr>
         </thead>
         <tbody class="bg-white ">
           <?php foreach ($data as $key=>$row): ?>
               <tr scope="row" id="<?php echo $row['id'];?>">
                   <td><?php echo $key+1; ?></td>
+                  <td>RF-<?php echo $row['id'];?></td>
                   <td><?php echo $row['name'];?></td>
                   <td><?php echo $row['ref'];?></td>
                   <td><?php echo $row['category'];?></td>

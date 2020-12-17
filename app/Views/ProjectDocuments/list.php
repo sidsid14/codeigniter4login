@@ -71,6 +71,7 @@
         <thead class="thead-dark">
           <tr>
             <th scope="col">#</th>
+            <th scope="col">ID</th>
             <th scope="col">Title</th>
             <th scope="col">Author</th>
             <th scope="col">Reviewer</th>
@@ -82,6 +83,7 @@
           <?php foreach ($data as $key=>$row): ?>
               <tr scope="row" id="<?php echo $row['id'];?>">
                   <td><?php echo $key+1; ?></td>
+                  <td>D-<?php  echo $row['id'];?></td>
                   <td><?php  echo $row['title'];?></td>
                   <td><?php echo $row['author'];?></td>
                   <td><?php echo $row['reviewer'];?></td>

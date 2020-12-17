@@ -1,4 +1,4 @@
-<div class="row p-2 p-md-4 mb-3">
+<div class="row p-md-3">
     <div class="col-3">
       <div class="form-group mb-0">
         <select class="form-control selectpicker" onchange="getSelectedStatusData()" data-live-search="true" data-size="8" name="requirementType" id="requirementType" data-style="btn-secondary">
@@ -15,7 +15,7 @@
     </div>
 </div>
 
-<div class="row p-0 p-md-4">
+<div class="row p-0 p-md-3">
 <?php if (count($data) == 0): ?>
 
   <div class="col-12">
@@ -31,16 +31,18 @@
         <thead>
           <tr>
             <th scope="col">#</th>
+            <th scope="col" style="width:35px">ID</th>
             <th scope="col">Requirement</th>
             <th scope="col" style="width:50%">Description</th>
             <th scope="col">Update Date</th>
-            <th scope="col">Action</th>
+            <th scope="col" style="width:80px">Action</th>
           </tr>
         </thead>
         <tbody  class="bg-white">
           <?php foreach ($data as $key=>$row): ?>
               <tr scope="row" id="<?php echo $row['id'];?>">
                   <td><?php echo $key+1; ?></td>
+                  <td>RQ-<?php echo $row['id'];?></td>
                   <td><?php echo $row['requirement'];?></td>
                   <td><?php echo $row['description'];?></td>
                   <td><?php $timestamp = strtotime($row['update_date']) + (330*60); echo date("Y-m-d h:i A", $timestamp); ?></td>

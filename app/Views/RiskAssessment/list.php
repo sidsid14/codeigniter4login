@@ -2,7 +2,7 @@
   $uri = service('uri');
   ?>
 
-  <div class="row p-2 p-md-4 mb-3">
+  <div class="row p-2 p-md-3">
       <div class="col-3">
         <div class="form-group mb-0">
           <select class="form-control selectpicker" id="projects" name="projects" data-style="btn-secondary" data-live-search="true" data-size="8" >
@@ -56,7 +56,7 @@
         </div>
   </div>
 
-  <div class="row p-0 p-md-4">
+  <div class="row p-0 p-md-3">
     <?php if (count($data) == 0): ?>
       <div class="col-12">
         <div class="alert alert-warning" role="alert">
@@ -70,17 +70,19 @@
             <thead >
               <tr>
                 <th scope="col">#</th>
+                <th scope="col" style="width:35px">ID</th>
                 <th scope="col">Risk</th>
-                <th scope="col" style="width:45%">Hazard Analysis</th>
-                <th scope="col"> <?= (($riskCategorySelected == 'Vulnerability') ? "CVSS 3.1 Base Score" : "RPN") ?> </th>
+                <th scope="col" style="width:35%">Hazard Analysis</th>
+                <th scope="col"  style="width:83px"> <?= (($riskCategorySelected == 'Vulnerability') ? "CVSS 3.1 Base Score" : "RPN") ?> </th>
                 <th scope="col">Status</th>
-                <th scope="col" style="width:125px">Action</th>
+                <th scope="col" style="width:80px">Action</th>
               </tr>
             </thead>
             <tbody  class="bg-white">
               <?php foreach ($data as $key=>$row): ?>
                   <tr scope="row" id="<?php echo $row['id'];?>">
                       <td><?php echo $key+1; ?></td>
+                      <td>RA-<?php echo $row['id']; ?></td>
                       <td><?php echo $row['risk'];?></td>
                       <td><?php echo $row['hazard-analysis'];?></td>
                       <?php if (isset($row['baseScore_severity']) && $row['baseScore_severity'] !=0): ?>

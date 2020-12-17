@@ -1,7 +1,7 @@
 <?php
   $uri = service('uri');
 ?>
-  <div class="row p-0 p-md-4">
+  <div class="row p-0 p-md-3">
     <div class="col-1">
     <div class="btn-group btn-group-toggle" >
         <div id="data-open-issue-soup-matrix">
@@ -36,7 +36,7 @@
     
   </div>
 
-  <div class="row p-0 p-md-4">
+  <div class="row p-0 p-md-3">
     <?php if ((count($data) == 0) && ($listViewDisplay == true)): ?>
       <div class="col-12">
         <div class="alert alert-warning" role="alert">
@@ -51,19 +51,21 @@
               <thead >
                 <tr>
                   <th scope="col">#</th>
+                  <th scope="col"  style="width:35px">ID</th>
                   <th class="<?php echo (($rootTraceabilityColumn == 1) ? '': 'd-none') ;?>" scope="col" id="headerLabel1">User Needs</th>
                   <th class="<?php echo (($rootTraceabilityColumn == 2) ? '': 'd-none') ;?>" scope="col" id="headerLabel2">Standards</th>
                   <th class="<?php echo (($rootTraceabilityColumn == 3) ? '': 'd-none') ;?>" scope="col" id="headerLabel3">Guidance</th>
                   <th scope="col">System</th>
                   <th scope="col">Subsystem</th>
                   <th scope="col">Test</th>
-                  <th scope="col" style="width:125px">Action</th>
+                  <th scope="col" style="width:80px">Action</th>
                 </tr>
               </thead>
               <tbody  class="bg-white">
                 <?php $count=1; foreach ($data as $key=>$row): ?>
                     <tr scope="row" id="<?php echo $row['id'];?>">
                         <td><?php echo $count++; ?></td>
+                        <td>TM-<?php echo $row['id']; ?></td>
                         <td class="<?php echo (($rootTraceabilityColumn == 1) ? '': 'd-none') ;?>"><?php if(isset($row['cncr'])) { echo $row['cncr']; }?></td>
                         <td class="<?php echo (($rootTraceabilityColumn == 2) ? '': 'd-none') ;?>"><?php if(isset($row['standards'])) { echo $row['standards']; }?></td>
                         <td class="<?php echo (($rootTraceabilityColumn == 3) ? '': 'd-none') ;?>"><?php if(isset($row['guidance'])) { echo $row['guidance']; }?></td>
