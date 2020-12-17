@@ -238,7 +238,7 @@
 
 
 <script>
-    var teamMembers, project_id, teamMemberOptions = "", tasksArr = [];
+    var teamMembers, activeProjects, projectOptions = "", project_id, teamMemberOptions = "", tasksArr = [];
     var defaultZIndex =3;
     var taskStats = {'Todo': 0, 'In Progress': 0, 'Under Verification': 0, 'Complete': 0, 'Observations': 0};
 
@@ -247,12 +247,19 @@
         $(".fluid-container").parents().css("overflow", "visible")
         $("body").css("overflow-x", "hidden");
 
+        project_id = '<?= $project_id ?>';
+
         teamMembers = <?= json_encode($teamMembers) ?>;
         <?php foreach($teamMembers as $key => $name) : ?>
             teamMemberOptions += `<option value="<?= $key ?>"><?= $name ?></option>`; 
         <?php endforeach; ?>
 
-        project_id = '<?= $project_id ?>';
+        activeProjects = <?= json_encode($activeProjects) ?>;
+
+        <?php foreach($activeProjects as $key => $name) : ?>
+            <?php $selected = ""; if($key == $project_id ) { $selected = "selected"; } ?>
+            projectOptions += `<option <?= $selected ?> value="<?= $key ?>"><?= $name ?></option>`; 
+        <?php endforeach; ?>
 
         makeColumnsDroppable();
 
@@ -278,7 +285,6 @@
         
         for(var i=0;i<keys.length;i++){
             const targetColumn = ".stats_"+keys[i].replace(" ", "");
-            console.log(targetColumn);
             $(targetColumn).text(values[i])
         }
     }
@@ -315,16 +321,44 @@
             var formTitle = "Add Task", buttonText = "Add";
             
             if(taskId != ""){
-                formTitle = "Edit Task", buttonText = "Update";
-                
+                formTitle = `T-${taskId}`, buttonText = "Update";
             }
 
             var dialog = bootbox.dialog({
                 title: formTitle,
                 message: `<form id="taskForm">
                         <input type="hidden" name="id" value='${taskId}' />
-                        <input type="hidden" name="project_id" value='${project_id}' />
-                        <div class="row">
+                        <div class="row justify-content-center">
+                            <div class="col-12 col-md-6 d-none projectDropDown">
+                                <div class="form-group">
+                                    <label class = "font-weight-bold text-muted" for="project_id">Project</label>
+                                    <select class="form-control selectpicker" data-live-search="true" data-size="8" name="project_id" id="project_id">
+                                        <option value="" disabled selected>
+                                            Select
+                                        </option>
+                                        ${projectOptions}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="form-group">
+                                    <label class = "font-weight-bold text-muted" for="newTask_category">Category</label>
+                                    <select class="form-control selectpicker" name="newTask_category" id="newTask_category">                                    
+                                        <option value="Improvement" >
+                                            Improvement
+                                        </option>
+                                        <option value="Task" selected>
+                                            Task
+                                        </option>
+                                        <option value="New Feature" >
+                                            New Feature
+                                        </option>
+                                        <option value="Bug" >
+                                            Bug
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="col-12">
                                 <div class="form-group">
                                     <label class = "font-weight-bold text-muted" for="newTask_title">Title</label>
@@ -359,25 +393,7 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-12 col-md-6">
-                                <div class="form-group">
-                                    <label class = "font-weight-bold text-muted" for="newTask_category">Category</label>
-                                    <select class="form-control selectpicker" name="newTask_category" id="newTask_category">                                    
-                                        <option value="Improvement" >
-                                            Improvement
-                                        </option>
-                                        <option value="Task" selected>
-                                            Task
-                                        </option>
-                                        <option value="New Feature" >
-                                            New Feature
-                                        </option>
-                                        <option value="Bug" >
-                                            Bug
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
+                            
                             <div class="col-12 col-md-6">
                                 <div class="form-group">
                                     <label class = "font-weight-bold text-muted" for="newTask_column">Column</label>
@@ -401,16 +417,15 @@
                                 </div>
                             </div>
                             
-                            <div class="col-12">
+                            <div class="col-12 col-md-6">
 
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" id="inputGroupFileAddon01">Upload</span>
-                                    </div>
+                                <div class="form-group">
+                                    <label class = "font-weight-bold text-muted" for="newTask_attachments">Attachments</label>
                                     <div class="custom-file">
-                                        <input class="custom-file-input" type="file" id="newTask_attachments" name="attachments[]" accept="image/*,video/*" multiple>
                                         <label class = "custom-file-label" for="newTask_attachments">Attachments</label>
+                                        <input class="custom-file-input" type="file" id="newTask_attachments" name="attachments[]" accept="image/*,video/*" multiple>
                                     </div>
+                                    
                                 </div>
                                
                             </div>
@@ -426,7 +441,7 @@
                         callback: function(){
                                 bootbox.confirm({
                                     title: 'Delete',
-                                    message: `Are you sure you want to delete task T${taskId} ?`,
+                                    message: `Are you sure you want to delete task T-${taskId} ?`,
                                     buttons: {
                                         cancel: {
                                             label: '<i class="fa fa-times"></i> Cancel'
@@ -480,6 +495,7 @@
 
             if(taskId != ""){
                 $(".deleteTask").removeClass("d-none");
+                $(".projectDropDown").removeClass("d-none");
                 const task = tasksArr.find(x => parseInt(x.id) === taskId);
                 $('#newTask_title').val(task.title);
                 $('#newTask_description').val(task.description);
@@ -636,7 +652,7 @@
             jsonAttachments = newTask.attachments;
             attachmentsCount = JSON.parse(newTask.attachments).length;
             attachmentsHtml +=`<button data-toggle="popover" data-placement="bottom" data-content="View Attachments" type="button" 
-                                        class="btn btn-sm btn-purple box-shadow-right" onclick="attachmentSlider('T${newTask.id} Attachments', getCarouselHtml(${newTask.id}) )" >
+                                        class="btn btn-sm btn-purple box-shadow-right" onclick="attachmentSlider('T-${newTask.id} Attachments', getCarouselHtml(${newTask.id}) )" >
                                     <i class="fas fa-paperclip"></i>
                                 </button>
                                 <span id="attachmentCount_${newTask.id}" class="dot sec counter counter-lg">${attachmentsCount}</span>`;
@@ -644,7 +660,7 @@
         var taskHtml = `
                         <div class=" text-muted">
                             <div class="float-left pl-2 pt-2">
-                                <span class="badge bg-teal p-2 box-shadow-left" style="font-size:16px;cursor:default;">T${newTask.id}</span>
+                                <span class="badge bg-teal p-2 box-shadow-left" style="font-size:16px;cursor:default;">T-${newTask.id}</span>
                                 
                             </div>
                             <div class="float-right pt-2 pr-2">
@@ -751,29 +767,41 @@
                         updateStats();
 
                         addTaskToDocument(data.task);
-                        showFloatingAlert(`T${data.task.id} task added successfully!`);
+                        showFloatingAlert(`T-${data.task.id} task added successfully!`);
 
                     }else if(type == "update"){
 
-                        const temp = getTaskFromArray(data.task.id);
-                        const existingTaskLoc = temp[0];
-                        const existingTask = temp[1];
                         var task = new Task();
                         task = data.task;
-                        task.comments = existingTask.comments;
-                        tasksArr[existingTaskLoc] = task;
-                        $(`#${task.id}`).html(getTaskHtml(task));
-                        $('[data-toggle="popover"]').popover({trigger: "hover" });
 
-                        if(existingTask.task_column != task.task_column){
-                            var div_column = task.task_column.replace(" ", "");
-                            $(`#${task.id}`).appendTo($("#column_"+div_column));
-
+                        const temp = getTaskFromArray(task.id);
+                        const existingTaskLoc = temp[0];
+                        const existingTask = temp[1];
+                        if(existingTask.project_id != task.project_id){
+                            $("#"+task.id).fadeOut(800, function() { $(this).remove(); });
                             taskStats[existingTask.task_column] -= 1;
-                            taskStats[task.task_column] += 1;
                             updateStats();
+
+                            tasksArr.splice(existingTaskLoc, 1);
+                            showFloatingAlert(`T-${task.id} task moved to ${activeProjects[task.project_id]} successfully!`, "bg-warning");
+                        }else{
+                            task.comments = existingTask.comments;
+                            tasksArr[existingTaskLoc] = task;
+                            $(`#${task.id}`).html(getTaskHtml(task));
+                            $('[data-toggle="popover"]').popover({trigger: "hover" });
+
+                            if(existingTask.task_column != task.task_column){
+                                var div_column = task.task_column.replace(" ", "");
+                                $(`#${task.id}`).appendTo($("#column_"+div_column));
+
+                                taskStats[existingTask.task_column] -= 1;
+                                taskStats[task.task_column] += 1;
+                                updateStats();
+                            }
+                            showFloatingAlert(`T-${task.id} task updated successfully!`);
                         }
-                        showFloatingAlert(`T${task.id} task updated successfully!`);
+
+                        
 
                     }else if(type == "addComment"){
 
@@ -791,7 +819,7 @@
                         $(`#commentCount_${taskObject.id}`).removeClass('d-none');
                         $(`#commentCount_${taskObject.id}`).text(existingTask.comments.length);
                         
-                        showFloatingAlert(`Comment added to T${taskObject.id} successfully!`);
+                        showFloatingAlert(`Comment added to T-${taskObject.id} successfully!`);
                     }else if(type == "delete"){
                         
                         $("#"+taskObject.id).fadeOut(800, function() { $(this).remove(); });

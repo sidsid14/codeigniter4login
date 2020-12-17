@@ -13,7 +13,8 @@ class Taskboard extends BaseController
         if($project_id != ""){
             $projectModel = new ProjectModel();
             $project = $projectModel->where('project-id', $project_id)->first();
-            
+            $activeProjects = $projectModel->getProjects();
+            $data['activeProjects'] =  $activeProjects;
             $title = $project['name'];
             $data['title'] = $title;	
             $data['project_id'] =  $project_id;
