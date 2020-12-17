@@ -237,8 +237,8 @@
                             class="nav__name my_nav_link <?= (($uri->getSegment(1) == 'documents' || $uri->getSegment(1) == 'documents-templates' || $uri->getSegment(1) == 'documents-master' || $uri->getSegment(1) == 'documents-acronyms') ? 'text-light' : '')  ?>"">Documents</a>
 
                                 <div class=" nav__icon collapse__link">
-                            <img src="/assets/images/chevron-down.svg" class="icon__image "
-                                style="filter: <?= (($uri->getSegment(1) == 'documents' || $uri->getSegment(1) == 'documents-templates' || $uri->getSegment(1) == 'documents-master' || $uri->getSegment(1) == 'documents-acronyms') ? 'invert(1)' : '') ?>;">
+                            <img src="/assets/images/chevron-down.svg" class="icon__image" 
+                                style="width: 1em;height: 1em;filter: <?= (($uri->getSegment(1) == 'documents' || $uri->getSegment(1) == 'documents-templates' || $uri->getSegment(1) == 'documents-master' || $uri->getSegment(1) == 'documents-acronyms') ? 'invert(1)' : '') ?>;">
                     </div>
 
                     <ul class="collapse__menu">
@@ -282,7 +282,7 @@
 
                     <div class="nav__icon collapse__link">
                         <img src="/assets/images/chevron-down.svg" class="icon__image "
-                            style="filter: <?= ((($uri->getSegment(1) == 'requirements') || $uri->getSegment(1) == 'test-cases' || $uri->getSegment(1) == 'traceability-matrix')  ? 'invert(1)' : '') ?>;">
+                            style="width: 1em;height: 1em;filter: <?= ((($uri->getSegment(1) == 'requirements') || $uri->getSegment(1) == 'test-cases' || $uri->getSegment(1) == 'traceability-matrix')  ? 'invert(1)' : '') ?>;">
                     </div>
                     <ul class="collapse__menu">
                         <li style="padding:6px;"><a style="padding:6px" href="/requirements"
