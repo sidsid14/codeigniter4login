@@ -228,7 +228,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="">
+                    <div style="word-break: break-word;">
                         <ul class="commentsList list-group scroll scroll-primary withoutReviewBox"></ul>
                     </div>
                     <div>
