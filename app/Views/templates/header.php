@@ -190,7 +190,7 @@
                 <div>
                     <div class="nav__brand">
                         <div class="nav__icon">
-                            <img src="/assets/images/menu-outline.svg" style="margin-left: 10px;" class="icon__image"
+                            <img src="/assets/images/menu-outline.svg" style="margin-left: 10px;cursor: pointer;" class="icon__image"
                                 id="nav-toggle">
                         </div>
                         <a href="/projects" class="nav__logo" title="Project Data Reporting Tool" title="DocsGo">
