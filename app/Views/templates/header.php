@@ -233,7 +233,7 @@
                                     style="filter: <?= (($uri->getSegment(1) == 'documents' || $uri->getSegment(1) == 'documents-templates' || $uri->getSegment(1) == 'documents-master' || $uri->getSegment(1) == 'documents-acronyms') ? 'invert(1)' : '') ?>;">
                         </div>
                         </a>
-                        <a href="/documents" title="Documents"
+                        <a href="/documents" title="Documents" style="margin-left: 5px;" 
                             class="nav__name my_nav_link <?= (($uri->getSegment(1) == 'documents' || $uri->getSegment(1) == 'documents-templates' || $uri->getSegment(1) == 'documents-master' || $uri->getSegment(1) == 'documents-acronyms') ? 'text-light' : '')  ?>"">Documents</a>
 
                                 <div class=" nav__icon collapse__link">
@@ -277,7 +277,7 @@
                                 style="filter: <?= ((($uri->getSegment(1) == 'requirements') || $uri->getSegment(1) == 'test-cases' || $uri->getSegment(1) == 'traceability-matrix')  ? 'invert(1)' : '') ?>;">
                         </div>
                     </a>
-                    <a href="/traceability-matrix" title="Traceability Matrix"
+                    <a href="/traceability-matrix" title="Traceability Matrix" style="margin-left: 5px;" 
                         class="nav__name collapse__sublink my_nav_link <?= ((($uri->getSegment(1) == 'requirements') || $uri->getSegment(1) == 'test-cases' || $uri->getSegment(1) == 'traceability-matrix')  ? 'text-light' : '') ?>">Traceability</a>
 
                     <div class="nav__icon collapse__link">
