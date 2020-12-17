@@ -94,7 +94,8 @@
                     <div class="row">
 
                         <div class="ml-3">
-                            <h3 title="<?= $heading ?>" class="heading"><?= $heading ?></h3>
+                            <h3 style="width: 500px;" data-toggle="popover" data-placement="top"
+                                data-content="<?= $heading ?>" class="heading truncate"><?= $heading ?></h3>
                         </div>
                         <?php if (isset($projectDocument)): ?>
                         <div class="ml-auto mr-3">
@@ -528,7 +529,10 @@ var commentEditId = "",
     
 
 $(document).ready(function() {
-    
+    $('[data-toggle="popover"]').popover({
+        trigger: "hover"
+    });
+
 
     userName = "<?= session()->get('name') ?>";
 
