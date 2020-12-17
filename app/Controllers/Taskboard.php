@@ -52,14 +52,22 @@ class Taskboard extends BaseController
     public function addTask(){
         
         $id = $this->request->getVar('id');
+        $project_id = $this->request->getVar('project_id');
         if($id != ""){
             $this->isAuthorized($id);
+        }
+        if($project_id == ""){
+            $response = array();
+            $response["success"] = "False";
+            $response["errorMsg"] = "Project cannot be empty!";
+            echo json_encode($response);
+            exit(0);
         }
         $project_id = $this->request->getVar('project_id');
         $task = [
             "assignee" => $this->request->getVar('newTask_assignee'),
             "description" => $this->request->getVar('newTask_description'),
-            "project_id" => $this->request->getVar('project_id'),
+            "project_id" => $project_id,
             "verifier" => $this->request->getVar('newTask_verifier') ,
             "task_category" => $this->request->getVar('newTask_category'),
             "task_column" => $this->request->getVar('newTask_column'),
