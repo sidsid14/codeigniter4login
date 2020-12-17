@@ -71,8 +71,8 @@ a{
   grid-template-columns: max-content max-content;
   justify-content: space-between;
   align-items: center;
-  padding-top:10px;
-  padding-bottom: 10px;
+  padding-top:16px;
+  padding-bottom: 16px;
 }
 .nav__toggle{
   font-size: 1.25rem;
