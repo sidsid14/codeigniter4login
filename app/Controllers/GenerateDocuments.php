@@ -75,8 +75,8 @@ class GenerateDocuments extends BaseController
 		function addTableStylesToContent($rawContent) {
 			$fontFamily = 'Arial, sans-serif';
 			$fontSize = '11';
-			$replaceContent = str_replace("<table>", '<table class="pandoc-mark-css" style="border-spacing:0 10px; font-family:' . $fontFamily . '; font-size: ' . $fontSize . ';width: 100%; table-layout:fixed; word-wrap: break-word; padding: 10px; border: 1px #000000 solid; border-collapse: collapse;" border="1" cellpadding="5">', $rawContent);
-			$replaceContent = str_replace("<th>", "<th style='padding-top: 8px;font-weight: bold; height: 50px;text-align: left; background-color:#cbebf2;'>", $replaceContent);
+			$replaceContent = str_replace("<table>", '<table class="pandoc-mark-css" style="border-spacing: 0 10px; font-family:' . $fontFamily . '; font-size: ' . $fontSize . ';width: 100%; table-layout: fixed; word-wrap: break-word; padding: 10px; border: 1px #000000 solid; border-collapse: collapse;" border="1" cellpadding="5">', $rawContent);
+			$replaceContent = str_replace("<th>", "<th style='padding-top: 8px;font-weight: bold; height: 50px;text-align: center; background-color:#cbebf2;'>", $replaceContent);
 			$replaceContent = str_replace("<td>", "<td style='padding-top: 8px;text-align: left;'>", $replaceContent);
 			$replaceContent = str_replace("<br/>", " <br/> ", $replaceContent);
 			$replaceContent = str_replace("</table>", " </table><br/> ", $replaceContent);
@@ -166,7 +166,7 @@ class GenerateDocuments extends BaseController
 			$section->addTextBreak();
 			$section->addTextBreak();
 			$path = base_url().'/assets/images/vios_logo.jpg';
-			$section->addImage($documentIconImage, array('width' => 150, 'height' => 100, 'align' => 'center'));
+			$section->addImage($documentIconImage, array('width' => 200, 'height' => 200, 'align' => 'center'));
 			$section->addTextBreak();
 			$section->addTextBreak();
 			
@@ -276,10 +276,10 @@ class GenerateDocuments extends BaseController
 						$tableContentFormatted = addTableStylesToContent($contentSection);
 						//setOutputEscapingEnabled is added for gfm markdown
 						\PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
-						\PhpOffice\PhpWord\Shared\Html::addHtml($section, $tableContentFormatted, FALSE, FALSE);
+						\PhpOffice\PhpWord\Shared\Html::addHtml($section, $tableContentFormatted, false, false);
 					} else {
 						\PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
-						\PhpOffice\PhpWord\Shared\Html::addHtml($section, $contentSection, FALSE, FALSE);
+						\PhpOffice\PhpWord\Shared\Html::addHtml($section, $contentSection, false, false);
 					}
 					
 					$section->addTextBreak();
