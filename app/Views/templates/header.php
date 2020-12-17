@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="/assets/css/simplemde_v1.11.1.min.css" />
     <link rel="stylesheet" href="/assets/css/bootstrap-select_v1.13.14.min.css" />
 
-    <link rel="stylesheet" href="/assets/css/headerStyle.css">
+    <link rel="stylesheet" href="/assets/css/headerStyle.css?1.0">
 
     <!-- For Showing Code Diff  -->
     <link rel="stylesheet" href="/assets/css/github_diff.min.css" />
