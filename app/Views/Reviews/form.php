@@ -27,10 +27,10 @@
 }
 
 .reviewDiv {
-    max-width: 565px;
+    max-width: 520px;
 }
 </style>
-<div class="p-0 p-md-4">
+<div class="p-2">
     <div class="row justify-content-center">
         <div class="col-12 col-md-7 mx-auto">
             <?php if (session()->get('success')): ?>
