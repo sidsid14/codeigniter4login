@@ -97,6 +97,7 @@
   });
 
   function initializeDataTable(tableId){
+      
     table = $('#'+tableId).DataTable({
           "responsive": true,
           "autoWidth": false,
@@ -130,15 +131,7 @@
     makeRequest(url)
     .then((response) => {
         const reviewsList = response.reviews;
-        if(reviewsList.length){
-          populateTable(reviewsList);
-        }else{
-          let row = `<tr><td valign="top" colspan="${(dataInfo.requiredFields.length+2)}" class="dataTables_empty">No data available</td></tr>`;
-          tbody += row;
-          $('#tbody').html(tbody);
-          showFloatingAlert("No data available." , "bg-warning");
-        }
-        
+        populateTable(reviewsList);        
     })
     .catch((err) => {
         console.log(err);
@@ -203,12 +196,21 @@
             ]
         };
 
-        table.destroy();
+        if(reviewsList.length){
+            table.destroy();
+        }
+        
         
         $('#tbody').html("");
-        $('#tbody').append(getHTMLtable(reviewsList, dataInfo));
+        var data = getHTMLtable(reviewsList, dataInfo);
+        $('#tbody').append(data);
+       
+        if(reviewsList.length){
+            initializeDataTable('reviews-list');
+        }
+       
         
-        initializeDataTable('reviews-list');
+        
 
   }
 
