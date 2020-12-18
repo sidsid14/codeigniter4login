@@ -26,6 +26,18 @@ class Task {
     }
 }
 
+function initializeDataTable(tableId){
+      
+    return $('#'+tableId).DataTable({
+          "responsive": true,
+          "autoWidth": false,
+          "stateSave": true,
+          "pagingType": "full_numbers",
+          "paging": true,
+          "lengthMenu": [10, 25, 50, 75, 100],
+    });
+}
+
 function makeRequest(url){
     return new Promise((resolve, reject) => {
         $.ajax({

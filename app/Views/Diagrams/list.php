@@ -26,14 +26,15 @@
 
 <script>
 
-    var prevUrlType = "", userId;
+    var prevUrlType = "", userId, table;
 
     $(document).ready( function () {
         userId = <?= session()->get('id') ?>;
-        $('#diagrams-list').DataTable({
-            "responsive": true,
-            "autoWidth": false,
-        });
+        // $('#diagrams-list').DataTable({
+        //     "responsive": true,
+        //     "autoWidth": false,
+        // });
+        table = initializeDataTable('diagrams-list');
 
         <?php if(isset($_SESSION['PREV_URL'])): ?>
 
@@ -110,8 +111,20 @@
             ]
         };
 
+        if(diagramsList.length){
+            table.destroy();
+        }
+        
         $('#tbody').html("");
-        $('#tbody').append(getHTMLtable(diagramsList, dataInfo));
+        var data = getHTMLtable(diagramsList, dataInfo);
+        $('#tbody').append(data);
+       
+        if(diagramsList.length){
+            table = initializeDataTable('diagrams-list');
+        }
+
+        // $('#tbody').html("");
+        // $('#tbody').append(getHTMLtable(diagramsList, dataInfo));
     }
 
     function edit(id){

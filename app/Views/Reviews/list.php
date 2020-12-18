@@ -93,23 +93,13 @@
       userId = <?= $userId ?>;
       reviewStatus = <?= json_encode($reviewStatus) ?>;
 
-      initializeDataTable('reviews-list');
+      table = initializeDataTable('reviews-list');
 
       getTableRecords();
 
   });
 
-  function initializeDataTable(tableId){
-      
-    table = $('#'+tableId).DataTable({
-          "responsive": true,
-          "autoWidth": false,
-          "stateSave": true,
-          "pagingType": "full_numbers",
-          "paging": true,
-          "lengthMenu": [10, 25, 50, 75, 100],
-    });
-  }
+  
 
   $(document).on({
         ajaxStart: function(){
@@ -203,18 +193,14 @@
             table.destroy();
         }
         
-        
         $('#tbody').html("");
         var data = getHTMLtable(reviewsList, dataInfo);
         $('#tbody').append(data);
        
         if(reviewsList.length){
-            initializeDataTable('reviews-list');
+            table = initializeDataTable('reviews-list');
         }
        
-        
-        
-
   }
 
   function edit(id){
