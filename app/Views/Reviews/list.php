@@ -4,7 +4,7 @@
     <div class="col-12 pt-3 mb-4 pt-md-0 pb-md-0">
 
         <div class="row">
-            <div class="col">
+            <div class="col-md-2">
                 <div class="form-group mb-0">
                     <label class="font-weight-bold text-muted" for="projects">Project</label>
                     <select class="form-control selectpicker" onchange="getTableRecords(true)" id="projects"
@@ -21,8 +21,25 @@
 
             </div>
 
-            <div class="col">
-                <label class="font-weight-bold text-muted" >Status</label>
+            <div class="col-md-2">
+                <div class="form-group mb-0">
+                    <label class="font-weight-bold text-muted" for="selectedUser">User</label>
+                    <select class="form-control selectpicker" onchange="getTableRecords(true)" id="selectedUser"
+                        data-style="btn-secondary" data-live-search="true" data-size="8">
+                        <option value="ALL">
+                            All
+                        </option>
+                        <?php foreach ($teamMembers as $key => $value): ?>
+                        <option <?=(($selectedUser == $key) ? "selected" : "")?> value="<?=$key?>"><?=$value?>
+                        </option>
+                        <?php endforeach;?>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+                <label class="font-weight-bold text-muted" >Status</label><br/>
                 <div class="btn-group btn-group-toggle ">
                     <?php foreach ($reviewStatus as $revStatus): ?>
                     <?php
@@ -44,22 +61,7 @@
 
             </div>
 
-            <div class="col">
-                <div class="form-group mb-0">
-                    <label class="font-weight-bold text-muted" for="selectedUser">User</label>
-                    <select class="form-control selectpicker" onchange="getTableRecords(true)" id="selectedUser"
-                        data-style="btn-secondary" data-live-search="true" data-size="8">
-                        <option value="ALL">
-                            All
-                        </option>
-                        <?php foreach ($teamMembers as $key => $value): ?>
-                        <option <?=(($selectedUser == $key) ? "selected" : "")?> value="<?=$key?>"><?=$value?>
-                        </option>
-                        <?php endforeach;?>
-                    </select>
-                </div>
-
-            </div>
+            
 
         </div>
 
