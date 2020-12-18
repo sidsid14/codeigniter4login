@@ -6,6 +6,7 @@
         <div class="row">
             <div class="col">
                 <div class="form-group mb-0">
+                    <label class="font-weight-bold text-muted" for="projects">Project</label>
                     <select class="form-control selectpicker" onchange="getTableRecords(true)" id="projects"
                         data-style="btn-secondary" data-live-search="true" data-size="8">
                         <option value="" disabled>
@@ -21,6 +22,7 @@
             </div>
 
             <div class="col">
+                <label class="font-weight-bold text-muted" >Status</label>
                 <div class="btn-group btn-group-toggle ">
                     <?php foreach ($reviewStatus as $revStatus): ?>
                     <?php
@@ -44,6 +46,7 @@
 
             <div class="col">
                 <div class="form-group mb-0">
+                    <label class="font-weight-bold text-muted" for="selectedUser">User</label>
                     <select class="form-control selectpicker" onchange="getTableRecords(true)" id="selectedUser"
                         data-style="btn-secondary" data-live-search="true" data-size="8">
                         <option value="ALL">
