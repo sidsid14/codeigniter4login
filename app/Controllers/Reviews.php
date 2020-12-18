@@ -17,6 +17,7 @@ class Reviews extends BaseController
 
         $selectedStatus = null;
         $selectedProject = null;
+        $selectedUser = null;
 
         if (isset($_SESSION['PREV_URL'])) {
             $prev_url = $_SESSION['PREV_URL'];
@@ -24,7 +25,12 @@ class Reviews extends BaseController
                 $vars = $prev_url["vars"];
                 $selectedStatus = $vars['view'];
                 $selectedProject = $vars['project_id'];
+                $selectedUser = isset($vars['user_id']) ? $vars['user_id'] : null;
             }
+        }
+
+        if($selectedUser == null ){
+            $selectedUser = session()->get('id');
         }
 
         $teamModel = new TeamModel();
@@ -50,10 +56,11 @@ class Reviews extends BaseController
         }
 
         $reviewModel = new ReviewModel();
-        $data['reviewsCount'] = $reviewModel->getReviewsCount($selectedProject);
+        $data['reviewsCount'] = $reviewModel->getReviewsCount($selectedProject, $selectedUser);
 
         $data['selectedProject'] = $selectedProject;
         $data['selectedStatus'] = $selectedStatus;
+        $data['selectedUser'] = $selectedUser;
         // $this->updateReviewDescription();
 
         echo view('templates/header');
@@ -65,9 +72,10 @@ class Reviews extends BaseController
     public function getReviewStats()
     {
         $project_id = $this->request->getVar('project_id');
+        $selectedUser =  $this->request->getVar('user_id');
 
         $reviewModel = new ReviewModel();
-        $reviewStats = $reviewModel->getReviewsCount($project_id);
+        $reviewStats = $reviewModel->getReviewsCount($project_id, $selectedUser);
         $response["success"] = "True";
         $response["reviewStats"] = $reviewStats;
 
@@ -96,15 +104,22 @@ class Reviews extends BaseController
     {
         $view = $this->request->getVar('view');
         $project_id = $this->request->getVar('project_id');
+        $user_id = $this->request->getVar('user_id');
 
         $vars['view'] = $view;
         $vars['project_id'] = $project_id;
+        $vars['user_id'] = $user_id;
 
         helper('Helpers\utils');
         setPrevUrl('reviewsList', $vars);
 
+        $userCondition = "";
+        if($user_id != "ALL"){
+            $userCondition = " AND ( `review-by` = ".$user_id." OR `assigned-to` = ".$user_id." ) ";
+        }
+
         $model = new ReviewModel();
-        $whereCondition = ' WHERE rev.`status` = "' . $view . '" and proj.`project-id` = ' . $project_id;
+        $whereCondition = ' WHERE rev.`status` = "' . $view . '" AND proj.`project-id` = ' . $project_id.$userCondition;
 
         $data = $model->getMappedRecords($whereCondition);
 
@@ -489,9 +504,10 @@ class Reviews extends BaseController
                 $vars = $prev_url["vars"];
                 $status = $vars['view'];
                 $project_id = $vars['project_id'];
+                $user_id = isset($vars['user_id']) ? ( ($vars['user_id'] != 'ALL') ? $vars['user_id'] : '' ): '';
                 $model = new ReviewModel();
-                $prevId = $model->getPrevReviewId($id, $project_id, $status);
-                $nextId = $model->getNextReviewId($id, $project_id, $status);
+                $prevId = $model->getPrevReviewId($id, $project_id, $status, $user_id);
+                $nextId = $model->getNextReviewId($id, $project_id, $status, $user_id);
             }
         }
 

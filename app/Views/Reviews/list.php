@@ -1,9 +1,10 @@
+<?php $userId = session()->get('id');  ?>
 <div class="row p-0 p-md-4 justify-content-center">
 
     <div class="col-12 pt-3 mb-4 pt-md-0 pb-md-0">
 
         <div class="row">
-            <div class="col-12 col-md-3">
+            <div class="col">
                 <div class="form-group mb-0">
                     <select class="form-control selectpicker" onchange="getTableRecords(true)" id="projects"
                         data-style="btn-secondary" data-live-search="true" data-size="8">
@@ -19,7 +20,7 @@
 
             </div>
 
-            <div class="col-12 col-md-9 pt-3 pb-3 pt-md-0 pb-md-0">
+            <div class="col">
                 <div class="btn-group btn-group-toggle ">
                     <?php foreach ($reviewStatus as $revStatus): ?>
                     <?php
@@ -37,6 +38,22 @@
                         <span class="stats_<?= $statusId ?> badge badge-light ml-1 "><?= $statusCount ?></span>
                     </label>
                     <?php endforeach;?>
+                </div>
+
+            </div>
+
+            <div class="col">
+                <div class="form-group mb-0">
+                    <select class="form-control selectpicker" onchange="getTableRecords(true)" id="selectedUser"
+                        data-style="btn-secondary" data-live-search="true" data-size="8">
+                        <option value="ALL">
+                            All
+                        </option>
+                        <?php foreach ($teamMembers as $key => $value): ?>
+                        <option <?=(($selectedUser == $key) ? "selected" : "")?> value="<?=$key?>"><?=$value?>
+                        </option>
+                        <?php endforeach;?>
+                    </select>
                 </div>
 
             </div>
@@ -70,7 +87,7 @@
   var userId, reviewStatus, table = null;
 
   $(document).ready(function() {
-      userId = <?= session()->get('id') ?>;
+      userId = <?= $userId ?>;
       reviewStatus = <?= json_encode($reviewStatus) ?>;
 
       initializeDataTable('reviews-list');
@@ -102,7 +119,8 @@
   function getTableRecords(updateStats = false){
     const selectedView = $("input[name='view']:checked").val();
     const selectedProjectId = $("#projects").val();
-    var url = `/reviews/getReviews?view=${selectedView}&project_id=${selectedProjectId}`;
+    const selectedUsers =  $("#selectedUser").val();
+    var url = `/reviews/getReviews?view=${selectedView}&project_id=${selectedProjectId}&user_id=${selectedUsers}`;
     
     $("#addButton").attr("href", `/reviews/add?project_id=${selectedProjectId}`);
     
@@ -115,7 +133,10 @@
         if(reviewsList.length){
           populateTable(reviewsList);
         }else{
-          $('#tbody').html("");
+          let row = `<tr><td valign="top" colspan="${(dataInfo.requiredFields.length+2)}" class="dataTables_empty">No data available</td></tr>`;
+          tbody += row;
+          $('#tbody').html(tbody);
+          showFloatingAlert("No data available." , "bg-warning");
         }
         
     })
@@ -125,7 +146,7 @@
     })
     
     if(updateStats){
-      var url = `/reviews/getReviewStats?project_id=${selectedProjectId}`;
+      var url = `/reviews/getReviewStats?project_id=${selectedProjectId}&user_id=${selectedUsers}`;
     
       makeRequest(url)
       .then((response) => {

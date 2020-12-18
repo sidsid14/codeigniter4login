@@ -41,9 +41,14 @@ class ReviewModel extends Model{
         return $data;
     }
 
-    public function getReviewsCount($project_id){
+    public function getReviewsCount($project_id, $user_id){
         $db      = \Config\Database::connect();
-        $sql = "select count(*) as count ,status from `docsgo-reviews` where `project-id` = ".$project_id." group by status";
+        $userCondition = "";
+        if($user_id != "ALL"){
+            $userCondition = " AND (`review-by` = ".$user_id." OR `assigned-to` = ".$user_id." ) ";
+        }
+
+        $sql = "select count(*) as count ,status from `docsgo-reviews` where `project-id` = ".$project_id.$userCondition." group by status";
 
         $query = $db->query($sql);
         $result = $query->getResult('array');
@@ -61,9 +66,14 @@ class ReviewModel extends Model{
         
     }
 
-    public function getPrevReviewId($updateDate, $project_id, $status){
+    public function getPrevReviewId($updateDate, $project_id, $status, $user_id){
+        $userCondition = "";
+        if($user_id != ""){
+            $userCondition = " AND (`review-by` = ".$user_id." OR `assigned-to` = ".$user_id." ) ";
+        }
+
         $db      = \Config\Database::connect();
-        $sql = "SELECT id from `docsgo-reviews` where `updated-at` < '".$updateDate."' and `project-id` = ".$project_id." and status = '".$status."'  ORDER BY `updated-at` desc LIMIT 1;";
+        $sql = "SELECT id from `docsgo-reviews` where `updated-at` < '".$updateDate."' and `project-id` = ".$project_id." and status = '".$status."' ".$userCondition."  ORDER BY `updated-at` desc LIMIT 1;";
        
         $query = $db->query($sql);
 
@@ -76,9 +86,14 @@ class ReviewModel extends Model{
         return $data;
     }
      
-    public function getNextReviewId($updateDate, $project_id, $status){
+    public function getNextReviewId($updateDate, $project_id, $status, $user_id){
+        $userCondition = "";
+        if($user_id != ""){
+            $userCondition = " AND (`review-by` = ".$user_id." OR `assigned-to` = ".$user_id." ) ";
+        }
+        
         $db      = \Config\Database::connect();
-        $sql = "SELECT id from `docsgo-reviews` where `updated-at` > '".$updateDate."' and `project-id` = ".$project_id." and status = '".$status."'  ORDER BY `updated-at`,id desc LIMIT 1;";
+        $sql = "SELECT id from `docsgo-reviews` where `updated-at` > '".$updateDate."' and `project-id` = ".$project_id." and status = '".$status."' ".$userCondition." ORDER BY `updated-at`,id desc LIMIT 1;";
        
         $query = $db->query($sql);
 
