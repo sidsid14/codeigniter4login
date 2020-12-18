@@ -992,7 +992,7 @@ function generatePreview(e, id) {
                 var el = '.bootbox-body p:lt(' + listTags + ')';
                 showPreview("PREVIEW", response, 'lg');
                 $(el).css('text-align', 'center').addClass('first-header-tags');
-                $('.first-header-tags img').css({'width':'200px', 'height':'200px'});
+                $('.first-header-tags img').css({'width':'150px', 'height':'100px'});
                 setTimeout(() => {
                     $('.bootbox-alert').scrollTop(0);
                 }, 500);

@@ -51,7 +51,7 @@ class GenerateDocuments extends BaseController
 			echo "no data";
 			return false;
 		}
-		//Fetching the doc-properties from Model
+		//Fetching the doc-properties(Global seetings) from Model
 		$settingsModel = new SettingsModel();
 		$documentProperties = $settingsModel->getSettings("documentProperties");
 		$documentProperties = json_decode($documentProperties[0]['options'], true);
@@ -66,40 +66,6 @@ class GenerateDocuments extends BaseController
 			if($val["key"] == "docConfidential"){
 				$documentFooterMsg = $val["value"];
 			}
-		}
-
-		function sectionNumber($sectionStr) {
-			return (int) filter_var($sectionStr, FILTER_SANITIZE_NUMBER_INT);
-		}
-
-		function addTableStylesToContent($rawContent) {
-			$fontFamily = 'Arial, sans-serif';
-			$fontSize = '11';
-			$replaceContent = str_replace("<table>", '<table class="pandoc-mark-css" style="border-spacing: 0 10px; font-family:' . $fontFamily . '; font-size: ' . $fontSize . ';width: 100%; table-layout: fixed; word-wrap: break-word; padding: 10px; border: 1px #000000 solid; border-collapse: collapse;" border="1" cellpadding="5">', $rawContent);
-			$replaceContent = str_replace("<th>", "<th style='padding-top: 8px;font-weight: bold; height: 50px;text-align: center; background-color:#cbebf2;'>", $replaceContent);
-			$replaceContent = str_replace("<td>", "<td style='padding-top: 8px;text-align: left;'>", $replaceContent);
-			$replaceContent = str_replace("<br/>", " <br/> ", $replaceContent);
-			$replaceContent = str_replace("</table>", " </table><br/> ", $replaceContent);
-			return $replaceContent;
-		}
-
-		function addImagePaths($content, $title) {
-			$url = base_url().'/media/media';
-			$content = str_replace("./media/media", $url, $content);
-			if($title !='' && $title != null){
-				$content = str_replace('<header id="title-block-header">', '<header id="title-block-header-display" style="display: none">', $content);
-			}else{
-				$content = str_replace('<header id="title-block-header">', '<header id="title-block-header" style="display: none">', $content);
-			}
-			$content = str_replace('<h1 id=', '<h1 style="font-size: x-large;font-weight: bold;" id=', $content);
-			return $content;
-		}
-
-		function handleCodeblocks($content) {
-			$content = str_replace("```", "", $content);
-			$content = str_replace("````", "", $content);
-			$content = str_replace("``", "", $content);
-			return $content;
 		}
 
 		$jsonGetId = $str;
@@ -123,6 +89,7 @@ class GenerateDocuments extends BaseController
 
 			$section = $phpWord->addSection();
 
+			//Applying the paragraph styles...
 			$phpWord->addTitleStyle(1, array('name' => $json['section-font'], 'size' => $json['section-font-size'], 'bold' => TRUE));
 			$phpWord->setDefaultParagraphStyle(
 					array(
@@ -131,7 +98,6 @@ class GenerateDocuments extends BaseController
 						'spacing' => 100,
 					)
 			);
-
 			$multilevelNumberingStyleName = 'multilevel';
 			$phpWord->addNumberingStyle(
 					$multilevelNumberingStyleName, array(
@@ -156,7 +122,6 @@ class GenerateDocuments extends BaseController
 			if($documentFooterMsg == ''){
 				$documentFooterMsg = 'Murata Vios CONFIDENTIAL';
 			}
-			// $subsequent->addImage($documentIconImage, array('width' => 110, 'height' => 50));
 		
 			//Footer for all pages
 			$footer = $section->addFooter();
@@ -166,7 +131,7 @@ class GenerateDocuments extends BaseController
 			$section->addTextBreak();
 			$section->addTextBreak();
 			$path = base_url().'/assets/images/vios_logo.jpg';
-			$section->addImage($documentIconImage, array('width' => 200, 'height' => 200, 'align' => 'center'));
+			$section->addImage($documentIconImage, array('width' => 150, 'height' => 100, 'align' => 'center'));
 			$section->addTextBreak();
 			$section->addTextBreak();
 			
@@ -175,15 +140,6 @@ class GenerateDocuments extends BaseController
 			$fontStyle['name'] = 'Arial';
 			$fontStyle['size'] = 16;
 			$fontStyle['bold'] = TRUE;
-			//Handling the header section form config | JSON data
-			/* //Not Required right now
-			if($documentTitle == '' || $documentTitle == null){
-				$section->addText($json['cp-line1'], $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);
-				$section->addText($json['cp-line2'], $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);	
-			}else{
-				$section->addText($documentTitle, $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);
-			}
-			*/
 
 			$cp_line3 = $json['cp-line3'];
 			$fontStyle['name'] = 'Arial';
@@ -199,19 +155,6 @@ class GenerateDocuments extends BaseController
 			$section->addTextBreak();
 			$section->addTextBreak();
 
-			/*//Approval Matrix not required now so commented
-			$fontStyle['name'] = $json['section-font'];
-			$fontStyle['size'] = $json['section-font-size'];
-			$fontStyle['bold'] = TRUE;
-			$section->addText('Approval Matrix', $fontStyle);
-
-			$fontStyle['name'] = $json['section-font'];
-			$fontStyle['size'] = $json['section-font-size'];
-			$fontStyle['bold'] = FALSE;
-			$section->addText($json['cp-approval-matrix'], $fontStyle);
-			$section->addTextBreak();
-			*/
-
 			$fontStyle['name'] = $json['section-font'];
 			$fontStyle['size'] = $json['section-font-size'];
 			$fontStyle['bold'] = TRUE;
@@ -222,8 +165,8 @@ class GenerateDocuments extends BaseController
 			$fontStyle['bold'] = FALSE;
 
 			$tableContent = $pandoc->convert($json['cp-change-history'], "gfm", "html5");
-			$tableContent = addTableStylesToContent($tableContent);
-			\PhpOffice\PhpWord\Shared\Html::addHtml($section, $tableContent, FALSE, FALSE);
+			$tableContent = $this->addTableStylesToContent($tableContent);
+			\PhpOffice\PhpWord\Shared\Html::addHtml($section, $tableContent, false, false);
 
 			$section->addTextBreak();
 
@@ -240,7 +183,7 @@ class GenerateDocuments extends BaseController
 			// $section->addTitle('TABLE OF CONTENTS', 0);
 			$section->addTextBreak(2);
 
-			// Add TOC #1
+			// Add TOC...
 			$toc = $section->addTOC($fontStyle12, 'tabLeader');
 			$section->addTextBreak(2);
 
@@ -273,7 +216,7 @@ class GenerateDocuments extends BaseController
 					}
 					*/
 					if (strpos($contentSection, '<table>') !== false) {
-						$tableContentFormatted = addTableStylesToContent($contentSection);
+						$tableContentFormatted = $this->addTableStylesToContent($contentSection);
 						//setOutputEscapingEnabled is added for gfm markdown
 						\PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
 						\PhpOffice\PhpWord\Shared\Html::addHtml($section, $tableContentFormatted, false, false);
@@ -358,17 +301,15 @@ class GenerateDocuments extends BaseController
 						header("Content-Description: File Transfer");
 						header("Content-Disposition: attachment; filename=".$fileName);
 						header("Content-Transfer-Encoding: binary");  
-						readfile($directoryName.'/'.$fileName); // or echo file_get_contents($temp_file);
+						readfile($directoryName.'/'.$fileName);
 						unlink($directoryName.'/'.$fileName);
 					}else{
 						$outputFileName = str_replace("docx", "html", $fileName);
 						$cmd = "pandoc --extract-media ./media '".$directoryName."/".$fileName."' --metadata title='vios' -s -o ".$outputFileName;
-						// $cmd = "pandoc --extract-media $imgPath '".$directoryName."/".$fileName."' --metadata title='vios' -s -o ".$outputFileName;
-						// $cmd = "pandoc '".$directoryName."/".$fileName."' --keep-parstyle='Snap' --keep-parstyle='Crackle' --metadata title='vios' -s -o ".$outputFileName;
 						$html = shell_exec($cmd);
 						$html = file_get_contents($outputFileName);
-						$html = addTableStylesToContent($html);
-						$html = addImagePaths($html, $documentTitle);
+						$html = $this->addTableStylesToContent($html);
+						$html = $this->addImagePaths($html, $documentTitle);
 						echo $html;
 						unlink($directoryName.'/'.$fileName);
 						unlink($outputFileName);
@@ -382,6 +323,39 @@ class GenerateDocuments extends BaseController
 			}
 				
 		}
+	}
+
+	function sectionNumber($sectionStr) {
+		return (int) filter_var($sectionStr, FILTER_SANITIZE_NUMBER_INT);
+	}
+
+	function addTableStylesToContent($rawContent) {
+		$fontFamily = 'Arial, sans-serif';
+		$fontSize = '11';
+		$replaceContent = str_replace("<table>", '<table class="pandoc-mark-css" style="border-spacing: 0 10px; layout: fixed; font-family:' . $fontFamily . '; font-size: ' . $fontSize . ';width: 100%; table-layout: fixed; word-wrap: break-word; padding: 10px; border: 1px #000000 solid; border-collapse: collapse;" border="1" cellpadding="5">', $rawContent);
+		$replaceContent = str_replace("<th>", "<th style='padding-top: 8px;font-weight: bold; height: 50px;text-align: center; background-color:#cbebf2;'>", $replaceContent);
+		$replaceContent = str_replace("<br/>", " <br/> ", $replaceContent);
+		$replaceContent = str_replace("</table>", " </table><br/> ", $replaceContent);
+		return $replaceContent;
+	}
+
+	function addImagePaths($content, $title) {
+		$url = base_url().'/media/media';
+		$content = str_replace("./media/media", $url, $content);
+		if($title !='' && $title != null){
+			$content = str_replace('<header id="title-block-header">', '<header id="title-block-header-display" style="display: none">', $content);
+		}else{
+			$content = str_replace('<header id="title-block-header">', '<header id="title-block-header" style="display: none">', $content);
+		}
+		$content = str_replace('<h1 id=', '<h1 style="font-size: x-large;font-weight: bold;" id=', $content);
+		return $content;
+	}
+
+	function handleCodeblocks($content) {
+		$content = str_replace("```", "", $content);
+		$content = str_replace("````", "", $content);
+		$content = str_replace("``", "", $content);
+		return $content;
 	}
 
 	private function returnParams(){
@@ -432,10 +406,7 @@ class GenerateDocuments extends BaseController
 		$projectId = $this->returnProjectID();
 		$current_date =  gmdate("Y-m-d H:i:s");
 		$downloadZipFileName = "Project_Documents_".$projectId.".zip";
-		// $json_data = "{timeStamp:".$current_date.",filePath: ".$downloadZipFileName."}";
-
 		$json_data = array("timeStamp"=>$current_date, "filePath"=>$downloadZipFileName);
-
 
 		$model = new ProjectModel();
 		$res = $model->updateGenerateDocumentPath($projectId, json_encode($json_data));
