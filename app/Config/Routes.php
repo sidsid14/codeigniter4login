@@ -97,6 +97,8 @@ $routes->post('reviews/saveComment', 'Reviews::saveComment',['filter' => 'auth']
 $routes->post('reviews/deleteComment', 'Reviews::deleteComment',['filter' => 'auth']);
 
 $routes->get('documents', 'Documents::index',['filter' => 'auth']);
+$routes->get('documents/getDocuments', 'Documents::getDocuments', ['filter' => 'auth']);
+$routes->get('documents/getDocumentStats', 'Documents::getDocumentStats', ['filter' => 'auth']);
 $routes->get('documents/add', 'Documents::add',['filter' => 'auth']);
 $routes->post('documents/save', 'Documents::save',['filter' => 'auth']);
 $routes->match(['get','post'],'documents/delete/(:num)', 'Documents::delete',['filter' => 'auth']);

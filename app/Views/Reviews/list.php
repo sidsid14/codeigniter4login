@@ -39,7 +39,7 @@
             </div>
 
             <div class="col-md-6">
-                <label class="font-weight-bold text-muted" >Status</label><br/>
+                <label class="font-weight-bold text-muted">Status</label><br />
                 <div class="btn-group btn-group-toggle ">
                     <?php foreach ($reviewStatus as $revStatus): ?>
                     <?php
@@ -47,21 +47,15 @@
                         $selected = ($selectedStatus == $revStatus) ? true : false;
                         $statusCount = (isset($reviewsCount[$revStatus])) ? $reviewsCount[$revStatus] : 0;
                     ?>
-                    <label 
-                        class="lbl_<?= $statusId ?> btn <?=($selected ? " btn-primary" : "btn-secondary")?>">
-                        <input type="radio" name="view" value="<?=$revStatus?>" autocomplete="off" onclick="getTableRecords()"
-                            <?=($selected ? "checked" : "")?>> <?=$revStatus?>
-                        <?php if (isset($reviewsCount[$revStatus])): ?>
-                         
-                        <?php endif?>
+                    <label class="lbl_<?= $statusId ?> btn <?=($selected ? " btn-primary" : "btn-secondary")?>">
+                        <input type="radio" name="view" value="<?=$revStatus?>" autocomplete="off"
+                            onclick="getTableRecords()" <?=($selected ? "checked" : "")?>> <?=$revStatus?>
                         <span class="stats_<?= $statusId ?> badge badge-light ml-1 "><?= $statusCount ?></span>
                     </label>
                     <?php endforeach;?>
                 </div>
 
             </div>
-
-            
 
         </div>
 
@@ -89,148 +83,146 @@
 </div>
 
 <script>
-  var userId, reviewStatus, table = null;
+var userId, reviewStatus, table = null;
 
-  $(document).ready(function() {
-      userId = <?= $userId ?>;
-      reviewStatus = <?= json_encode($reviewStatus) ?>;
+$(document).ready(function() {
+    userId = <?= $userId ?>;
+    reviewStatus = <?= json_encode($reviewStatus) ?>;
 
-      table = initializeDataTable('reviews-list');
+    table = initializeDataTable('reviews-list');
 
-      getTableRecords();
+    getTableRecords();
 
-  });
+});
 
-  
 
-  $(document).on({
-        ajaxStart: function(){
-            $("#loading-overlay").show();
-        },
-        ajaxStop: function(){ 
-            $("#loading-overlay").hide();
-        }    
-  });
 
-  function getTableRecords(updateStats = false){
+$(document).on({
+    ajaxStart: function() {
+        $("#loading-overlay").show();
+    },
+    ajaxStop: function() {
+        $("#loading-overlay").hide();
+    }
+});
+
+function getTableRecords(updateStats = false) {
     const selectedView = $("input[name='view']:checked").val();
     const selectedProjectId = $("#projects").val();
-    const selectedUsers =  $("#selectedUser").val();
+    const selectedUsers = $("#selectedUser").val();
     var url = `/reviews/getReviews?view=${selectedView}&project_id=${selectedProjectId}&user_id=${selectedUsers}`;
-    
+
     $("#addButton").attr("href", `/reviews/add?project_id=${selectedProjectId}`);
-    
+
     $(".btn-group label").removeClass("btn-primary").addClass("btn-secondary");
     $(`.lbl_${selectedView.replace(/\s/g, '_')}`).removeClass("btn-secondary").addClass("btn-primary");
-    
+
     makeRequest(url)
-    .then((response) => {
-        const reviewsList = response.reviews;
-        populateTable(reviewsList);        
-    })
-    .catch((err) => {
-        console.log(err);
-        showPopUp('Error', "An unexpected error occured on server.");
-    })
-    
-    if(updateStats){
-      var url = `/reviews/getReviewStats?project_id=${selectedProjectId}&user_id=${selectedUsers}`;
-    
-      makeRequest(url)
-      .then((response) => {
-            const reviewStats = response.reviewStats;
-            updateCount(reviewStats);
-      })
-      .catch((err) => {
-          console.log(err);
-          showPopUp('Error', "An unexpected error occured on server.");
-      })
+        .then((response) => {
+            const reviewsList = response.reviews;
+            populateTable(reviewsList);
+        })
+        .catch((err) => {
+            console.log(err);
+            showPopUp('Error', "An unexpected error occured on server.");
+        })
+
+    if (updateStats) {
+        var url = `/reviews/getReviewStats?project_id=${selectedProjectId}&user_id=${selectedUsers}`;
+
+        makeRequest(url)
+            .then((response) => {
+                const reviewStats = response.reviewStats;
+                updateCount(reviewStats);
+            })
+            .catch((err) => {
+                console.log(err);
+                showPopUp('Error', "An unexpected error occured on server.");
+            })
     }
 
-  }
+}
 
-  function updateCount(updatedCount){
+function updateCount(updatedCount) {
     reviewStatus.forEach(status => {
-      var count = 0;
-      if(updatedCount != null){
-        if(updatedCount.hasOwnProperty(status)){
-            count = updatedCount[status];
+        var count = 0;
+        if (updatedCount != null) {
+            if (updatedCount.hasOwnProperty(status)) {
+                count = updatedCount[status];
+            }
         }
-      }
-      
 
-      $(`.stats_${status.replace(/\s/g, '_')}`).text(count);
+
+        $(`.stats_${status.replace(/\s/g, '_')}`).text(count);
     })
 
-  }
+}
 
-  function populateTable(reviewsList){
-        dataInfo = {
-            "rowId": 'id',
-            "requiredFields": ['reviewId','review-name', 'context', 'author', 'reviewer', 'updated-at'],
-            "dateFields": ["updated-at"],
-            "action": [
-                {
-                    title: "Edit",
-                    buttonClass: "btn btn-warning",
-                    iconClass: "fa fa-edit",
-                    clickTrigger: "edit",
-                    clickParams: ['id']
-                },
-                {
-                    title: "Delete",
-                    buttonClass: "btn btn-danger",
-                    iconClass: "fa fa-trash",
-                    clickTrigger: "deleteReview",
-                    clickParams: ['id'],
-                    condition: {
-                        on: 'assigned-to',
-                        with: userId
+function populateTable(reviewsList) {
+    dataInfo = {
+        "rowId": 'id',
+        "requiredFields": ['reviewId', 'review-name', 'context', 'author', 'reviewer', 'updated-at'],
+        "dateFields": ["updated-at"],
+        "action": [{
+                title: "Edit",
+                buttonClass: "btn btn-warning",
+                iconClass: "fa fa-edit",
+                clickTrigger: "edit",
+                clickParams: ['id']
+            },
+            {
+                title: "Delete",
+                buttonClass: "btn btn-danger",
+                iconClass: "fa fa-trash",
+                clickTrigger: "deleteReview",
+                clickParams: ['id'],
+                condition: {
+                    on: 'assigned-to',
+                    with: userId
+                }
+            }
+        ]
+    };
+
+    if (reviewsList.length) {
+        table.destroy();
+    }
+
+    $('#tbody').html("");
+    var data = getHTMLtable(reviewsList, dataInfo);
+    $('#tbody').append(data);
+
+    if (reviewsList.length) {
+        table = initializeDataTable('reviews-list');
+    }
+
+}
+
+function edit(id) {
+    location.href = `/reviews/add/${id}`;
+}
+
+function deleteReview(id) {
+
+    bootbox.confirm("Do you really want to delete the review?", function(result) {
+        if (result) {
+            $.ajax({
+                url: '/reviews/delete/' + id,
+                type: 'GET',
+                success: function(response) {
+                    response = JSON.parse(response);
+                    if (response.success == "True") {
+                        $("#" + id).fadeOut(800)
+                    } else {
+                        bootbox.alert('Review not deleted.');
                     }
                 }
-            ]
-        };
-
-        if(reviewsList.length){
-            table.destroy();
+            });
+        } else {
+            console.log('Delete Cancelled');
         }
-        
-        $('#tbody').html("");
-        var data = getHTMLtable(reviewsList, dataInfo);
-        $('#tbody').append(data);
-       
-        if(reviewsList.length){
-            table = initializeDataTable('reviews-list');
-        }
-       
-  }
 
-  function edit(id){
-      location.href = `/reviews/add/${id}`;
-  }
+    });
 
-  function deleteReview(id) {
-
-      bootbox.confirm("Do you really want to delete the review?", function(result) {
-          if (result) {
-              $.ajax({
-                  url: '/reviews/delete/' + id,
-                  type: 'GET',
-                  success: function(response) {
-                      response = JSON.parse(response);
-                      if (response.success == "True") {
-                          $("#" + id).fadeOut(800)
-                      } else {
-                          bootbox.alert('Review not deleted.');
-                      }
-                  }
-              });
-          } else {
-              console.log('Delete Cancelled');
-          }
-
-      });
-
-  }
-
+}
 </script>

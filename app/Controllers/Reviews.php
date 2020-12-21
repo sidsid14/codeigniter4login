@@ -50,9 +50,10 @@ class Reviews extends BaseController
 
         $projectModel = new ProjectModel();
         $data['projects'] = $projectModel->getProjects(); //Projects Dropdown
-
+        
         if ($selectedProject == null) {
-            $selectedProject = $this->getActiveProjectId(); //Default project
+            helper('Helpers\utils');
+            $selectedProject = getActiveProjectId(); //Default project
         }
 
         $reviewModel = new ReviewModel();
@@ -82,23 +83,23 @@ class Reviews extends BaseController
         echo json_encode($response);
     }
 
-    private function getActiveProjectId()
-    {
+    // private function getActiveProjectId()
+    // {
 
-        $projectModel = new ProjectModel();
-        $activeProject = $projectModel->where("status", "Active")->first();
+    //     $projectModel = new ProjectModel();
+    //     $activeProject = $projectModel->where("status", "Active")->first();
 
-        if ($activeProject != "") {
-            return $activeProject['project-id'];
-        } else {
-            $activeProject = $projectModel->first();
-            if ($activeProject != "") {
-                return $activeProject['project-id'];
-            } else {
-                return null;
-            }
-        }
-    }
+    //     if ($activeProject != "") {
+    //         return $activeProject['project-id'];
+    //     } else {
+    //         $activeProject = $projectModel->first();
+    //         if ($activeProject != "") {
+    //             return $activeProject['project-id'];
+    //         } else {
+    //             return null;
+    //         }
+    //     }
+    // }
 
     public function getReviews()
     {
@@ -130,16 +131,6 @@ class Reviews extends BaseController
 
     }
 
-    private function getProjects()
-    {
-        $projectModel = new ProjectModel();
-        $data = $projectModel->findAll();
-        $projects = [];
-        foreach ($data as $project) {
-            $projects[$project['project-id']] = $project['name'];
-        }
-        return $projects;
-    }
 
     private function returnParams()
     {

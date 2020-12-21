@@ -50,27 +50,30 @@
 }
 
 .reviewDiv {
-    max-width: 565px;
+    max-width: 520px;
 }
 </style>
 
-<div class="row justify-content-center">
+<div class="p-2">
 
-    <div class="col-12 col-lg-7 ml-3 pr-0 pl-0">
-
-        <?php if (session()->get('success')): ?>
-        <div class="alert alert-success" role="alert">
-            <?= session()->get('success') ?>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-7 mx-auto">
+            <?php if (session()->get('success')): ?>
+            <div class="alert alert-success" role="alert">
+                <?= session()->get('success') ?>
+            </div>
+            <?php endif; ?>
         </div>
-        <?php endif; ?>
 
-        <!-- Form starts here -->
-        <form id="documentForm" action="/documents/save" method="post">
-            <?php
+        <div class="col-12 col-lg-7 ml-3 pr-0 pl-0">
+
+            <!-- Form starts here -->
+            <form id="documentForm" action="/documents/save" method="post">
+                <?php
                 if(isset($projectDocument)){
-                    $heading = $projectDocument['file-name'];
-                    $title = $jsonObject["cp-line3"];
                     $docId = $projectDocument["id"];
+                    $heading = 'D-'. $docId ." ".$projectDocument['file-name'];
+                    $title = $jsonObject["cp-line3"];
                     $docType = $projectDocument["type"];
                     
                 }else{
@@ -83,77 +86,89 @@
             ?>
 
 
-            <!-- Hidden Fields for form -->
-            <input type="hidden" id="project-id" name="project-id" value="<?= $project_id ?>">
-            <input type="hidden" id="id" name="id" value="<?= $docId ?>">
-            <input type="hidden" id="type" name="type" value="<?= $docType ?>">
+                <!-- Hidden Fields for form -->
+                <input type="hidden" id="project-id" name="project-id" value="<?= $project_id ?>">
+                <input type="hidden" id="id" name="id" value="<?= $docId ?>">
+                <input type="hidden" id="type" name="type" value="<?= $docType ?>">
 
-            <div class="card  mt-2 form-color" style="border:0px !important;">
-                <!-- Document Title -->
-                <div class="card-header form-color sticky">
-                    <div class="row">
+                <div class="card  mt-2 form-color" style="border:0px !important;">
+                    <!-- Document Title -->
+                    <div class="card-header" style="border:0px !important;">
+                        <div class="row p-2">
+                            <div class="">
+                                <h3 style="width: 550px;" class="truncate" data-toggle="popover" data-placement="top"
+                                    data-content="<?= $heading ?>"><?= $heading ?></h3>
+                            </div>
+                            <div class="ml-auto">
+                                <?php if (isset($projectDocument)): ?>
 
-                        <div class="ml-3">
-                            <h3 style="width: 500px;" data-toggle="popover" data-placement="top"
-                                data-content="<?= $heading ?>" class="heading truncate"><?= $heading ?></h3>
+                                <a title="Preview" onclick="generatePreview(this, <?php echo $docId;?>)"
+                                    class="ml-2 btn bg-purple text-light">
+                                    <i class="fa fa-eye" aria-hidden="true"></i>
+                                </a>
+
+                                <?php endif; ?>
+                                <?php if (isset($nearByDocuments)): ?>
+                                <a data-toggle="popover" style="border: 1px solid;" data-placement="left"
+                                    title="<?= isset($nearByDocuments['prevId']) ? 'D-'.$nearByDocuments['prevId']: '' ?>"
+                                    data-content="Previous Document"
+                                    href="/documents/add/?id=<?= $nearByDocuments['prevId'] ?>"
+                                    class="btn btn-light text-primary ml-4 <?= isset($nearByDocuments['prevId']) ? '': 'disabled' ?>">
+                                    <i class="fas fa-angle-left"></i>
+                                </a>
+                                <a data-toggle="popover" style="border: 1px solid;" data-placement="right"
+                                    title="<?= isset($nearByDocuments['nextId']) ? 'D-'.$nearByDocuments['nextId']: '' ?>"
+                                    data-content="Next Document"
+                                    href="/documents/add/?id=<?= $nearByDocuments['nextId'] ?>"
+                                    class="btn btn-light text-primary ml-2 <?= isset($nearByDocuments['nextId']) ? '': 'disabled' ?>">
+                                    <i class="fas fa-angle-right"></i>
+                                </a>
+                                <?php endif; ?>
+                            </div>
                         </div>
-                        <?php if (isset($projectDocument)): ?>
-                        <div class="ml-auto mr-3">
-                            <a title="Preview" onclick="generatePreview(this, <?php echo $docId;?>)"
-                                class="btn btn-primary ml-2 btn btn-info">
-                                <i class="fa fa-eye" aria-hidden="true"></i>
-                            </a>
-                            <button type="button" id="project-name" class="btn btn-info"><?= $project_name ?>
-                            </button>
-                        </div>
-                        <?php endif; ?>
-
                     </div>
 
+                    <ul class="nav nav-tabs nav-justified sticky" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active lead" id="header-tab" data-toggle="tab" href="#header" role="tab"
+                                aria-controls="header" aria-selected="true">Header</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link lead" id="section-tab" data-toggle="tab" href="#section" role="tab"
+                                aria-controls="section" aria-selected="false">Sections</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link lead" id="revision-tab" data-toggle="tab" href="#revision" role="tab"
+                                aria-controls="revision" aria-selected="false">Revision History</a>
+                        </li>
+                    </ul>
 
+                    <div class="tab-content pt-1 pl-3 pr-3" id="myTabContent">
 
-                </div>
+                        <div class="tab-pane fade show active" id="header" role="tabpanel" aria-labelledby="header-tab">
+                            <?php if (isset($existingDocs)): ?>
+                            <div class="row">
 
+                                <div class="col-12 col-sm-4">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-muted" for="project-name">Project</label>
+                                        <br />
+                                        <button type="button" id="project-name"
+                                            class="btn btn-info"><?= $project_name ?>
+                                        </button>
 
-                <ul class="nav nav-tabs nav-justified sticky" style="top:66px" id="myTab" role="tablist">
-                    <li class="nav-item">
-                        <a class="nav-link active lead" id="header-tab" data-toggle="tab" href="#header" role="tab"
-                            aria-controls="header" aria-selected="true">Header</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link lead" id="section-tab" data-toggle="tab" href="#section" role="tab"
-                            aria-controls="section" aria-selected="false">Sections</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link lead" id="revision-tab" data-toggle="tab" href="#revision" role="tab"
-                            aria-controls="revision" aria-selected="false">Revision History</a>
-                    </li>
-                </ul>
-
-                <div class="tab-content pt-1 pl-3 pr-3" id="myTabContent">
-
-                    <div class="tab-pane fade show active" id="header" role="tabpanel" aria-labelledby="header-tab">
-                        <?php if (isset($existingDocs)): ?>
-                        <div class="row">
-
-                            <div class="col-12 col-sm-4">
-                                <div class="form-group">
-                                    <label class="font-weight-bold text-muted" for="project-name">Project</label> <br />
-                                    <button type="button" id="project-name" class="btn btn-info"><?= $project_name ?>
-                                    </button>
-
+                                    </div>
                                 </div>
-                            </div>
 
 
-                            <div class="col-12 col-sm-2"></div>
+                                <div class="col-12 col-sm-2"></div>
 
-                            <div class="col-12 col-sm-6 <?= isset($projectDocument["id"]) ? 'd-none' : '' ?>">
-                                <div class="form-group">
-                                    <label class="font-weight-bold text-muted" for="existingDocs">Fill From
-                                        Existing</label>
-                                    <div class="input-group">
-                                        <?php 
+                                <div class="col-12 col-sm-6 <?= isset($projectDocument["id"]) ? 'd-none' : '' ?>">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-muted" for="existingDocs">Fill From
+                                            Existing</label>
+                                        <div class="input-group">
+                                            <?php 
                                                 if($allExistingDocs != "TRUE" ){
                                                     $docsDrop = $existingDocs["my"];
                                                     $checked = "checked";
@@ -169,90 +184,91 @@
                                                 }
                                             ?>
 
-                                        <select class="form-control  selectpicker" data-live-search="true" data-size="8"
-                                            id="existingDocs">
-                                            <option value="" selected>
-                                                Select
-                                            </option>
-                                            <?php foreach ($docsDrop as $key=>$value): ?>
-                                            <option <?=  ($value["id"] == $selectedDocId)? 'selected' : '' ?>
-                                                value='<?=  $value["id"] ?>'><?=  $value['title'] ?></option>
-                                            <?php endforeach; ?>
+                                            <select class="form-control  selectpicker" data-live-search="true"
+                                                data-size="8" id="existingDocs">
+                                                <option value="" selected>
+                                                    Select
+                                                </option>
+                                                <?php foreach ($docsDrop as $key=>$value): ?>
+                                                <option <?=  ($value["id"] == $selectedDocId)? 'selected' : '' ?>
+                                                    value='<?=  $value["id"] ?>'><?=  $value['title'] ?></option>
+                                                <?php endforeach; ?>
 
+                                            </select>
+                                            <input type="checkbox" id="existingDocType" data-on="MY"
+                                                data-onstyle="success" data-offstyle="info" data-off="ALL"
+                                                <?= $checked ?> data-toggle="toggle">
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <?php endif; ?>
+                            <div class="row">
+
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-muted" for="cp-line3">Title</label>
+                                        <input required type="text" class="form-control" name="cp-line3" id="cp-line3"
+                                            value="<?= $title  ?>" maxlength="64">
+                                    </div>
+                                </div>
+
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-muted" for="reviewer-id">Reviewer</label>
+                                        <select class="form-control selectpicker" data-live-search="true" data-size="8"
+                                            id="reviewer-id" name="reviewer-id" requried>
+                                            <option disabled selected value> -- select a reviewer -- </option>
+                                            <?php foreach ($teams as $key=>$value): ?>
+                                            <option
+                                                <?= isset($projectDocument['reviewer-id']) ? (($projectDocument['reviewer-id'] == $key) ? 'selected': '') : '' ?>
+                                                value='<?=  $key ?>'>
+                                                <?=  $value ?></option>
+                                            <?php endforeach; ?>
                                         </select>
-                                        <input type="checkbox" id="existingDocType" data-on="MY" data-onstyle="success"
-                                            data-offstyle="info" data-off="ALL" <?= $checked ?> data-toggle="toggle">
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-sm-2">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-muted" for="cp-line5">Revision</label>
+                                        <input type="text" class="form-control" name="cp-line5" id="cp-line5"
+                                            value="<?= $jsonObject["cp-line5"] ?>">
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-sm-9">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-muted" for="cp-approval-matrix">Approval
+                                            Matrix</label>
+                                        <input type="text" class="form-control" name="cp-approval-matrix"
+                                            id="cp-approval-matrix" value="<?= $jsonObject["cp-approval-matrix"] ?>">
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-sm-3">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-muted" for="cp-line4">Document ID</label>
+                                        <input type="text" class="form-control" name="cp-line4" id="cp-line4"
+                                            value="<?= $jsonObject["cp-line4"] ?>">
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-muted" for="cp-change-history">Change
+                                            History</label>
+                                        <textarea class="form-control" name="cp-change-history"
+                                            id="cp-change-history"><?= $jsonObject["cp-change-history"] ?></textarea>
                                     </div>
                                 </div>
                             </div>
 
-
-                        </div>
-                        <?php endif; ?>
-                        <div class="row">
-
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label class="font-weight-bold text-muted" for="cp-line3">Title</label>
-                                    <input required type="text" class="form-control" name="cp-line3" id="cp-line3"
-                                        value="<?= $title  ?>" maxlength="64">
-                                </div>
-                            </div>
-
-                            <div class="col-4">
-                                <div class="form-group">
-                                    <label class="font-weight-bold text-muted" for="reviewer-id">Reviewer</label>
-                                    <select class="form-control selectpicker" data-live-search="true" data-size="8"
-                                        id="reviewer-id" name="reviewer-id" requried>
-                                        <option disabled selected value> -- select a reviewer -- </option>
-                                        <?php foreach ($teams as $key=>$value): ?>
-                                        <option
-                                            <?= isset($projectDocument['reviewer-id']) ? (($projectDocument['reviewer-id'] == $key) ? 'selected': '') : '' ?>
-                                            value='<?=  $key ?>'>
-                                            <?=  $value ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-sm-2">
-                                <div class="form-group">
-                                    <label class="font-weight-bold text-muted" for="cp-line5">Revision</label>
-                                    <input type="text" class="form-control" name="cp-line5" id="cp-line5"
-                                        value="<?= $jsonObject["cp-line5"] ?>">
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-sm-9">
-                                <div class="form-group">
-                                    <label class="font-weight-bold text-muted" for="cp-approval-matrix">Approval
-                                        Matrix</label>
-                                    <input type="text" class="form-control" name="cp-approval-matrix"
-                                        id="cp-approval-matrix" value="<?= $jsonObject["cp-approval-matrix"] ?>">
-                                </div>
-                            </div>
-
-                            <div class="col-12 col-sm-3">
-                                <div class="form-group">
-                                    <label class="font-weight-bold text-muted" for="cp-line4">Document ID</label>
-                                    <input type="text" class="form-control" name="cp-line4" id="cp-line4"
-                                        value="<?= $jsonObject["cp-line4"] ?>">
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label class="font-weight-bold text-muted" for="cp-change-history">Change
-                                        History</label>
-                                    <textarea class="form-control" name="cp-change-history"
-                                        id="cp-change-history"><?= $jsonObject["cp-change-history"] ?></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Submit button shouldb be visible if -->
-                        <!-- it is new or owned by author -->
-                        <?php 
+                            <!-- Submit button shouldb be visible if -->
+                            <!-- it is new or owned by author -->
+                            <?php 
 
                             $showSubmit = True;
                             if(isset($projectDocument["id"])){
@@ -265,170 +281,171 @@
 
                         ?>
 
-                        <?php if($showSubmit): ?>
+                            <?php if($showSubmit): ?>
 
-                        <div class="row">
+                            <div class="row">
 
-                            <div class="col-12 col-sm-3"></div>
+                                <div class="col-12 col-sm-3"></div>
 
-                            <div class="col-12 col-sm-4">
+                                <div class="col-12 col-sm-4">
 
-                                <div class="form-group">
-                                    <select class="form-control selectpicker" name="status" id="status">
-                                        <option value="" disabled>
-                                            Select Status
-                                        </option>
-                                        <?php foreach ($documentStatus as $key=>$value): ?>
-                                        <option
-                                            <?= isset($projectDocument["status"]) ? (($projectDocument["status"] == $value) ? 'selected': '') : '' ?>
-                                            value="<?=  $value ?>"><?=  $value ?></option>
-                                        <?php endforeach; ?>
+                                    <div class="form-group">
+                                        <select class="form-control selectpicker" name="status" id="status">
+                                            <option value="" disabled>
+                                                Select Status
+                                            </option>
+                                            <?php foreach ($documentStatus as $key=>$value): ?>
+                                            <option
+                                                <?= isset($projectDocument["status"]) ? (($projectDocument["status"] == $value) ? 'selected': '') : '' ?>
+                                                value="<?=  $value ?>"><?=  $value ?></option>
+                                            <?php endforeach; ?>
 
-                                    </select>
+                                        </select>
+                                    </div>
                                 </div>
+
+                                <div class="col-12 col-sm-4 ">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+
+
                             </div>
 
-                            <div class="col-12 col-sm-4 ">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
+                            <?php endif; ?>
 
 
                         </div>
 
-                        <?php endif; ?>
 
 
-                    </div>
+                        <div class="tab-pane fade" id="section" role="tabpanel" aria-labelledby="section-tab">
 
+                            <!-- Creating Sections -->
+                            <?php foreach ($jsonObject['sections'] as $section): ?>
 
+                            <div class="col-12 mb-3 pl-1 pr-1">
+                                <!-- Section Title -->
+                                <div class="card-header text-white bg-dark">
+                                    <div class="row">
+                                        <!-- If a section has a dropdown than take half the width otherwise take full width -->
+                                        <div
+                                            class="col-<?= (isset($section["type"])) ? ($section["type"] == "text" ? '12' : '6') : '12'?>">
+                                            <div class="row">
+                                                <div class="col">
+                                                    <div class="input-group">
+                                                        <!-- Show Review button only if it matches with assigned reviewer id -->
+                                                        <?php if (isset($projectDocument['id'])): ?>
 
-                    <div class="tab-pane fade" id="section" role="tabpanel" aria-labelledby="section-tab">
-
-                        <!-- Creating Sections -->
-                        <?php foreach ($jsonObject['sections'] as $section): ?>
-
-                        <div class="col-12 mb-3 pl-1 pr-1">
-                            <!-- Section Title -->
-                            <div class="card-header text-white bg-dark">
-                                <div class="row">
-                                    <!-- If a section has a dropdown than take half the width otherwise take full width -->
-                                    <div
-                                        class="col-<?= (isset($section["type"])) ? ($section["type"] == "text" ? '12' : '6') : '12'?>">
-                                        <div class="row">
-                                            <div class="col">
-                                                <div class="input-group">
-                                                    <!-- Show Review button only if it matches with assigned reviewer id -->
-                                                    <?php if (isset($projectDocument['id'])): ?>
-
-                                                    <div>
-                                                        <div class="pr-3 pt-1">
-                                                            <button type="button" class="btn btn-sm btn-outline-warning "
-                                                                onclick="addLineToComment('<?=$section['title']?>')"
-                                                                title="Add review comment">
-                                                                <i class="fas fa-list "></i>
-                                                            </button>
+                                                        <div>
+                                                            <div class="pr-3 pt-1">
+                                                                <button type="button"
+                                                                    class="btn btn-sm btn-outline-warning "
+                                                                    onclick="addLineToComment('<?=$section['title']?>')"
+                                                                    title="Add review comment">
+                                                                    <i class="fas fa-list "></i>
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                    </div>
 
-                                                    <?php endif; ?>
-                                                    <p class="lead mb-0 pt-1 "><?=  $section["title"] ?></p>
+                                                        <?php endif; ?>
+                                                        <p class="lead mb-0 pt-1 "><?=  $section["title"] ?></p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <?php if (isset($section["type"])): ?>
-                                    <?php if ($section["type"] == "database"): ?>
-                                    <div class="col-5">
-                                        <select class="form-control selectpicker" data-actions-box="true"
-                                            data-live-search="true" data-size="8" id="select_<?=  $section["id"] ?>"
-                                            multiple>
-                                            <?php foreach ($lookUpTables[$section["tableName"]] as $key=>$value): ?>
-                                            <option value='<?=  $value['id'] ?>'>
-                                                <?=  $value[$section["headerColumns"] ] ?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                    </div>
-                                    <div class="col-1 ">
-                                        <button type="button" class="btn btn-sm btn-outline-light float-right mt-1"
-                                            onclick='insertTable("<?=  $section["id"] ?>","<?=$section["tableName"] ?>", "<?=  $section["contentColumns"] ?>" )'>
-                                            Insert</button>
-                                    </div>
-                                    <?php endif; ?>
+                                        <?php if (isset($section["type"])): ?>
+                                        <?php if ($section["type"] == "database"): ?>
+                                        <div class="col-5">
+                                            <select class="form-control selectpicker" data-actions-box="true"
+                                                data-live-search="true" data-size="8" id="select_<?=  $section["id"] ?>"
+                                                multiple>
+                                                <?php foreach ($lookUpTables[$section["tableName"]] as $key=>$value): ?>
+                                                <option value='<?=  $value['id'] ?>'>
+                                                    <?=  $value[$section["headerColumns"] ] ?></option>
+                                                <?php endforeach; ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-1 ">
+                                            <button type="button" class="btn btn-sm btn-outline-light float-right mt-1"
+                                                onclick='insertTable("<?=  $section["id"] ?>","<?=$section["tableName"] ?>", "<?=  $section["contentColumns"] ?>" )'>
+                                                Insert</button>
+                                        </div>
+                                        <?php endif; ?>
 
-                                    <?php endif; ?>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
+
+                                <!-- Section Body -->
+
+                                <div class="card-body p-0">
+                                    <textarea class="form-control sections" name="<?=  $section["id"] ?>"
+                                        id="<?=  $section["id"] ?>"><?=  $section["content"] ?></textarea>
+                                </div>
+
                             </div>
 
-                            <!-- Section Body -->
+                            <?php endforeach; ?>
+                        </div>
 
-                            <div class="card-body p-0">
-                                <textarea class="form-control sections" name="<?=  $section["id"] ?>"
-                                    id="<?=  $section["id"] ?>"><?=  $section["content"] ?></textarea>
+                        <div class="tab-pane fade" id="revision" tole="tabpanel" aria-labelledby="revision-tab">
+                            <div class="alert alert-warning revisionAlert" role="alert">
+                                No revision history available.
                             </div>
+                            <table class="table table-hover d-none revisionTable">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Revision log</th>
+                                        <th scope="col">User name</th>
+                                        <th scope="col" style="width:125px">Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="revisionBody">
 
+                                </tbody>
+                            </table>
                         </div>
 
-                        <?php endforeach; ?>
                     </div>
 
-                    <div class="tab-pane fade" id="revision" tole="tabpanel" aria-labelledby="revision-tab">
-                        <div class="alert alert-warning revisionAlert" role="alert">
-                            No revision history available.
-                        </div>
-                        <table class="table table-hover d-none revisionTable">
-                            <thead>
-                                <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Revision log</th>
-                                    <th scope="col">User name</th>
-                                    <th scope="col" style="width:125px">Timestamp</th>
-                                </tr>
-                            </thead>
-                            <tbody id="revisionBody">
-
-                            </tbody>
-                        </table>
-                    </div>
 
                 </div>
 
 
-            </div>
+            </form>
 
 
-        </form>
+        </div>
 
-
-    </div>
-
-    <!-- Review Div -->
-    <?php if (isset($projectDocument['project-id'])): ?>
-    <div class="col reviewDiv pr-0 pl-0 mt-2">
-        <div class="col sticky">
-            <div class="form-color">
-                <div class="card-header" style="border:0px !important;">
-                    <div class="row">
-                        <div class="col-10">
-                            <h5 class="text-primary mt-2 reviewHeading">
-                                <?= isset($documentReview['id']) ? 'R-'.$documentReview['id']: ' Review' ?> Comments
-                            </h5>
-                        </div>
-                        <div class="col-2">
-                            <button onclick="showReview()" class="btn btn-outline-primary float-right">
-                                <i class="fas fa-plus "></i>
-                            </button>
+        <!-- Review Div -->
+        <?php if (isset($projectDocument['project-id'])): ?>
+        <div class="col reviewDiv pr-0 pl-0 mt-2">
+            <div class="col sticky">
+                <div class="form-color">
+                    <div class="card-header" style="border:0px !important;">
+                        <div class="row">
+                            <div class="col-10">
+                                <h5 class="text-primary mt-2 reviewHeading">
+                                    <?= isset($documentReview['id']) ? 'R-'.$documentReview['id']: ' Review' ?> Comments
+                                </h5>
+                            </div>
+                            <div class="col-2">
+                                <button onclick="showReview()" class="btn btn-outline-primary float-right">
+                                    <i class="fas fa-plus "></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="">
-                    <ul class="commentsList list-group scroll scroll-primary withoutReviewBox"></ul>
-                </div>
-                <div>
-                    <div class="form-group hide reviewbox p-2">
-                        <textarea class="form-control" name="description" id="description"></textarea>
-                        <div class="d-flex w-100 justify-content-end mt-2">
-                            <?php
+                    <div class="">
+                        <ul class="commentsList list-group scroll scroll-primary withoutReviewBox"></ul>
+                    </div>
+                    <div>
+                        <div class="form-group hide reviewbox p-2">
+                            <textarea class="form-control" name="description" id="description"></textarea>
+                            <div class="d-flex w-100 justify-content-end mt-2">
+                                <?php
                                 $showStatus = false;
                                 $showCategory = true;
                                 $reviewId = "";
@@ -444,57 +461,57 @@
                                 }
                                 ?>
 
-                            <?php if($showCategory): ?>
-                            <div style="width:165px">
-                                <div class="form-group">
-                                    <label class="font-weight-bold text-muted" for="reviewCategory">Category</label>
-                                    <select class="form-control selectpicker" data-live-search="true" data-size="8"
-                                        name="reviewCategory" id="reviewCategory">
-                                        <option value="" disabled>
-                                            Select
-                                        </option>
-                                        <?php foreach ($reviewCategory as $key=>$value): ?>
-                                        <option
-                                            <?= isset($documentReview['category']) ? (($documentReview['category'] == $value) ? 'selected': '') : '' ?>
-                                            value="<?=  $value ?>"><?=  $value ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
+                                <?php if($showCategory): ?>
+                                <div style="width:165px">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-muted" for="reviewCategory">Category</label>
+                                        <select class="form-control selectpicker" data-live-search="true" data-size="8"
+                                            name="reviewCategory" id="reviewCategory">
+                                            <option value="" disabled>
+                                                Select
+                                            </option>
+                                            <?php foreach ($reviewCategory as $key=>$value): ?>
+                                            <option
+                                                <?= isset($documentReview['category']) ? (($documentReview['category'] == $value) ? 'selected': '') : '' ?>
+                                                value="<?=  $value ?>"><?=  $value ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+
+                                    </div>
 
                                 </div>
+                                <?php endif ?>
 
-                            </div>
-                            <?php endif ?>
-
-                            <?php if($showStatus): ?>
-                            <div style="width:165px;margin-left:10px">
-                                <div class="form-group">
-                                    <label class="font-weight-bold text-muted" for="reviewStatus">Status</label>
-                                    <select class="form-control selectpicker" data-live-search="true" data-size="8"
-                                        name="reviewStatus" id="reviewStatus">
-                                        <option value="" disabled>
-                                            Select
-                                        </option>
-                                        <?php foreach ($documentStatus as $key=>$value): ?>
-                                        <option
-                                            <?= ($selectedStatus == $value) ? 'selected': ''?>
-                                            value="<?=  $value ?>"><?=  $value ?></option>
-                                        <?php endforeach; ?>
-                                    </select>
+                                <?php if($showStatus): ?>
+                                <div style="width:165px;margin-left:10px">
+                                    <div class="form-group">
+                                        <label class="font-weight-bold text-muted" for="reviewStatus">Status</label>
+                                        <select class="form-control selectpicker" data-live-search="true" data-size="8"
+                                            name="reviewStatus" id="reviewStatus">
+                                            <option value="" disabled>
+                                                Select
+                                            </option>
+                                            <?php foreach ($documentStatus as $key=>$value): ?>
+                                            <option <?= ($selectedStatus == $value) ? 'selected': ''?>
+                                                value="<?=  $value ?>"><?=  $value ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
-                            <?php endif ?>
-                            <div style="margin-top:31px">
-                                <button class="btn btn-success ml-4"
-                                    onclick="saveReview('<?= $reviewId ?>')">Save</button>
-                                <button class="btn btn-dark ml-1" onclick="showReview()">Cancel</button>
+                                <?php endif ?>
+                                <div style="margin-top:31px">
+                                    <button class="btn btn-success ml-4"
+                                        onclick="saveReview('<?= $reviewId ?>')">Save</button>
+                                    <button class="btn btn-dark ml-1" onclick="showReview()">Cancel</button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <?php endif; ?>
     </div>
-    <?php endif; ?>
 </div>
 
 <a id="back-to-top" href="#" class="btn btn-light btn-lg back-to-top text-primary" role="button"><i
@@ -526,7 +543,7 @@ var commentEditId = "",
     reviewedSection = [],
     toggleReviewBox = true,
     reviewComments = [];
-    
+
 
 $(document).ready(function() {
     $('[data-toggle="popover"]').popover({
@@ -537,53 +554,53 @@ $(document).ready(function() {
     userName = "<?= session()->get('name') ?>";
 
     <?php if (isset($lookUpTables)): ?>
-        lookUpTables = <?= json_encode($lookUpTables) ?>;
+    lookUpTables = <?= json_encode($lookUpTables) ?>;
     <?php endif; ?>
 
     <?php if (isset($existingDocs)): ?>
-        existingDocList = <?= json_encode($existingDocs) ?>;
+    existingDocList = <?= json_encode($existingDocs) ?>;
     <?php endif; ?>
 
 
     <?php if(isset($projectDocument["id"])): ?>
-        <?php if($projectDocument["revision-history"] != null): ?>
-            revisionHistory = <?= json_encode($projectDocument["revision-history"]) ?>;
-            showRevisionHistory(revisionHistory);
-        <?php endif; ?>
+    <?php if($projectDocument["revision-history"] != null): ?>
+    revisionHistory = <?= json_encode($projectDocument["revision-history"]) ?>;
+    showRevisionHistory(revisionHistory);
+    <?php endif; ?>
     <?php endif; ?>
 
     <?php if (isset($documentReview)): ?>
-        $(".reviewDiv").removeClass('d-none');
-        var savedReview = <?= json_encode($documentReview) ?>;
-        documentReview.id = savedReview["id"];
-        documentReview.docId = "<?= $projectDocument['id'] ?>";
-        documentReview.projectId = savedReview["project-id"];
-        documentReview.reviewName = savedReview["review-name"];
-        documentReview.category = savedReview["category"];
-        documentReview.context = savedReview["context"];
-        documentReview.description = savedReview["description"];
-        documentReview.reviewBy = savedReview["review-by"];
-        documentReview.assignedTo = savedReview["assigned-to"];
-        documentReview.reviewRef = savedReview["review-ref"];
-        documentReview.status = savedReview["status"];
+    $(".reviewDiv").removeClass('d-none');
+    var savedReview = <?= json_encode($documentReview) ?>;
+    documentReview.id = savedReview["id"];
+    documentReview.docId = "<?= $projectDocument['id'] ?>";
+    documentReview.projectId = savedReview["project-id"];
+    documentReview.reviewName = savedReview["review-name"];
+    documentReview.category = savedReview["category"];
+    documentReview.context = savedReview["context"];
+    documentReview.description = savedReview["description"];
+    documentReview.reviewBy = savedReview["review-by"];
+    documentReview.assignedTo = savedReview["assigned-to"];
+    documentReview.reviewRef = savedReview["review-ref"];
+    documentReview.status = savedReview["status"];
 
-        if (documentReview.description != null && documentReview.description != "") {
-            const temp = JSON.parse(documentReview.description);
-            const comments = Object.values(temp);
-            reviewComments = comments;
+    if (documentReview.description != null && documentReview.description != "") {
+        const temp = JSON.parse(documentReview.description);
+        const comments = Object.values(temp);
+        reviewComments = comments;
 
-            comments.forEach((comment) => {
-                addReviewCommentToUI(documentReview.id, comment);
-            })
-        }
+        comments.forEach((comment) => {
+            addReviewCommentToUI(documentReview.id, comment);
+        })
+    }
     <?php else: ?>
-        <?php if(isset($projectDocument["id"])): ?>
-            documentReview.docId = "<?= $projectDocument['id'] ?>";
-            documentReview.assignedTo = "<?= $projectDocument['author-id'] ?>";
-            documentReview.projectId = $("#project-id").val();
-            documentReview.context = "<?= $projectDocument['file-name'] ?>";
-            documentReview.status = "<?= $projectDocument['status'] ?>";
-        <?php endif; ?>
+    <?php if(isset($projectDocument["id"])): ?>
+    documentReview.docId = "<?= $projectDocument['id'] ?>";
+    documentReview.assignedTo = "<?= $projectDocument['author-id'] ?>";
+    documentReview.projectId = $("#project-id").val();
+    documentReview.context = "<?= $projectDocument['file-name'] ?>";
+    documentReview.status = "<?= $projectDocument['status'] ?>";
+    <?php endif; ?>
     <?php endif; ?>
 
     $(".sticky").parents().css("overflow", "visible");
@@ -904,9 +921,9 @@ function saveReview(reviewId) {
             documentReview.category = reviewCategory;
             documentReview.reviewName = reviewCategory + " Review";
             documentReview.reviewBy = $("#reviewer-id").val();
-        } 
+        }
 
-        if(commentEditId != ""){
+        if (commentEditId != "") {
             documentReview["commentId"] = commentEditId;
         }
 
@@ -929,7 +946,7 @@ function submitReview() {
             if (response.success == "True") {
                 const reviewId = response.reviewId;
 
-                if(documentReview["id"] == ""){
+                if (documentReview["id"] == "") {
                     $(".reviewHeading").text(`R-${reviewId} Comments`);
                     documentReview["id"] = reviewId;
                 }
@@ -945,14 +962,14 @@ function submitReview() {
                 addReviewCommentToUI(documentReview["id"], comment);
                 showReview();
                 showFloatingAlert(response.message);
-                
+
                 if ($("#status").length) {
                     $("#status").val(response.status);
                     $('.selectpicker').selectpicker('refresh');
                 }
 
                 showRevisionHistory(response.revisionHistory);
-                
+
             } else {
                 showPopUp("Failure", "Failed to add a review comment!.");
             }
@@ -1032,11 +1049,11 @@ function showPreview(title, message, width) {
 </script>
 
 <style>
-.preview-modal > .modal-content {
+.preview-modal>.modal-content {
     width: 200% !important;
 }
 
-.preview-modal img{
+.preview-modal img {
     max-width: 250px;
 }
 

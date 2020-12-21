@@ -13,112 +13,117 @@ use App\Models\AcronymsModel;
 use App\Models\SettingsModel;
 class Documents extends BaseController
 {
-    public function index()
+	public function index()
     {
         $data = [];
-		$data['pageTitle'] = 'Documents';
-		$data['addBtn'] = False;
-		$data['titleDD'] = True;
+        $data['pageTitle'] = 'Documents';
+        $data['addBtn'] = False;
+        $data['titleDD'] = True;
 		$data['addUrl'] = "/documents/add";
 
-		//Projects Dropdown
-		$projectModel = new ProjectModel();
-		$data['projects'] = $projectModel->getProjects();
+        $selectedStatus = null;
+        $selectedProject = null;
+        $selectedUser = null;
 
-		//Status Radio Buttons
-		$settingsModel = new SettingsModel();		
-		$documentStatusOptions =  $settingsModel->getConfig("documentStatus");
-		$data["documentStatus"] = $documentStatusOptions;
+        if (isset($_SESSION['PREV_URL'])) {
+            $prev_url = $_SESSION['PREV_URL'];
+            if ($prev_url["name"] == "documentsList") {
+                $vars = $prev_url["vars"];
+                $selectedStatus = $vars['view'];
+                $selectedProject = $vars['project_id'];
+                $selectedUser = isset($vars['user_id']) ? $vars['user_id'] : null;
+            }
+        }
 
+        if($selectedUser == null ){
+            $selectedUser = session()->get('id');
+        }
+
+        $teamModel = new TeamModel();
+		$data['teamMembers'] = $teamModel->getMembers();
+		
 		//Document Type List for adding new documents
 		$templateModel = new DocumentTemplateModel();
 		$existingTypes = $templateModel->getTypes();
 		$data['documentType'] = $existingTypes;
 
-		$view = $this->request->getVar('view');
-		$project_id = $this->request->getVar('project_id');
+        $settingsModel = new SettingsModel();
+        $documentStatusOptions = $settingsModel->getConfig("documentStatus");
+        $data["documentStatus"] = $documentStatusOptions; //Status Radio Buttons
 
-		$selectedStatus = null;
-		if($view == '' || $project_id == ''){
-			//Initial Case
-			$projectModel = new ProjectModel();
-			$activeProject = $projectModel->where("status","Active")->first();	
-			if($activeProject == ""){
-				$activeProject = $projectModel->first();	
-				if($activeProject == ""){
-					$data['data'] = [];
-					echo view('templates/header');
-					echo view('templates/pageTitle', $data);
-					echo view('ProjectDocuments/list',$data);
-					echo view('templates/footer');
-					exit(0);
-				}
-			}
-			$selectedProject = $activeProject['project-id'];
+        if ($selectedStatus == null) {
+            if ($documentStatusOptions != null) {
+                $selectedStatus = $documentStatusOptions[0]; //Default status
+            } else {
+                $selectedStatus = null;
+            }
+        }
 
-			if($documentStatusOptions != null){
-				$selectedStatus = $documentStatusOptions[0];
-			}
+        $projectModel = new ProjectModel();
+        $data['projects'] = $projectModel->getProjects(); //Projects Dropdown
 
-		}else{
-			$selectedProject = $project_id;
-			$selectedStatus = $view;
-		}
+        if ($selectedProject == null) {
+			helper('Helpers\utils');
+            $selectedProject = getActiveProjectId(); //Default project
+        }
 
-		if($selectedStatus != null){
-			session()->set('prevUrl', '');
-			
-			$data['selectedProject'] = $selectedProject;
-			$data['selectedStatus'] = $selectedStatus;
+        $documentModel = new DocumentModel();
+        $data['documentsCount'] = $documentModel->getDocumentsCount($selectedProject, $selectedUser);
 
-			$whereCondition = "WHERE docs.`status` = '".$selectedStatus."' and docs.`project-id` = ".$selectedProject;
-			$documentModel = new DocumentModel();
-			$data['data']  = $documentModel->getDocuments($whereCondition);	
-			$data['documentsCount'] = $documentModel->getDocumentsCount($selectedProject);
-		}else{
-			$data['data'] = [];
-		}
+        $data['selectedProject'] = $selectedProject;
+        $data['selectedStatus'] = $selectedStatus;
+        $data['selectedUser'] = $selectedUser;
+        // $this->updateReviewDescription();
 
 		echo view('templates/header');
 		echo view('templates/pageTitle', $data);
 		echo view('ProjectDocuments/list',$data);
 		echo view('templates/footer');
 	}
+	
+	public function getDocumentStats()
+    {
+        $project_id = $this->request->getVar('project_id');
+        $selectedUser =  $this->request->getVar('user_id');
 
-	// Used for generating documents
-	// Will be deprecated soon
-	public function getJson(){
-		// Type can be document or project
-		$type = $this->request->getVar('type');
-		$id = $this->request->getVar('id');
-		$model = new DocumentModel();
-		if($type == "" && $id == ""){			
-			$data = $model->where('status',"Approved")->findAll();	
-			return json_encode($data);
-		}else{
-			if(($type == "document") || ($type == "project")){
-				if($id != ""){
-					if($type == "document"){
-						$data = $model->where('status',"Approved")->where('id',$id)->findAll();
-					}else if($type == "project"){
-						$data = $model->where('status',"Approved")->where('project-id',$id)->findAll();
-					}					
-					$documents = [];
-					foreach($data as $document){
-						$temp['file-name'] = $document['file-name'];
-						$temp['json-object'] = $document['json-object'];
-						$documents[$document['id']] = $temp;
-					}
-					return json_encode($documents);
-				}else{
-					echo "id not defined";
-				}
-			}else{
-				echo "Type not defiend";
-			}
-		}
-		
+        $documentModel = new DocumentModel();
+        $documentStats = $documentModel->getDocumentsCount($project_id, $selectedUser);
+        $response["success"] = "True";
+        $response["documentStats"] = $documentStats;
+
+        echo json_encode($response);
 	}
+
+	public function getDocuments()
+    {
+        $view = $this->request->getVar('view');
+        $project_id = $this->request->getVar('project_id');
+        $user_id = $this->request->getVar('user_id');
+
+        $vars['view'] = $view;
+        $vars['project_id'] = $project_id;
+        $vars['user_id'] = $user_id;
+
+        helper('Helpers\utils');
+        setPrevUrl('documentsList', $vars);
+
+        $userCondition = "";
+        if($user_id != "ALL"){
+            $userCondition = " AND ( docs.`reviewer-id` = ".$user_id." OR docs.`author-id` = ".$user_id." ) ";
+        }
+
+		$documentModel = new DocumentModel();
+        $whereCondition = ' WHERE docs.`status` = "' . $view . '" AND docs.`project-id` = ' . $project_id.$userCondition;
+
+        $data = $documentModel->getDocuments($whereCondition);
+
+        $response["success"] = "True";
+        $response["documents"] = $data;
+
+        echo json_encode($response);
+
+    }
+
 
 	private function getTablesData($tableName, $project_id){
 		if($tableName == 'teams'){
@@ -208,22 +213,6 @@ class Documents extends BaseController
 		$teamModel = new TeamModel();
 		$data['teams']= $teamModel->getMembers();	
 		
-
-		//Handling the back page navigation url
-		if(isset($_SERVER['HTTP_REFERER'])){
-			$urlStr = $_SERVER['HTTP_REFERER'];
-			if (strpos($urlStr, '?view')) {
-				$urlAr = explode("?view", $urlStr);
-				$backUrl = '/documents?view'.$urlAr[count($urlAr)-1];
-				session()->set('prevUrl', $backUrl);
-			}else{
-				if(session()->get('prevUrl') == ''){
-					session()->set('prevUrl', '/documents');
-				}
-			}
-		}else{
-			session()->set('prevUrl', '/documents');
-		}
 		$data['backUrl'] =  session()->get('prevUrl');
 
 		$settingsModel = new SettingsModel();
@@ -337,6 +326,7 @@ class Documents extends BaseController
 				//Get Review Comment
 				$reviewModel = new ReviewModel();
 				$data['documentReview'] = $reviewModel->where('id',$data['projectDocument']['review-id'])->first();
+				$data['nearByDocuments'] = $this->getNearByDocuments($data['projectDocument']['update-date']);
 			}
 		}
 
@@ -346,6 +336,30 @@ class Documents extends BaseController
 		echo view('templates/footer');
 	}
 
+	private function getNearByDocuments($id)
+    {
+        $prevId = null;
+        $nextId = null;
+
+        if (isset($_SESSION['PREV_URL'])) {
+            $prev_url = $_SESSION['PREV_URL'];
+            if ($prev_url["name"] == "documentsList") {
+                $vars = $prev_url["vars"];
+                $status = $vars['view'];
+                $project_id = $vars['project_id'];
+                $user_id = isset($vars['user_id']) ? ( ($vars['user_id'] != 'ALL') ? $vars['user_id'] : '' ): '';
+				$documentModel = new DocumentModel();
+                $prevId = $documentModel->getPrevDocId($id, $project_id, $status, $user_id);
+                $nextId = $documentModel->getNextDocId($id, $project_id, $status, $user_id);
+            }
+        }
+
+        $rev["prevId"] = $prevId;
+        $rev["nextId"] = $nextId;
+
+        return $rev;
+	}
+	
 	public function save(){
 		$response = array();
 

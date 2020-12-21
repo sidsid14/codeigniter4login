@@ -51,7 +51,7 @@ class DocumentModel extends Model{
     public function getDocuments($whereCondition = "", $limit = ""){
         $db      = \Config\Database::connect();
         
-        $sql = "SELECT docs.`id`,docs.`project-id`,docs.`review-id`,docs.`type`,docs.`author-id`, author.`name` as `author`, reviewer.`name` as `reviewer`, docs.`update-date`,docs.`json-object`,docs.`file-name`,docs.`status`
+        $sql = "SELECT  CONCAT('D','-',docs.`id`) as documentId, docs.`id`,docs.`project-id`,docs.`review-id`,docs.`type`,docs.`author-id`, author.`name` as `author`, reviewer.`name` as `reviewer`, docs.`update-date`,docs.`json-object`,docs.`file-name`,docs.`status`
         FROM `docsgo-documents` AS docs
         INNER JOIN `docsgo-team-master` AS author ON docs.`author-id` = author.`id` 
         INNER JOIN `docsgo-team-master` AS reviewer ON docs.`reviewer-id` = reviewer.`id` 
@@ -71,10 +71,13 @@ class DocumentModel extends Model{
 
     }
 
-    public function getDocumentsCount($project_id){
+    public function getDocumentsCount($project_id, $user_id){
         $db      = \Config\Database::connect();
-        
-        $sql = "select count(*) as count ,status from `docsgo-documents` where `project-id` = ".$project_id." group by status";
+        $userCondition = "";
+        if($user_id != "ALL"){
+            $userCondition = " AND ( `reviewer-id` = ".$user_id." OR `author-id` = ".$user_id." ) ";
+        }
+        $sql = "select count(*) as count ,status from `docsgo-documents` where `project-id` = ".$project_id.$userCondition." group by status";
 
         $query = $db->query($sql);
 
@@ -89,5 +92,47 @@ class DocumentModel extends Model{
         }
     
     }
+
+    public function getPrevDocId($updateDate, $project_id, $status, $user_id){
+        $userCondition = "";
+        if($user_id != ""){
+            $userCondition = " AND ( `reviewer-id` = ".$user_id." OR `author-id` = ".$user_id." ) ";
+        }
+
+        $db      = \Config\Database::connect();
+        $sql = "SELECT id from `docsgo-documents` where `update-date` < '".$updateDate."' and `project-id` = ".$project_id." and status = '".$status."' ".$userCondition."  ORDER BY `update-date` desc LIMIT 1;";
+       
+        $query = $db->query($sql);
+
+        $data = $query->getResult('array');
+        if(count($data)){
+            $data = $data[0]['id'];
+        }else{
+            $data = null;
+        }
+        return $data;
+    }
+     
+    public function getNextDocId($updateDate, $project_id, $status, $user_id){
+        $userCondition = "";
+        if($user_id != ""){
+            $userCondition = " AND ( `reviewer-id` = ".$user_id." OR `author-id` = ".$user_id." ) ";
+        }
+        
+        $db      = \Config\Database::connect();
+        $sql = "SELECT id from `docsgo-documents` where `update-date` > '".$updateDate."' and `project-id` = ".$project_id." and status = '".$status."' ".$userCondition." ORDER BY `update-date`,id desc LIMIT 1;";
+       
+        $query = $db->query($sql);
+
+        $data = $query->getResult('array');
+        if(count($data)){
+            $data = $data[0]['id'];
+        }else{
+            $data = null;
+        }
+        return $data;
+    }
+
+
 
 }
