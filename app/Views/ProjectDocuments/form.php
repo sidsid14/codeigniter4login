@@ -52,6 +52,16 @@
 .reviewDiv {
     max-width: 520px;
 }
+
+.sectionLinks{
+    font-size:1rem;
+    cursor:pointer
+}
+
+.sectionLinksNav > .nav-link.active{
+    background-color: #007bff !important;
+}
+
 </style>
 
 <div class="p-2">
@@ -65,7 +75,7 @@
             <?php endif; ?>
         </div>
 
-        <div class="col-12 col-lg-7 ml-3 pr-0 pl-0">
+        <div class="col-12 col-lg-8 ml-3 pr-0 pl-0">
 
             <!-- Form starts here -->
             <form id="documentForm" action="/documents/save" method="post">
@@ -320,73 +330,92 @@
 
                         <div class="tab-pane fade" id="section" role="tabpanel" aria-labelledby="section-tab">
 
-                            <!-- Creating Sections -->
-                            <?php foreach ($jsonObject['sections'] as $section): ?>
+                            <div class="row" >
+                                <div class="col-3 p-0">
+                                
+                                    <div class="bg-white rounded sticky" style="top:50px">
 
-                            <div class="col-12 mb-3 pl-1 pr-1">
-                                <!-- Section Title -->
-                                <div class="card-header text-white bg-dark">
-                                    <div class="row">
-                                        <!-- If a section has a dropdown than take half the width otherwise take full width -->
-                                        <div
-                                            class="col-<?= (isset($section["type"])) ? ($section["type"] == "text" ? '12' : '6') : '12'?>">
-                                            <div class="row">
-                                                <div class="col">
-                                                    <div class="input-group">
-                                                        <!-- Show Review button only if it matches with assigned reviewer id -->
-                                                        <?php if (isset($projectDocument['id'])): ?>
-
-                                                        <div>
-                                                            <div class="pr-3 pt-1">
-                                                                <button type="button"
-                                                                    class="btn btn-sm btn-outline-warning "
-                                                                    onclick="addLineToComment('<?=$section['title']?>')"
-                                                                    title="Add review comment">
-                                                                    <i class="fas fa-list "></i>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-
-                                                        <?php endif; ?>
-                                                        <p class="lead mb-0 pt-1 "><?=  $section["title"] ?></p>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                        <div class="nav nav-pills flex-column sectionLinksNav">
+                                            <?php foreach ($jsonObject['sections'] as $index=>$section): ?>
+                                            <a class="sectionLinks nav-link <?=($index == 0) ? 'active': '' ?>"
+                                                onclick="goToDiv(this,'#div_<?=  $section['id'] ?>')" ><?=  $section["title"] ?></a>
+                                            <?php endforeach; ?>
                                         </div>
-
-                                        <?php if (isset($section["type"])): ?>
-                                        <?php if ($section["type"] == "database"): ?>
-                                        <div class="col-5">
-                                            <select class="form-control selectpicker" data-actions-box="true"
-                                                data-live-search="true" data-size="8" id="select_<?=  $section["id"] ?>"
-                                                multiple>
-                                                <?php foreach ($lookUpTables[$section["tableName"]] as $key=>$value): ?>
-                                                <option value='<?=  $value['id'] ?>'>
-                                                    <?=  $value[$section["headerColumns"] ] ?></option>
-                                                <?php endforeach; ?>
-                                            </select>
-                                        </div>
-                                        <div class="col-1 ">
-                                            <button type="button" class="btn btn-sm btn-outline-light float-right mt-1"
-                                                onclick='insertTable("<?=  $section["id"] ?>","<?=$section["tableName"] ?>", "<?=  $section["contentColumns"] ?>" )'>
-                                                Insert</button>
-                                        </div>
-                                        <?php endif; ?>
-
-                                        <?php endif; ?>
                                     </div>
                                 </div>
 
-                                <!-- Section Body -->
+                                <!-- Creating Sections -->
+                                <div class="col-9 p-0">
+                                    <?php foreach ($jsonObject['sections'] as $section): ?>
 
-                                <div class="card-body p-0">
-                                    <textarea class="form-control sections" name="<?=  $section["id"] ?>"
-                                        id="<?=  $section["id"] ?>"><?=  $section["content"] ?></textarea>
+                                    <div class="col-12 mb-3 pl-1 pr-1 template__section" id="div_<?=  $section["id"] ?>">
+                                        <!-- Section Title -->
+                                        <div class="card-header text-white bg-dark">
+                                            <div class="row">
+                                                <!-- If a section has a dropdown than take half the width otherwise take full width -->
+                                                <div class="col-7">
+                                                    
+                                                            <div class="input-group">
+                                                                <!-- Show Review button only if it matches with assigned reviewer id -->
+                                                                <?php if (isset($projectDocument['id'])): ?>
+                                                                <div class="input-group-prepend">
+                                                                    <button type="button"
+                                                                            class="btn btn-sm btn-warning"
+                                                                            onclick="addLineToComment('<?=$section['title']?>')"
+                                                                            title="Add review comment">
+                                                                            <i class="fas fa-list "></i>
+                                                                    </button>
+                                                                </div>
+                                                               
+                                                                <?php endif; ?>
+                                                                <input style="background: transparent;color: #fff;" type="text" class="form-control" readonly value="<?=  $section["title"] ?>" aria-label="Input group example" aria-describedby="btnGroupAddon">
+
+                                                            </div>
+                                                        
+                                                </div>
+
+                                                <?php if (isset($section["type"])): ?>
+                                                <?php if ($section["type"] == "database"): ?>
+                                                <div class="col-5">
+                                                    <div class="input-group">
+                                                        <select class="form-control selectpicker" data-actions-box="true"
+                                                            data-live-search="true" data-size="8"
+                                                            id="select_<?=  $section["id"] ?>" multiple>
+                                                            <?php foreach ($lookUpTables[$section["tableName"]] as $key=>$value): ?>
+                                                            <option value='<?=  $value['id'] ?>'>
+                                                                <?=  $value[$section["headerColumns"] ] ?></option>
+                                                            <?php endforeach; ?>
+                                                        </select>
+                                                        <div class="input-group-append">
+                                                            <button type="button"
+                                                            title = "Add to <?=  $section["title"] ?>"
+                                                            class="btn btn-sm btn-orange "
+                                                            onclick='insertTable("<?=  $section["id"] ?>","<?=$section["tableName"] ?>", "<?=  $section["contentColumns"] ?>" )'>
+                                                            <i class="fa fa-plus" aria-hidden="true"></i></button>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                </div>
+                                               
+                                                <?php endif; ?>
+
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+
+                                        <!-- Section Body -->
+
+                                        <div class="card-body p-0" >
+                                            <textarea class="form-control sections" name="<?=  $section["id"] ?>"
+                                                id="<?=  $section["id"] ?>"><?=  $section["content"] ?></textarea>
+                                        </div>
+
+                                    </div>
+
+                                    <?php endforeach; ?>
                                 </div>
-
                             </div>
 
-                            <?php endforeach; ?>
                         </div>
 
                         <div class="tab-pane fade" id="revision" tole="tabpanel" aria-labelledby="revision-tab">
@@ -609,6 +638,41 @@ $(document).ready(function() {
 
 });
 
+document.addEventListener('DOMContentLoaded', function(){ 
+  const sections = document.querySelectorAll(".template__section");
+  const sections_links = document.querySelectorAll(".sectionLinks");
+  
+  // functions to add and remove the active class from links as appropriate
+  const makeActive = (link) => sections_links[link].classList.add("active");
+  const removeActive = (link) => sections_links[link].classList.remove("active");
+  const removeAllActive = () => [...Array(sections.length).keys()].forEach((link) => removeActive(link));
+  
+  const sectionMargin = 0;
+  
+  let currentActive = 0;
+
+  // listen for scroll events
+  window.addEventListener("scroll", () => {
+    
+    const current = sections.length - [...sections].reverse().findIndex((section) => window.scrollY >= section.offsetTop - sectionMargin ) - 1
+  
+    if (current !== currentActive) {
+      removeAllActive();
+      currentActive = current;
+      makeActive(current);
+    }
+  });
+}, false);
+
+function goToDiv(e, target){
+    
+    var targetElement = e;
+
+    $('html, body').animate({
+        scrollTop: $(target).offset().top-50
+    }, 1000);
+
+} 
 
 const capitalize = (s) => {
     if (typeof s !== 'string') return ''
@@ -732,6 +796,9 @@ function showRevisionHistory(revisionHistory) {
 
 // For Reloading Sections in section tab
 $("#section-tab").click(function() {
+    var sectionLinks = $('.sectionLinks');
+    sectionLinks.removeClass('active');
+    $(sectionLinks[0]).addClass('active');
     setTimeout(function() {
         $('.sections').each(function() {
             var $cm = $(this).nextAll('.CodeMirror')[0].CodeMirror;
