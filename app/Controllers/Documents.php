@@ -213,7 +213,7 @@ class Documents extends BaseController
 		$teamModel = new TeamModel();
 		$data['teams']= $teamModel->getMembers();	
 		
-		$data['backUrl'] =  session()->get('prevUrl');
+		$data['backUrl'] = "/documents";
 
 		$settingsModel = new SettingsModel();
 		
