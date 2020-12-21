@@ -499,10 +499,11 @@
                                     </div>
                                 </div>
                                 <?php endif ?>
-                                <div style="margin-top:31px">
-                                    <button class="btn btn-success ml-4"
-                                        onclick="saveReview('<?= $reviewId ?>')">Save</button>
-                                    <button class="btn btn-dark ml-1" onclick="showReview()">Cancel</button>
+                                <div style="margin-top:31px;margin-right:10px">
+                                    <button title="Save" class="btn btn-success ml-4"
+                                        onclick="saveReview('<?= $reviewId ?>')"><i class="fas fa-save"></i></button>
+                                    <button title="Cancel" class="btn btn-dark ml-1" onclick="showReview()"><i
+                                            class="fas fa-times"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -1009,7 +1010,10 @@ function generatePreview(e, id) {
                 var el = '.bootbox-body p:lt(' + listTags + ')';
                 showPreview("PREVIEW", response, 'lg');
                 $(el).css('text-align', 'center').addClass('first-header-tags');
-                $('.first-header-tags img').css({'width':'150px', 'height':'100px'});
+                $('.first-header-tags img').css({
+                    'width': '150px',
+                    'height': '100px'
+                });
                 setTimeout(() => {
                     $('.bootbox-alert').scrollTop(0);
                 }, 500);

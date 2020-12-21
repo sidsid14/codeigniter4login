@@ -261,8 +261,12 @@
                                     <?php endif ?>
                                 </div>
                                 <div>
-                                    <button class="btn btn-success ml-4" onclick="saveComment('<?= $reviewId ?>')">Save</button>
-                                    <button class="btn btn-dark ml-1" onclick="showReview()">Cancel</button>
+                                    <button title="Save" class="btn btn-success ml-4" onclick="saveComment('<?= $reviewId ?>')">
+                                        <i class="fas fa-save"></i>
+                                    </button>
+                                    <button title="Cancel" class="btn btn-dark ml-1" onclick="showReview()">
+                                        <i class="fas fa-times"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
