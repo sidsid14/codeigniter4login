@@ -116,7 +116,7 @@ class GenerateDocuments extends BaseController
 				if (trim($json['cp-icon']) != "") {
 					$documentIconImage = $json['cp-icon'];
 				}else{
-					$documentIconImage = base_url().'/assets/images/vios_logo.jpg';
+					$documentIconImage = base_url().'/assets/images/logo.png';
 				}
 			}
 			if($documentFooterMsg == ''){
@@ -130,8 +130,7 @@ class GenerateDocuments extends BaseController
 			//#-2: Adding iamge at first page header line
 			$section->addTextBreak();
 			$section->addTextBreak();
-			$path = base_url().'/assets/images/vios_logo.jpg';
-			$section->addImage($documentIconImage, array('width' => 150, 'height' => 100, 'align' => 'center'));
+			$section->addImage($documentIconImage, array('width' => 167, 'height' => 140, 'align' => 'center'));
 			$section->addTextBreak();
 			$section->addTextBreak();
 			

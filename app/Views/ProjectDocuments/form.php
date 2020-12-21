@@ -1078,8 +1078,8 @@ function generatePreview(e, id) {
                 showPreview("PREVIEW", response, 'lg');
                 $(el).css('text-align', 'center').addClass('first-header-tags');
                 $('.first-header-tags img').css({
-                    'width': '150px',
-                    'height': '100px'
+                    'width': '167px',
+                    'height': '140px'
                 });
                 setTimeout(() => {
                     $('.bootbox-alert').scrollTop(0);
