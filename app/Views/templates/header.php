@@ -149,6 +149,10 @@
         border: 1px solid;
     }
 
+    .dropdown-menu{
+        max-width:235px;
+    }
+
     /* Side menu icon styles */
     /* .nav__icon {
         font-size: 0.9rem

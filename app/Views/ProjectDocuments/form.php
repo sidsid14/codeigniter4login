@@ -584,7 +584,7 @@ $(document).ready(function() {
     userName = "<?= session()->get('name') ?>";
 
     <?php if (isset($lookUpTables)): ?>
-    lookUpTables = <?= json_encode($lookUpTables) ?>;
+    lookUpTables = <?= json_encode($lookUpTables,   JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?>;
     <?php endif; ?>
 
     <?php if (isset($existingDocs)): ?>
