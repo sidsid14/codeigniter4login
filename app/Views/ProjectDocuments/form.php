@@ -1,7 +1,7 @@
 <style>
 .nav-link.active {
     color: #f8f9fa !important;
-    background-color: #6c757d !important;
+    background-color: lightslategray !important;
 }
 
 .nav-item {
@@ -335,7 +335,7 @@
                                 
                                     <div class="bg-white rounded sticky" style="top:50px">
 
-                                        <div class="nav nav-pills flex-column sectionLinksNav">
+                                        <div class="nav nav-pills flex-column sectionLinksNav text-center">
                                             <?php foreach ($jsonObject['sections'] as $index=>$section): ?>
                                             <a class="sectionLinks nav-link <?=($index == 0) ? 'active': '' ?>"
                                                 onclick="goToDiv(this,'#div_<?=  $section['id'] ?>')" ><?=  $section["title"] ?></a>
@@ -350,7 +350,7 @@
 
                                     <div class="col-12 mb-3 pl-1 pr-1 template__section" id="div_<?=  $section["id"] ?>">
                                         <!-- Section Title -->
-                                        <div class="card-header text-white bg-dark">
+                                        <div class="card-header text-white"  style="border:0px !important;background: lightslategray;">
                                             <div class="row">
                                                 <!-- If a section has a dropdown than take half the width otherwise take full width -->
                                                 <div class="col-7">
@@ -368,7 +368,7 @@
                                                                 </div>
                                                                
                                                                 <?php endif; ?>
-                                                                <input style="background: transparent;color: #fff;" type="text" class="form-control" readonly value="<?=  $section["title"] ?>" aria-label="Input group example" aria-describedby="btnGroupAddon">
+                                                                <input style="background: wheat;color: black;" type="text" class="form-control" readonly value="<?=  $section["title"] ?>" aria-label="Input group example" aria-describedby="btnGroupAddon">
 
                                                             </div>
                                                         
