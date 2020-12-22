@@ -53,7 +53,7 @@
       }
 
     .truncate {
-        width: 136px;
+        width: 110px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
