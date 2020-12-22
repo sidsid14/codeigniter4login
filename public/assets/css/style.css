@@ -11,6 +11,7 @@ body::-webkit-scrollbar-track {
 }
 
 body::-webkit-scrollbar-thumb {
+  border-radius: 12px;
   background: #007bff;
 }
 
@@ -115,31 +116,45 @@ table tr:last-child td:last-child {
 }
 
 .scroll-primary::-webkit-scrollbar-thumb {
+  border-radius: 12px;
   background: #007bff;
+  
 }
 
 .scroll-dark::-webkit-scrollbar-thumb {
+  border-radius: 12px;
   background: #343a40;
+  
 }
 
 .scroll-info::-webkit-scrollbar-thumb {
+  border-radius: 12px;
   background: #17a2b8;
+  
 }
 
 .scroll-warning::-webkit-scrollbar-thumb {
+  border-radius: 12px;
   background: #ffc107;
+  
 }
 
 .scroll-success::-webkit-scrollbar-thumb {
+  border-radius: 12px;
   background: #28a745;
+  
 }
 
 .scroll-orange::-webkit-scrollbar-thumb {
+  border-radius: 12px;
   background: #fd7e14;
+  
 }
 
 .scroll-purple::-webkit-scrollbar-thumb {
+  border-radius: 12px;
   background: #6f42c1;
+  
 }
 
 .sticky {
