@@ -506,19 +506,15 @@ class Documents extends BaseController
 	}
 
 	public function delete(){
-		if (session()->get('is-admin')){
-			$uri = $this->request->uri;
-			$id = $uri->getSegment(3);
+		
+		$uri = $this->request->uri;
+		$id = $uri->getSegment(3);
 
-			$model = new DocumentModel();
-			$model->delete($id);
-			$response = array('success' => "True");
-			echo json_encode( $response );
-		}
-		else{
-			$response = array('success' => "False");
-			echo json_encode( $response );
-		}
+		$model = new DocumentModel();
+		$model->delete($id);
+		$response = array('success' => "True");
+		echo json_encode( $response );
+		
 	}
 
 
