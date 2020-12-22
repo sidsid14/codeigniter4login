@@ -58,6 +58,11 @@
     cursor:pointer
 }
 
+.sectionLinks:hover{
+    background-color: #007bff;
+    color: #fff !important;
+}
+
 .sectionLinksNav > .nav-link.active{
     background-color: #007bff !important;
 }
