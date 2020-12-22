@@ -47,11 +47,12 @@ class RiskAssessment extends BaseController
 			$data['data'][$key]['hazard-analysis'] = $convertData;
 		}
 		session()->set('prevUrl', '');
-		$data['projects'] = $this->getProjects();
 		$projectModel = new ProjectModel();
-		$activeProject = $projectModel->where("status","Active")->first();	
+        $data['projects'] = $projectModel->getProjects(); 
+		helper('Helpers\utils');
+		$activeProject = getActiveProjectId();	
 		if($activeProject != ""){
-			$selectedProject = $activeProject['project-id'];
+			$selectedProject = $activeProject;
 			$data['selectedProject'] = $selectedProject;
 			$data['riskCategory'] = $this->getRiskTypecategories();
 		}else{
@@ -173,7 +174,9 @@ class RiskAssessment extends BaseController
 		$dataList = [];
 		$data['riskCategory'] = $this->getRiskTypecategories();
 		$data['riskStatus'] = ['Open', 'Close'];
-		$data['projects'] = $this->getProjects();
+
+		$projectModel = new ProjectModel();
+		$data['projects'] = $projectModel->getProjects(); 
 		//Handling the back page navigation url
 		if(isset($_SERVER['HTTP_REFERER'])){
 			$urlStr = $_SERVER['HTTP_REFERER'];
@@ -299,16 +302,6 @@ class RiskAssessment extends BaseController
 			$data = [];
 		}
 		return $data;
-	}
-
-	private function getProjects(){
-        $projectModel = new ProjectModel();
-        $data = $projectModel->findAll();	
-		$projects = [];
-		foreach($data as $project){
-			$projects[$project['project-id']] = $project['name'];
-		}
-		return $projects;
 	}
 
 	public function delete(){

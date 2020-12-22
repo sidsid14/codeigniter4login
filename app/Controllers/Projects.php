@@ -19,7 +19,7 @@ class Projects extends BaseController
 			$view = 'Active';			
 		}
 
-		$data['data'] = $model->where('status', $view)->orderBy('start-date')->findAll();	
+		$data['data'] = $model->where('status', $view)->orderBy('start-date', 'desc')->findAll();	
 		$data['view'] = $view;
 		
 		echo view('templates/header');

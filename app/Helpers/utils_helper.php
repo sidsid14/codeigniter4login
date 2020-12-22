@@ -19,7 +19,7 @@
     {
 
         $projectModel = new ProjectModel();
-        $activeProject = $projectModel->where("status", "Active")->first();
+        $activeProject = $projectModel->where("status", "Active")->orderBy('start-date', 'desc')->first();
 
         if ($activeProject != "") {
             return $activeProject['project-id'];

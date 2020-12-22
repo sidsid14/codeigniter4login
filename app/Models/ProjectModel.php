@@ -9,7 +9,7 @@ class ProjectModel extends Model{
     
     public function getProjects(){
         $db = \Config\Database::connect();
-        $sql = "Select `project-id`, `name` from `docsgo-projects` where status = 'Active'";
+        $sql = "Select `project-id`, `name` from `docsgo-projects` where status = 'Active' ORDER BY `start-date` DESC ";
         $query = $db->query($sql);
 
         $result = $query->getResult('array');
