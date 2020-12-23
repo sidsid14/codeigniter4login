@@ -55,11 +55,15 @@
 
 .sectionLinks{
     font-size:1rem;
-    cursor:pointer
+    cursor:pointer;
+    box-shadow: inset 0 0 0 0.01px #fff;
+	-webkit-transition: all ease 0.8s;
+	-moz-transition: all ease 0.8s;
+	transition: all ease 0.8s;
 }
 
 .sectionLinks:hover{
-    background-color: #007bff;
+    box-shadow: inset 400px 0 0 0 #007bff;
     color: #fff !important;
 }
 
