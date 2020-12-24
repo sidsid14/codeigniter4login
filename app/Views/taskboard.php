@@ -881,6 +881,8 @@ function addComment(taskId) {
 
     if (existingTask.comments == null) {
         existingTask.comments = [];
+    }else{
+        existingTask.comments.reverse();
     }
     var commentsHtml = "";
 
