@@ -528,7 +528,8 @@ function drawPie(chartContainerId, title, data, colors) {
         series: data.series,
         chart: {
             id: chartContainerId,
-            width: 400,
+            width: "100%",
+            height: 200,
             type: "donut",
             toolbar: {
                 show: true
