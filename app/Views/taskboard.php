@@ -12,6 +12,16 @@
     font-size: 45px;
     line-height: 18px;
     margin-top: 4px;
+    color: #86befa;
+}
+
+button[data-id="selectedUserId"]{
+    height: 32px;
+    margin-top: -6px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
 }
 
 .tasks-column {
@@ -87,14 +97,6 @@
     max-width: 80vw;
 }
 
-button[data-id="selectedUserId"]{
-    height: 32px;
-    margin-top: -4px;
-    padding-top: 4px;
-    padding-bottom: 4px;
-    padding-left: 8px;
-    padding-right: 8px;
-}
 
 /* Chart styles */
 .box {
