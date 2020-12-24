@@ -401,14 +401,14 @@ $('#selectedView').change(function() {
 function displayChart(chartData) {
 
     if(chartData.developerData.series.length){
-        drawBar("developerChart", "Development Team - Tasks Load", chartData.developerData);
+        drawBar("developerChart", "Development Tasks Load", chartData.developerData);
     }else{
         $("#developerChart").html("");
         $("#developerChart").html("<span>No tasks assigned for development.</span>")
     }
 
     if(chartData.verificationData.series.length){
-        drawBar("verifierChart", "Verification Team - Tasks Load", chartData.verificationData)
+        drawBar("verifierChart", "Verification Tasks Load", chartData.verificationData)
     }else{
         $("#verifierChart").html("");
         $("#verifierChart").html("<span>No tasks assigned for verification.</span>")
