@@ -87,6 +87,15 @@
     max-width: 80vw;
 }
 
+button[data-id="selectedUserId"]{
+    height: 32px;
+    margin-top: -4px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    padding-left: 8px;
+    padding-right: 8px;
+}
+
 /* Chart styles */
 .box {
     box-shadow: 0px 1px 22px -12px #607D8B;
@@ -113,10 +122,10 @@
             <li class="breadcrumb-item active" aria-current="page">
                 <input type="checkbox" id="selectedView" checked data-size="small"
                     data-on="<i class='fas fa-list-ul'></i>&nbsp;&nbsp;List" data-off="<i class='fas fa-chart-line'></i>&nbsp;&nbsp;Graph&nbsp;"
-                    data-toggle="toggle" data-onstyle="outline-primary"  data-offstyle="outline-secondary">
+                    data-toggle="toggle" data-onstyle="outline-secondary"  data-offstyle="outline-primary">
             </li>
             <li class="breadcrumb-item active" aria-current="page">
-                <select class="selectpicker" id="selectedUserId" onchange="getTasks()" data-live-search="true" data-style="btn-outline-primary"
+                <select class="selectpicker" id="selectedUserId" onchange="getTasks()" data-live-search="true" data-style="btn-outline-secondary"
                     data-size="8" data-width="fit" data-header="Select user">
                     <option data-icon="fas fa-users" value="ALL" selected>
                         All
