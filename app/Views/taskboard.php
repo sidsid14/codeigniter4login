@@ -21,7 +21,7 @@
     max-height: 83vh;
     overflow-y: auto;
     padding: 0.3rem;
-    min-height: 30vh;
+    min-height: 83vh;
     background-color: #eff4f7;;
     border-color: 1px solid #eff4f7;;
 }
