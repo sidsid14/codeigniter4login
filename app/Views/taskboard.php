@@ -891,8 +891,8 @@ function addComment(taskId) {
             commentsHtml +=
                 `<ul class="list-group scroll scroll-orange" style="max-height: 300px;overflow-y: auto;">`;
         }
-        commentsHtml += `<li class="list-group-item list-group-item-action" style="font-size:14px;line-height:1.5rem;">
-                                        ${commentData.comment}
+        commentsHtml += `<li class="list-group-item list-group-item-action" style="font-size:14px;line-height:1.5rem">
+                                       <span style="white-space: pre-line"> ${commentData.comment} </span>
                                     <footer class="blockquote-footer text-right">By <cite>${commentData.by}</cite> at ${formatDate(commentData.timestamp)}</footer>
                                 </li>`;
         if (i == (existingTask.length - 1)) {
