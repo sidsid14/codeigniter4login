@@ -24,11 +24,31 @@ class Taskboard extends BaseController
 
             $taskModel = new TaskboardModel();
             $data['tasksArr'] = $taskModel->getTasks("WHERE project_id = ".$project_id);
+            $data['chartData'] = $taskModel->getTasksCount($project_id);
         }
 		echo view('templates/header');
 		echo view('taskboard',$data);
 		echo view('templates/footer');
 
+    }
+
+    public function getTasks(){
+        $project_id = $this->request->getVar('project_id');
+        $user_id = $this->request->getVar('user_id');
+
+        $userCondition = "";
+        if($user_id != "ALL"){
+            $userCondition = " AND (tasks.assignee = ".$user_id." OR tasks.verifier = ".$user_id.") ";
+        }
+        $taskModel = new TaskboardModel();
+        $tasksArr = $taskModel->getTasks("WHERE project_id = ".$project_id.$userCondition );
+        $chartData= $taskModel->getTasksCount($project_id, $user_id);
+
+        $response["success"] = "True";
+        $response["tasksArr"] = $tasksArr;
+        $response["chartData"] = $chartData;
+
+        echo json_encode($response);
     }
 
     private function isAuthorized($id){

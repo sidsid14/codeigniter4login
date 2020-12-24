@@ -35,6 +35,8 @@
     <script type="text/javascript" src="/assets/js/bootstrap-select.min.js"></script>
     <script type="text/javascript" src="/assets/js/diff2html-ui.min.js"></script>
     <script type="text/javascript" src="/assets/js/datatables.min.js"></script>
+    <!-- For Charts-->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <!-- For drawing diagrams feature -->
     <script src="/assets/js/mermaid.min.js"></script>
     <!-- For taskboard drag and drop feature -->

@@ -121,6 +121,7 @@ $routes->match(['get','post'],'inventory-master/delete/(:num)', 'InventoryMaster
 $routes->get('bulk-insert', 'BulkInsert::index', ['filter' => 'auth']);
 
 $routes->get('taskboard', 'Taskboard::index',['filter' => 'auth']);
+$routes->get('taskboard/getTasks', 'Taskboard::getTasks',['filter' => 'auth']);
 $routes->post('taskboard/addTask', 'Taskboard::addTask',['filter' => 'auth']);
 $routes->post('taskboard/addComment', 'Taskboard::addComment',['filter' => 'auth']);
 $routes->post('taskboard/deleteTask', 'Taskboard::deleteTask',['filter' => 'auth']);

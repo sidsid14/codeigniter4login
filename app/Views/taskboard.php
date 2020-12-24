@@ -1,112 +1,129 @@
 <style>
+.breadcrumb-item {
+    font-size: 24px;
+}
+
+.arr-right .breadcrumb-item+.breadcrumb-item::before {
+    content: "›";
+    vertical-align: top;
+    font-size: 45px;
+    line-height: 18px;
+    margin-top: 4px;
+}
+
+.tasks-column {
+    padding-left: 5px;
+    padding-right: 5px;
+    min-width: 20% !important;
+}
+
+.task-parent {
+    max-height: 83vh;
+    overflow-y: auto;
+    padding: 0.3rem;
+    min-height: 30vh;
+    background-color: #eff4f7;;
+    border-color: 1px solid #eff4f7;;
+}
+
+/* task styles */
+.newTask {
+    box-shadow: 0px 1px 22px -12px #607D8B;
+    border-radius: 8px;
+}
+
+.newTask:hover {
+    box-shadow: rgba(19, 19, 19, 0.6) 0px 0.35em 1.175em, rgba(19, 19, 19, 0.2) 0px 0.175em 0.5em;
+    transform: translateY(-3px) scale(1.05);
+    transition: transform 1000ms;
+}
+
+.truncate {
+    width: 130px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 
-    .breadcrumb-item {
-        font-size: 24px;
-    }
+.newTask_textarea {
+    height: 110px;
+}
 
-    .arr-right .breadcrumb-item+.breadcrumb-item::before {
-        content: "›";
-        vertical-align: top;
-        font-size: 45px;
-        line-height: 18px;
-        margin-top: 4px;
-    }
-
-    .tasks-column{
-        padding-left:5px;
-        padding-right:5px;
-        min-width: 20% !important;
-    }
-
-    .task-parent {
-        max-height: 93vh;
-        overflow-y: auto;
-        padding: 0.3rem;
-        min-height: 30vh;
-        /* z-index: 1; */
-        background-color: #ccc;
-        border-color: 1px solid #ccc;
-    }
-
-    @keyframes cardEntrance {
-        from{
-            opacity: 0;
-            transform: translate(-100%, 50%) rotate(15deg) translate(100%, -50%);
-        }
-        to{
-            opacity: 1;
-            transform: rotate(0deg);
-        }
-    }
-
-    /* task styles */
-    .newTask{
-        animation: cardEntrance 500ms ease-out;
-        animation-fill-mode: backwards;
-    }
-
-    .newTask:hover {
-        box-shadow: rgba(19,19,19,0.6) 0px 0.35em 1.175em, rgba(19,19,19,0.2) 0px 0.175em 0.5em;
-        transform: translateY(-3px) scale(1.05);
-        transition: transform 1000ms;
-      }
-
-    .truncate {
-        width: 110px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-   
-    .newTask_textarea {
-        height: 110px;
-    }
-
-    /* Draggable style */
-    .ui-helper {
-        width: 100% !important;
-    }
-
- 
-    /* Comment Styles */
-    .counter.counter-lg {        
-        font-size: 10px;
-        color: #f8f9fa;
-        font-weight: bold;
-        text-align: center;
-        padding-top: 1px;
-    }
-
-    .sec {
-        position: relative;
-        top: -14px;
-        right: -4px;
-    }
-
-    .dot {
-        height: 16px;
-        width: 15px;
-        background-color: #cc650f;
-        border-radius: 50%;
-        display: inline-block;
-        margin-left: -15px;
-    }
-
-    .modal-lg{
-        max-width:80vw;
-    }
+/* Draggable style */
+.ui-helper {
+    width: 100% !important;
+}
 
 
-    
+/* Comment Styles */
+.counter.counter-lg {
+    font-size: 10px;
+    color: #f8f9fa;
+    font-weight: bold;
+    text-align: center;
+    padding-top: 1px;
+}
+
+.sec {
+    position: relative;
+    top: -14px;
+    right: -4px;
+}
+
+.dot {
+    height: 16px;
+    width: 15px;
+    background-color: #cc650f;
+    border-radius: 50%;
+    display: inline-block;
+    margin-left: -15px;
+}
+
+.modal-lg {
+    max-width: 80vw;
+}
+
+/* Chart styles */
+.box {
+    box-shadow: 0px 1px 22px -12px #607D8B;
+    background-color: #fff;
+    padding: 25px 35px 25px 30px;
+    border-radius:8px;
+}
+
+.chart-title h5 {
+    font-size: 18px;
+    color: rgba(51, 51, 51, 1);
+    margin-bottom: 38px;
+}
+.hidden{
+    display: none;
+}
 </style>
 
 <div class="fluid-container">
-    <nav aria-label="breadcrumb ">
-        <ol class="breadcrumb  arr-right">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb  arr-right" style="margin:0px;">
             <li class="breadcrumb-item text-primary" aria-current="page"> Taskboard </li>
             <li class="breadcrumb-item active" aria-current="page"><?= $title ?></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <input type="checkbox" id="selectedView" checked data-size="small"
+                    data-on="<i class='fas fa-list-ul'></i>&nbsp;&nbsp;List" data-off="<i class='fas fa-chart-line'></i>&nbsp;&nbsp;Graph&nbsp;"
+                    data-toggle="toggle"  data-offstyle="success">
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">
+                <select class="selectpicker" id="selectedUserId" onchange="getTasks()" data-live-search="true"
+                    data-size="8" data-width="fit" data-header="Select user">
+                    <option data-icon="fas fa-users" value="ALL" selected>
+                        All
+                    </option>
+                    <?php foreach ($teamMembers as $key=>$value): ?>
+                    <option data-icon="far fa-user" value='<?=  $key ?>'>
+                        <?=  $value ?> </option>
+                    <?php endforeach; ?>
+                </select>
+            </li>
             <li class="ml-auto">
                 <a class="btn btn-secondary text-light" href="/projects">
                     <i class="fa fa-chevron-left"></i> Back
@@ -116,9 +133,36 @@
         </ol>
 
     </nav>
+    <div class="pt-4 graphView hidden pb-4" style="background-color: #eff4f7;min-height:100vh">
+        <div class="row justify-content-center mb-4">
 
-    <div class="row" style="padding-left:1rem;padding-right:1rem; ">
-        <div class="col-12 col-md-2 tasks-column" >
+            <div class="col-12 col-sm-5 ">
+                <div class="box">
+                    <div id="developerChart"><span>No data found.</span></div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-5">
+                <div class="box">
+                    <div id="verifierChart"><span>No data found.</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center mb-2">
+            <div class="col-12 col-sm-5">
+                <div class="box">
+                    <div id="columnPie"><span>No data found.</span></div>
+                </div>
+            </div>
+            <div class="col-12 col-sm-5">
+                <div class="box">
+                    <div id="categoryPie"><span>No data found.</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row listView" style="padding-left:1rem;padding-right:1rem; position:fixed; top:65px;">
+        <div class="col-12 col-md-2 tasks-column">
 
             <div class="card">
                 <div class="card-header bg-dark text-light">
@@ -128,11 +172,12 @@
 
                 <div class="card-body task-parent scroll scroll-dark" id="column_Todo">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="column_Todo_title" id="column_Todo_title" 
+                        <input type="text" class="form-control" name="column_Todo_title" id="column_Todo_title"
                             placeholder="Quick Add - Title Only" />
                         <div class="ml-2">
-                            <button class="btn btn-outline-dark" data-toggle="popover" data-placement="bottom" data-content="Add Task" 
-                            onclick="addTask('Todo', document.getElementById('column_Todo_title').value)">
+                            <button class="btn btn-outline-dark" data-toggle="popover" data-placement="bottom"
+                                data-content="Add Task"
+                                onclick="addTask('Todo', document.getElementById('column_Todo_title').value)">
                                 <i class="fas fa-plus "></i>
                             </button>
                         </div>
@@ -142,7 +187,7 @@
             </div>
 
         </div>
-        <div class="col-12 col-md-2 tasks-column" >
+        <div class="col-12 col-md-2 tasks-column">
 
             <div class="card ">
                 <div class="card-header  bg-info  text-light">
@@ -151,11 +196,12 @@
                 </div>
                 <div class="card-body task-parent scroll scroll-info " id="column_InProgress">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="column_InProgress_title" id="column_InProgress_title" 
-                            placeholder="Quick Add - Title Only" />
+                        <input type="text" class="form-control" name="column_InProgress_title"
+                            id="column_InProgress_title" placeholder="Quick Add - Title Only" />
                         <div class="ml-2">
-                            <button class="btn btn-outline-info"  data-toggle="popover" data-placement="bottom" data-content="Add Task" 
-                            onclick="addTask('In Progress', document.getElementById('column_InProgress_title').value)">
+                            <button class="btn btn-outline-info" data-toggle="popover" data-placement="bottom"
+                                data-content="Add Task"
+                                onclick="addTask('In Progress', document.getElementById('column_InProgress_title').value)">
                                 <i class="fas fa-plus "></i>
                             </button>
                         </div>
@@ -164,7 +210,7 @@
             </div>
 
         </div>
-        <div class="col-12 col-md-2 tasks-column" >
+        <div class="col-12 col-md-2 tasks-column">
 
             <div class="card">
                 <div class="card-header bg-purple">
@@ -173,11 +219,12 @@
                 </div>
                 <div class="card-body  task-parent scroll scroll-purple " id="column_UnderVerification">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="column_UnderVerification_title" id="column_UnderVerification_title" 
-                            placeholder="Quick Add - Title Only" />
+                        <input type="text" class="form-control" name="column_UnderVerification_title"
+                            id="column_UnderVerification_title" placeholder="Quick Add - Title Only" />
                         <div class="ml-2">
-                            <button class="btn btn-outline-purple"  data-toggle="popover" data-placement="bottom" data-content="Add Task"
-                            onclick="addTask('Under Verification', document.getElementById('column_UnderVerification_title').value)">
+                            <button class="btn btn-outline-purple" data-toggle="popover" data-placement="bottom"
+                                data-content="Add Task"
+                                onclick="addTask('Under Verification', document.getElementById('column_UnderVerification_title').value)">
                                 <i class="fas fa-plus "></i>
                             </button>
                         </div>
@@ -186,8 +233,8 @@
             </div>
 
         </div>
-       
-        <div class="col-12 col-md-2 tasks-column" >
+
+        <div class="col-12 col-md-2 tasks-column">
 
             <div class="card">
                 <div class="card-header  bg-success text-light">
@@ -196,11 +243,12 @@
                 </div>
                 <div class="card-body  task-parent scroll scroll-success " id="column_Complete">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="column_Complete_title" id="column_Complete_title" 
+                        <input type="text" class="form-control" name="column_Complete_title" id="column_Complete_title"
                             placeholder="Quick Add - Title Only" />
                         <div class="ml-2">
-                            <button class="btn btn-outline-success"  data-toggle="popover" data-placement="bottom" data-content="Add Task"
-                            onclick="addTask('Complete', document.getElementById('column_Complete_title').value)">
+                            <button class="btn btn-outline-success" data-toggle="popover" data-placement="bottom"
+                                data-content="Add Task"
+                                onclick="addTask('Complete', document.getElementById('column_Complete_title').value)">
                                 <i class="fas fa-plus "></i>
                             </button>
                         </div>
@@ -210,7 +258,7 @@
 
         </div>
 
-        <div class="col-12 col-md-2 tasks-column" >
+        <div class="col-12 col-md-2 tasks-column">
 
             <div class="card">
                 <div class="card-header  bg-warning text-dark">
@@ -219,11 +267,12 @@
                 </div>
                 <div class="card-body  task-parent scroll scroll-warning " id="column_Observations">
                     <div class="input-group">
-                        <input type="text" class="form-control" name="column_Observations_title" id="column_Observations_title" 
-                            placeholder="Quick Add - Title Only" />
+                        <input type="text" class="form-control" name="column_Observations_title"
+                            id="column_Observations_title" placeholder="Quick Add - Title Only" />
                         <div class="ml-2">
-                            <button class="btn btn-outline-warning"  data-toggle="popover" data-placement="bottom" data-content="Add Task"
-                            onclick="addTask('Observations', document.getElementById('column_Observations_title').value)">
+                            <button class="btn btn-outline-warning" data-toggle="popover" data-placement="bottom"
+                                data-content="Add Task"
+                                onclick="addTask('Observations', document.getElementById('column_Observations_title').value)">
                                 <i class="fas fa-plus "></i>
                             </button>
                         </div>
@@ -234,99 +283,356 @@
         </div>
 
     </div>
+
+    
 </div>
 
 
 <script>
-    var teamMembers, activeProjects, projectOptions = "", project_id, teamMemberOptions = "", tasksArr = [];
-    var defaultZIndex =3;
-    var taskStats = {'Todo': 0, 'In Progress': 0, 'Under Verification': 0, 'Complete': 0, 'Observations': 0};
+var teamMembers, activeProjects, projectOptions = "",
+    project_id, teamMemberOptions = "",
+    tasksArr = [];
+var defaultZIndex = 3;
+var taskStats = {
+    'Todo': 0,
+    'In Progress': 0,
+    'Under Verification': 0,
+    'Complete': 0,
+    'Observations': 0
+};
 
-    $(document).ready(function () {
-        $('[data-toggle="popover"]').popover({trigger: "hover" });
-        $(".fluid-container").parents().css("overflow", "visible")
-        $("body").css("overflow-x", "hidden");
-
-        project_id = '<?= $project_id ?>';
-
-        teamMembers = <?= json_encode($teamMembers) ?>;
-        <?php foreach($teamMembers as $key => $name) : ?>
-            teamMemberOptions += `<option value="<?= $key ?>"><?= $name ?></option>`; 
-        <?php endforeach; ?>
-
-        activeProjects = <?= json_encode($activeProjects) ?>;
-
-        <?php foreach($activeProjects as $key => $name) : ?>
-            <?php $selected = ""; if($key == $project_id ) { $selected = "selected"; } ?>
-            projectOptions += `<option <?= $selected ?> value="<?= $key ?>"><?= $name ?></option>`; 
-        <?php endforeach; ?>
-
-        makeColumnsDroppable();
-
-        <?php if(isset($tasksArr)): ?>
-            tasksArr = <?= json_encode($tasksArr) ?>;
-            tasksArr.forEach((task,i)=>{
-                taskStats[task['task_column']] += 1;
-                if(task.comments != null){
-                    tasksArr[i].comments = JSON.parse(task.comments);
-                }
-                addTaskToDocument(task);
-            });
-            updateStats(taskStats);
-        <?php endif ?>
-
-
-        
+$(document).ready(function() {
+    $('[data-toggle="popover"]').popover({
+        trigger: "hover"
     });
+    $(".fluid-container").parents().css("overflow", "visible")
+    $("body").css("overflow-x", "hidden");
 
-    function updateStats(){
-        const keys = Object.keys(taskStats);
-        const values = Object.values(taskStats);
-        
-        for(var i=0;i<keys.length;i++){
-            const targetColumn = ".stats_"+keys[i].replace(" ", "");
-            $(targetColumn).text(values[i])
+    project_id = '<?= $project_id ?>';
+
+    teamMembers = <?= json_encode($teamMembers) ?>;
+    <?php foreach($teamMembers as $key => $name) : ?>
+    teamMemberOptions += `<option value="<?= $key ?>"><?= $name ?></option>`;
+    <?php endforeach; ?>
+
+    activeProjects = <?= json_encode($activeProjects) ?>;
+
+    <?php foreach($activeProjects as $key => $name) : ?>
+    <?php $selected = ""; if($key == $project_id ) { $selected = "selected"; } ?>
+    projectOptions += `<option <?= $selected ?> value="<?= $key ?>"><?= $name ?></option>`;
+    <?php endforeach; ?>
+
+    makeColumnsDroppable();
+
+    <?php if(isset($tasksArr)): ?>
+    tasksArr = <?= json_encode($tasksArr) ?>;
+    displayTasks();
+    
+    <?php endif ?>
+
+    <?php if(isset($chartData)): ?>
+    var chartData = <?= json_encode($chartData) ?>;
+    displayChart(chartData);
+    <?php endif ?>
+
+});
+
+function displayTasks(){
+    $(".newTask").remove();
+
+    taskStats = {
+        'Todo': 0,
+        'In Progress': 0,
+        'Under Verification': 0,
+        'Complete': 0,
+        'Observations': 0
+    };
+
+    tasksArr.forEach((task, i) => {
+        taskStats[task['task_column']] += 1;
+        if (task.comments != null) {
+            tasksArr[i].comments = JSON.parse(task.comments);
+        }
+        addTaskToDocument(task);
+    });
+    updateStats(taskStats);
+}
+
+function getTasks(){
+    const selectedUserId = $("#selectedUserId").val();
+    var url = `/taskboard/getTasks?project_id=${project_id}&user_id=${selectedUserId}`;
+    makeRequest(url)
+        .then((response) => {
+            tasksArr = response.tasksArr;
+            displayTasks();
+            const chartData = response.chartData;
+            removeChart('developerChart');
+            removeChart('verifierChart');
+            removeChart('columnPie');
+            removeChart('categoryPie');
+            displayChart(chartData)
+                
+        })
+        .catch((err) => {
+            console.log(err);
+            showPopUp('Error', "An unexpected error occured on server.");
+        })
+}
+
+function removeChart(id){
+    try{
+        ApexCharts.exec(id, 'destroy');
+    }catch(err){
+        console.log(err);
+    }
+}
+
+$('#selectedView').change(function() {
+    const showList = $(this).prop('checked');
+    if(!showList){
+        $(".listView").hide('slide', {direction: 'left'}, 1000);
+        $(".graphView").show('slide', {direction: 'right'}, 1000);
+    }else{
+        $(".graphView").hide('slide', {direction: 'right'}, 1000);
+        $(".listView").show('slide', {direction: 'left'}, 1000);
+    }
+})
+
+function displayChart(chartData) {
+
+    if(chartData.developerData.series.length){
+        drawBar("developerChart", "Development Team - Tasks Load", chartData.developerData);
+    }else{
+        $("#developerChart").html("");
+        $("#developerChart").html("<span>No tasks assigned for development.</span>")
+    }
+
+    if(chartData.verificationData.series.length){
+        drawBar("verifierChart", "Verification Team - Tasks Load", chartData.verificationData)
+    }else{
+        $("#verifierChart").html("");
+        $("#verifierChart").html("<span>No tasks assigned for verification.</span>")
+    }
+    
+    if(chartData.columnData.series.length){
+        drawPie("columnPie", "Task breakup - Column wise", chartData.columnData, returnColors("column", chartData.columnData
+        .labels));
+    }else{
+        $("#columnPie").html("");
+        $("#columnPie").html("<span>No data found.</span>")
+    }
+    
+    if(chartData.categoryData.series.length){
+        drawPie("categoryPie", "Task breakup - Category wise", chartData.categoryData, returnColors("category", chartData
+        .categoryData.labels));
+    }else{
+        $("#categoryPie").html("");
+        $("#categoryPie").html("<span>No data found.</span>")
+    }
+    
+
+}
+
+function returnColors(type, labels) {
+    let colors = [];
+    if (type == "column") {
+        for (let i = 0; i < labels.length; i++) {
+            if (labels[i] == "Complete") {
+                colors.push("#28a745");
+            } else if (labels[i] == "In Progress") {
+                colors.push("#17a2b8");
+            } else if (labels[i] == "Todo") {
+                colors.push("#343a40");
+            } else if (labels[i] == "Under Verification") {
+                colors.push("#6f42c1");
+            } else {
+                colors.push("#ffc107");
+            }
+        }
+    } else {
+        for (let i = 0; i < labels.length; i++) {
+            if (labels[i] == "Bug") {
+                colors.push("#dc3545");
+            } else if (labels[i] == "Improvement") {
+                colors.push("#28a745");
+            } else if (labels[i] == "New Feature") {
+                colors.push("#e83e8c");
+            } else if (labels[i] == "Task") {
+                colors.push("#343a40");
+            }
         }
     }
 
-    $(document).on({
-        ajaxStart: function(){
-            $("#loading-overlay").show();
-        },
-        ajaxStop: function(){ 
-            $("#loading-overlay").hide();
-        }    
-    });
+    return colors;
 
-    function makeColumnsDroppable(){
-        const columns = [ "Todo", "In Progress", "Under Verification", "Observations", "Complete"];
-        columns.forEach((columnName)=>{
-            const columnId = "#column_"+columnName.replace(" ", "");
-            var $column = $(columnId);
+}
 
-            $column.droppable({
-                drop: function( event, ui ) {
-                    $column.append(ui.draggable);
-                    const $task = $(ui.draggable)[0];
-                    const taskId = $task.id;
-                    updateTaskColumn(taskId, columnName);  
-                }
-            });
-
-        });
+function drawBar(chartContainerId, title, data) {
+    $("#"+chartContainerId).html("");
+    var chartHeight = 150;
+    if(data.series.length > 10){
+        chartHeight = 550;
+    }else if(data.series.length > 5){
+        chartHeight = 350;
+    }else if(data.series.length > 1){
+        chartHeight = 250;
     }
-   
-    function addTask(column, title, taskId = "") {
-        if(title == ""){
-            var formTitle = "Add Task", buttonText = "Add";
-            
-            if(taskId != ""){
-                formTitle = `T-${taskId}`, buttonText = "Update";
+    var options = {
+        title: {
+            text: title,
+        },
+        series: [{
+            name: "Tasks",
+            data: data.series
+        }],
+        chart: {
+            id: chartContainerId,
+            type: "bar",
+            height: chartHeight,
+            fontFamily: 'Open Sans, sans-serif',
+            redrawOnParentResize: true
+        },
+        legend: {
+            show: false
+        },
+        plotOptions: {
+            bar: {
+                horizontal: true,
+                distributed: true
             }
+        },
+        dataLabels: {
+            enabled: true
+        },
+        xaxis: {
+            categories: data.labels,
+            title: {
+                text: "No. of tasks assigned",
+            }
+        }
 
-            var dialog = bootbox.dialog({
-                title: formTitle,
-                message: `<form id="taskForm">
+    }
+
+    var chart = new ApexCharts(document.querySelector("#" + chartContainerId), options);
+       
+    chart.render();
+    window.dispatchEvent(new Event('resize'))
+}
+
+function drawPie(chartContainerId, title, data, colors) {
+    $("#"+chartContainerId).html("");
+    var pieOptions = {
+        title: {
+            text: title
+        },
+        series: data.series,
+        chart: {
+            id: chartContainerId,
+            width: 400,
+            type: "donut",
+            toolbar: {
+                show: true
+            },
+            fontFamily: 'Open Sans, sans-serif'
+        },
+        colors: colors,
+        labels: data.labels,
+        dataLabels: {
+            formatter: function(val, opts) {
+                return opts.w.config.series[opts.seriesIndex]
+            },
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 200
+                },
+                legend: {
+                    position: "bottom"
+                }
+            }
+        }],
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '65%',
+                    background: 'transparent',
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            label: 'Total',
+                            fontSize: '16px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 600,
+                            color: '#373d3f',
+                            formatter: function(w) {
+                                return w.globals.seriesTotals.reduce((a, b) => {
+                                    return a + b
+                                }, 0)
+                            }
+                        }
+                    }
+                },
+            }
+        }
+
+    };
+
+    var chart = new ApexCharts(document.querySelector("#" + chartContainerId), pieOptions);
+    chart.render();
+}
+
+function updateStats() {
+    const keys = Object.keys(taskStats);
+    const values = Object.values(taskStats);
+
+    for (var i = 0; i < keys.length; i++) {
+        const targetColumn = ".stats_" + keys[i].replace(" ", "");
+        $(targetColumn).text(values[i])
+    }
+}
+
+$(document).on({
+    ajaxStart: function() {
+        $("#loading-overlay").show();
+    },
+    ajaxStop: function() {
+        $("#loading-overlay").hide();
+    }
+});
+
+function makeColumnsDroppable() {
+    const columns = ["Todo", "In Progress", "Under Verification", "Observations", "Complete"];
+    columns.forEach((columnName) => {
+        const columnId = "#column_" + columnName.replace(" ", "");
+        var $column = $(columnId);
+
+        $column.droppable({
+            drop: function(event, ui) {
+                $column.append(ui.draggable);
+                const $task = $(ui.draggable)[0];
+                const taskId = $task.id;
+                updateTaskColumn(taskId, columnName);
+            }
+        });
+
+    });
+}
+
+function addTask(column, title, taskId = "") {
+    if (title == "") {
+        var formTitle = "Add Task",
+            buttonText = "Add";
+
+        if (taskId != "") {
+            formTitle = `T-${taskId}`, buttonText = "Update";
+        }
+
+        var dialog = bootbox.dialog({
+            title: formTitle,
+            message: `<form id="taskForm">
                         <input type="hidden" name="id" value='${taskId}' />
                         <div class="row justify-content-center">
                             <div class="col-12 col-md-6 d-none projectDropDown">
@@ -434,161 +740,168 @@
                         </form>
                         
                         `,
-                buttons: {
-                    delete: {
-                        label: "Delete",
-                        className: 'btn-danger mr-auto d-none deleteTask',
-                        callback: function(){
-                                bootbox.confirm({
-                                    title: 'Delete',
-                                    message: `Are you sure you want to delete task T-${taskId} ?`,
-                                    buttons: {
-                                        cancel: {
-                                            label: '<i class="fa fa-times"></i> Cancel'
-                                        },
-                                        confirm: {
-                                            label: '<i class="fa fa-check"></i> Confirm'
-                                        }
-                                    },
-                                    callback: function (result) {
-                                        if(result){
-                                            const object = {id:taskId};
-                                            updateTaskInDB('/taskboard/deleteTask', "delete", object);
-                                            
-                                        }else{
-                                            console.log('Delete Cancelled');
-                                        }
-                                    }
-                                });
-                                                        
-                        }
-                    },
-                    cancel: {
-                        label: "Cancel",
-                        className: 'btn-secondary'
-                    },
-                    ok: {
-                        label: buttonText,
-                        className: "btn-primary",
-                        callback: function () {
-
-                            const taskTitle = $('#newTask_title').val();
-                            let taskForm = new FormData(document.getElementById("taskForm"));
-
-                            if(taskTitle != ""){
-                                if(taskId == ""){
-                                    //Add Task
-                                    updateTaskInDB('/taskboard/addTask', "add", taskForm,true);
-                                }else{
-                                    //Update Task
-                                    updateTaskInDB('/taskboard/addTask', "update", taskForm,true);
+            buttons: {
+                delete: {
+                    label: "Delete",
+                    className: 'btn-danger mr-auto d-none deleteTask',
+                    callback: function() {
+                        bootbox.confirm({
+                            title: 'Delete',
+                            message: `Are you sure you want to delete task T-${taskId} ?`,
+                            buttons: {
+                                cancel: {
+                                    label: '<i class="fa fa-times"></i> Cancel'
+                                },
+                                confirm: {
+                                    label: '<i class="fa fa-check"></i> Confirm'
                                 }
-                            }else{
-                                showPopUp("Validation Error", "Title of a task cannot be empty!")
+                            },
+                            callback: function(result) {
+                                if (result) {
+                                    const object = {
+                                        id: taskId
+                                    };
+                                    updateTaskInDB('/taskboard/deleteTask', "delete", object);
+
+                                } else {
+                                    console.log('Delete Cancelled');
+                                }
                             }
-                            
-                        }
+                        });
+
                     }
-                    
+                },
+                cancel: {
+                    label: "Cancel",
+                    className: 'btn-secondary'
+                },
+                ok: {
+                    label: buttonText,
+                    className: "btn-primary",
+                    callback: function() {
+
+                        const taskTitle = $('#newTask_title').val();
+                        let taskForm = new FormData(document.getElementById("taskForm"));
+
+                        if (taskTitle != "") {
+                            if (taskId == "") {
+                                //Add Task
+                                updateTaskInDB('/taskboard/addTask', "add", taskForm, true);
+                            } else {
+                                //Update Task
+                                updateTaskInDB('/taskboard/addTask', "update", taskForm, true);
+                            }
+                        } else {
+                            showPopUp("Validation Error", "Title of a task cannot be empty!")
+                        }
+
+                    }
                 }
-            });
 
-            if(taskId != ""){
-                $(".deleteTask").removeClass("d-none");
-                $(".projectDropDown").removeClass("d-none");
-                const task = tasksArr.find(x => parseInt(x.id) === taskId);
-                $('#newTask_title').val(task.title);
-                $('#newTask_description').val(task.description);
-                $('#newTask_assignee').val(task.assignee);
-                $('#newTask_verifier').val(task.verifier);
-                $('#newTask_category').val(task.task_category);
-                $('#newTask_column').val(task.task_column);
-                const formFooter = `<footer class="blockquote-footer text-right mt-3">Created by <cite>${teamMembers[task.creator]}</cite></footer>`;
-                $('.modal-body').append(formFooter);
-            }else{
-                $("#newTask_column").val(column);
-            }
-
-
-            $(".custom-file-input").change(function(){
-                var files = $("#newTask_attachments")[0].files;
-                if(files.length < 1){
-                    $(".custom-file-label").text("Attachments")
-                }else if(files.length > 1){
-                    $(".custom-file-label").text(files.length+" Files")
-                }else{
-                    $(".custom-file-label").text(files[0].name)
-                }
-            })
-           
-            $('.selectpicker').selectpicker('refresh');
-            
-        }else{
-
-            let taskForm = new FormData();
-            taskForm.append('project_id', project_id);
-            taskForm.append('newTask_title', title);
-            taskForm.append('newTask_category', "Task");
-            taskForm.append('newTask_column', column);
-
-            updateTaskInDB('/taskboard/addTask', "add", taskForm, true);
-
-            
-        }
- 
-    }
-
-    function getTaskFromArray(taskId){
-        var existingTask, existingTaskLoc;
-        tasksArr.some((task, index) => {
-            if(task.id == taskId){
-                existingTask = task;
-                existingTaskLoc = index;
-                
-                return true;
             }
         });
-        return [existingTaskLoc, existingTask];
-    }
 
-    function updateTaskColumn(taskId, updatedColumn){
-        const temp = getTaskFromArray(taskId);
-        const existingTaskLoc = temp[0];
-        const existingTask = temp[1];
-
-        if(existingTask.task_column != updatedColumn ){
-            const object = {id: taskId, task_column:updatedColumn };
-            updateTaskInDB('/taskboard/updateTaskColumn', 'updateTaskColumn', object);
+        if (taskId != "") {
+            $(".deleteTask").removeClass("d-none");
+            $(".projectDropDown").removeClass("d-none");
+            const task = tasksArr.find(x => parseInt(x.id) === taskId);
+            $('#newTask_title').val(task.title);
+            $('#newTask_description').val(task.description);
+            $('#newTask_assignee').val(task.assignee);
+            $('#newTask_verifier').val(task.verifier);
+            $('#newTask_category').val(task.task_category);
+            $('#newTask_column').val(task.task_column);
+            const formFooter =
+                `<footer class="blockquote-footer text-right mt-3">Created by <cite>${teamMembers[task.creator]}</cite></footer>`;
+            $('.modal-body').append(formFooter);
+        } else {
+            $("#newTask_column").val(column);
         }
-        
-    }
 
-    function addComment(taskId){
-        const temp = getTaskFromArray(taskId);
-        const existingTask = temp[1];
-        
-        if(existingTask.comments == null){ 
-            existingTask.comments = []; 
-        }
-        var commentsHtml = "";
-        
-        existingTask.comments.forEach((commentData, i) => {
-            if (i == 0){
-                commentsHtml += `<ul class="list-group scroll scroll-orange" style="max-height: 300px;overflow-y: auto;">`;
+
+        $(".custom-file-input").change(function() {
+            var files = $("#newTask_attachments")[0].files;
+            if (files.length < 1) {
+                $(".custom-file-label").text("Attachments")
+            } else if (files.length > 1) {
+                $(".custom-file-label").text(files.length + " Files")
+            } else {
+                $(".custom-file-label").text(files[0].name)
             }
-            commentsHtml += `<li class="list-group-item list-group-item-action">
+        })
+
+        $('.selectpicker').selectpicker('refresh');
+
+    } else {
+
+        let taskForm = new FormData();
+        taskForm.append('project_id', project_id);
+        taskForm.append('newTask_title', title);
+        taskForm.append('newTask_category', "Task");
+        taskForm.append('newTask_column', column);
+
+        updateTaskInDB('/taskboard/addTask', "add", taskForm, true);
+
+
+    }
+
+}
+
+function getTaskFromArray(taskId) {
+    var existingTask, existingTaskLoc;
+    tasksArr.some((task, index) => {
+        if (task.id == taskId) {
+            existingTask = task;
+            existingTaskLoc = index;
+
+            return true;
+        }
+    });
+    return [existingTaskLoc, existingTask];
+}
+
+function updateTaskColumn(taskId, updatedColumn) {
+    const temp = getTaskFromArray(taskId);
+    const existingTaskLoc = temp[0];
+    const existingTask = temp[1];
+
+    if (existingTask.task_column != updatedColumn) {
+        const object = {
+            id: taskId,
+            task_column: updatedColumn
+        };
+        updateTaskInDB('/taskboard/updateTaskColumn', 'updateTaskColumn', object);
+    }
+
+}
+
+function addComment(taskId) {
+    const temp = getTaskFromArray(taskId);
+    const existingTask = temp[1];
+
+    if (existingTask.comments == null) {
+        existingTask.comments = [];
+    }
+    var commentsHtml = "";
+
+    existingTask.comments.forEach((commentData, i) => {
+        if (i == 0) {
+            commentsHtml +=
+                `<ul class="list-group scroll scroll-orange" style="max-height: 300px;overflow-y: auto;">`;
+        }
+        commentsHtml += `<li class="list-group-item list-group-item-action">
                                         ${commentData.comment}
                                     <footer class="blockquote-footer text-right">By <cite>${commentData.by}</cite> at ${formatDate(commentData.timestamp)}</footer>
                                 </li>`;
-            if(i == (existingTask.length-1)){
-                commentsHtml += `</ul>`;
-            }
+        if (i == (existingTask.length - 1)) {
+            commentsHtml += `</ul>`;
+        }
 
-        });
+    });
 
-        var dialog = bootbox.dialog({
-                title: "Add Comment",
-                message: `<div class="row">
+    var dialog = bootbox.dialog({
+        title: "Add Comment",
+        message: `<div class="row">
                             <div class="col-12">${commentsHtml}</div>
                             <div class="col-12 mt-2">
                                 <div class="form-group">
@@ -598,69 +911,73 @@
                             </div>
                         </div>
                         `,
-                buttons: {
-                    cancel: {
-                        label: "Cancel",
-                        className: 'btn-secondary'
-                    },
-                    ok: {
-                        label: "Add",
-                        className: 'bg-orange',
-                        callback: function () {
-                            const comment = $('#newTask_comment').val();
-                            
-                            if(comment != ""){
-                                const object = {id:taskId, comment};
-                                updateTaskInDB('/taskboard/addComment', 'addComment', object);
-                            }
-                            
-                            
-                        }
-                    }
-                }
-            });
+        buttons: {
+            cancel: {
+                label: "Cancel",
+                className: 'btn-secondary'
+            },
+            ok: {
+                label: "Add",
+                className: 'bg-orange',
+                callback: function() {
+                    const comment = $('#newTask_comment').val();
 
+                    if (comment != "") {
+                        const object = {
+                            id: taskId,
+                            comment
+                        };
+                        updateTaskInDB('/taskboard/addComment', 'addComment', object);
+                    }
+
+
+                }
+            }
+        }
+    });
+
+}
+
+function getTaskHtml(newTask) {
+    var categoryColor;
+    if (newTask.task_category == "Bug") {
+        categoryColor = "badge-danger";
+    } else if (newTask.task_category == "Improvement") {
+        categoryColor = "badge-success";
+    } else if (newTask.task_category == "Task") {
+        categoryColor = "badge-dark";
+    } else {
+        categoryColor = "bg-pink"
     }
 
-    function getTaskHtml(newTask){
-        var categoryColor;
-        if(newTask.task_category == "Bug"){
-            categoryColor = "badge-danger";
-        }else if(newTask.task_category == "Improvement"){
-            categoryColor = "badge-success";
-        }else if(newTask.task_category == "Task"){
-            categoryColor = "badge-dark";
-        }else{
-            categoryColor = "bg-pink"
-        }
+    var commentsCount = "";
+    var commentCountClass = "d-none";
+    if (newTask.comments != null) {
+        commentsCount = newTask.comments.length;
+        commentCountClass = "";
+    }
 
-        var commentsCount = "";
-        var commentCountClass = "d-none";
-        if(newTask.comments != null){
-            commentsCount = newTask.comments.length;
-            commentCountClass = "";
-        }
-
-        var assignee = (newTask.task_column == "Under Verification" ? newTask.verifier : newTask.assignee);
-        if(assignee != "" && assignee != null){
-            assignee = teamMembers[assignee];
-        }else{
-            assignee = "Unassigned";
-        }
-        var attachmentsHtml = "";
-        if(newTask.attachments != null){
-            jsonAttachments = newTask.attachments;
-            attachmentsCount = JSON.parse(newTask.attachments).length;
-            attachmentsHtml +=`<button data-toggle="popover" data-placement="bottom" data-content="View Attachments" type="button" 
+    var assignee = (newTask.task_column == "Under Verification" ? newTask.verifier : newTask.assignee);
+    if (assignee != "" && assignee != null) {
+        assignee = teamMembers[assignee];
+    } else {
+        assignee = "Unassigned";
+    }
+    var attachmentsHtml = "";
+    if (newTask.attachments != null) {
+        jsonAttachments = newTask.attachments;
+        attachmentsCount = JSON.parse(newTask.attachments).length;
+        attachmentsHtml +=
+            `<button data-toggle="popover" data-placement="bottom" data-content="View Attachments" type="button" 
                                         class="btn btn-sm btn-purple box-shadow-right" onclick="attachmentSlider('T-${newTask.id} Attachments', getCarouselHtml(${newTask.id}) )" >
                                     <i class="fas fa-paperclip"></i>
                                 </button>
                                 <span id="attachmentCount_${newTask.id}" class="dot sec counter counter-lg">${attachmentsCount}</span>`;
-        }
-        var taskHtml = `
+    }
+    var taskHtml = `
                         <div class=" text-muted">
                             <div class="float-left pl-2 pt-2">
-                                <span class="badge bg-teal p-2 box-shadow-left" style="font-size:16px;cursor:default;">T-${newTask.id}</span>
+                                <span class="badge bg-teal p-2 box-shadow-left" style="font-size:14px;cursor:default;">T-${newTask.id}</span>
                                 
                             </div>
                             <div class="float-right pt-2 pr-2">
@@ -674,189 +991,203 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="card-body">
-                            <p data-toggle="popover" data-placement="top" data-content="${newTask.description == null ? '' : newTask.description}" class="card-text task_title">${newTask.title}</p>
+                        <div class="card-body" style="padding:0.75rem">
+                            <p style="font-size:14px;line-height: 1.5;" data-toggle="popover" data-placement="top" data-content="${newTask.description == null ? '' : newTask.description}" class="card-text task_title">${newTask.title}</p>
                         </div>
-                        <div class="card-footer text-muted text-right pl-2 pr-2">
+                        <div class="card-footer text-muted text-right" style="padding:4px">
                             <div class="float-left">
-                                <span class="task_category p-2 badge ${categoryColor}" style="cursor:default;">${newTask.task_category}</span>
+                                <span style="font-size:11px" class="task_category p-2 badge ${categoryColor}" style="cursor:default;">${newTask.task_category}</span>
                             </div>
                             <div class="float-right truncate">
-                                <span data-toggle="popover" data-placement="bottom" data-content="${assignee}" class="task_assignee ">${assignee}</span>
+                                <span style="font-size:14px" data-toggle="popover" data-placement="bottom" data-content="${assignee}" class="task_assignee ">${assignee}</span>
                             </div>
                             
                         </div>
                     `;
-        
-        return taskHtml;
-    }
 
-    function getCarouselHtml(taskId){
-        const temp = getTaskFromArray(taskId);
-        const existingTask = temp[1];
-        const attachments = JSON.parse(existingTask.attachments);
-        let carouselIndicators = "";
-        let carouselItems = "";
-        attachments.forEach((attachment, index) =>{
+    return taskHtml;
+}
 
-            const activeClass = (index == 0) ? 'active' : '';
-            carouselIndicators += `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class="${activeClass}"></li>`;
-            if(attachment.type.includes('image')){
-                carouselItems += `<div class="carousel-item ${activeClass} ">
+function getCarouselHtml(taskId) {
+    const temp = getTaskFromArray(taskId);
+    const existingTask = temp[1];
+    const attachments = JSON.parse(existingTask.attachments);
+    let carouselIndicators = "";
+    let carouselItems = "";
+    attachments.forEach((attachment, index) => {
+
+        const activeClass = (index == 0) ? 'active' : '';
+        carouselIndicators +=
+            `<li data-target="#carouselExampleIndicators" data-slide-to="${index}" class="${activeClass}"></li>`;
+        if (attachment.type.includes('image')) {
+            carouselItems += `<div class="carousel-item ${activeClass} ">
                                     <img class="d-block img-fluid rounded mx-auto d-block" style="max-height: 80vh;" src="${attachment.link}" >
                                 </div>`;
-                
-            }else if(attachment.type.includes('video')){
-                carouselItems += `<div class="carousel-item ${activeClass}">
+
+        } else if (attachment.type.includes('video')) {
+            carouselItems += `<div class="carousel-item ${activeClass}">
                                     <video class="video-fluid d-block w-100" style="max-height: 80vh;" autoplay controls >
                                         <source src="${attachment.link}" type="${attachment.type}" />
                                     </video>
                                 </div>`;
-            }else if(attachment.type.includes('pdf')){
-                carouselItems += `<div class="carousel-item ${activeClass}">
+        } else if (attachment.type.includes('pdf')) {
+            carouselItems += `<div class="carousel-item ${activeClass}">
                                     <embed src="${attachment.link}" type="application/pdf" width="100%" style="min-height:80vh" />
                                 </div>`;
-            }
-            else{
-                carouselItems += `<div style="min-height: 200px;margin-top: 100px;" class="carousel-item text-center ${activeClass}">
+        } else {
+            carouselItems += `<div style="min-height: 200px;margin-top: 100px;" class="carousel-item text-center ${activeClass}">
                                     <a  href="${attachment.link}" download >Attachment</a>
                                 </div>`;
-            }
-        });
-        return [carouselIndicators, carouselItems];
-    }
+        }
+    });
+    return [carouselIndicators, carouselItems];
+}
 
-    function addTaskToDocument(newTask) {
+function addTaskToDocument(newTask) {
 
-        const html = `
+    const html = `
                     <div class="card mt-3 newTask"  style="display:none;" id="${newTask.id}">
                         ${getTaskHtml(newTask)}
                     </div>`;
 
-        const column = newTask.task_column.replace(" ", "");
-        var $column = $("#column_"+column);
-        $(html).appendTo($column).fadeIn('slow');
-        $('[data-toggle="popover"]').popover({trigger: "hover" });
-        
-        // $column.append(html);
-        $( ".card", $column ).draggable({
-            cancel: "button", 
-            revert: "invalid", 
-            containment: "document",
-            helper: "clone",
-            cursor: "move",
-            start  : function(event, ui){
-                $(ui.helper).addClass("ui-helper");
-                $( ".ui-draggable" ).not( ui.helper.css( "z-index", "1" ) )
-                            .css( "z-index", "0" );
-            }
-        });
-    }
+    const column = newTask.task_column.replace(" ", "");
+    var $column = $("#column_" + column);
+    $(html).appendTo($column).fadeIn('slow');
+    $('[data-toggle="popover"]').popover({
+        trigger: "hover"
+    });
 
-    function updateTaskInDB(url, type, taskObject,fileData = false){
+    // $column.append(html);
+    $(".card", $column).draggable({
+        cancel: "button",
+        revert: "invalid",
+        containment: "document",
+        helper: "clone",
+        cursor: "move",
+        start: function(event, ui) {
+            $(ui.helper).addClass("ui-helper");
+            $(".ui-draggable").not(ui.helper.css("z-index", "1"))
+                .css("z-index", "0");
+        }
+    });
+}
 
-        makePOSTRequest(url, taskObject, fileData)
-            .then((data) => {                
-                if(data.success == "True"){
-                    if(type == "add"){
-                    
-                        // taskObject.id = data.task;
-                        tasksArr.push(data.task);
+function updateTaskInDB(url, type, taskObject, fileData = false) {
 
-                        taskStats[data.task['task_column']] += 1;
-                        updateStats();
+    makePOSTRequest(url, taskObject, fileData)
+        .then((data) => {
+            if (data.success == "True") {
+                if (type == "add") {
 
-                        addTaskToDocument(data.task);
-                        showFloatingAlert(`T-${data.task.id} task added successfully!`);
+                    // taskObject.id = data.task;
+                    tasksArr.push(data.task);
 
-                    }else if(type == "update"){
+                    taskStats[data.task['task_column']] += 1;
+                    updateStats();
 
-                        var task = new Task();
-                        task = data.task;
+                    addTaskToDocument(data.task);
+                    showFloatingAlert(`T-${data.task.id} task added successfully!`);
+                    getTasks();
 
-                        const temp = getTaskFromArray(task.id);
-                        const existingTaskLoc = temp[0];
-                        const existingTask = temp[1];
-                        if(existingTask.project_id != task.project_id){
-                            $("#"+task.id).fadeOut(800, function() { $(this).remove(); });
-                            taskStats[existingTask.task_column] -= 1;
-                            updateStats();
+                } else if (type == "update") {
 
-                            tasksArr.splice(existingTaskLoc, 1);
-                            showFloatingAlert(`T-${task.id} task moved to ${activeProjects[task.project_id]} successfully!`, "bg-warning");
-                        }else{
-                            task.comments = existingTask.comments;
-                            tasksArr[existingTaskLoc] = task;
-                            $(`#${task.id}`).html(getTaskHtml(task));
-                            $('[data-toggle="popover"]').popover({trigger: "hover" });
+                    var task = new Task();
+                    task = data.task;
 
-                            if(existingTask.task_column != task.task_column){
-                                var div_column = task.task_column.replace(" ", "");
-                                $(`#${task.id}`).appendTo($("#column_"+div_column));
-
-                                taskStats[existingTask.task_column] -= 1;
-                                taskStats[task.task_column] += 1;
-                                updateStats();
-                            }
-                            showFloatingAlert(`T-${task.id} task updated successfully!`);
-                        }
-
-                        
-
-                    }else if(type == "addComment"){
-
-                        const temp = getTaskFromArray(taskObject.id);
-                        const existingTaskLoc = temp[0];
-                        const existingTask = temp[1];
-
-                        if(existingTask.comments == null){ 
-                            existingTask.comments = []; 
-                           
-                        }
-                        existingTask.comments.push(JSON.parse(data.jsonComment));
-                        tasksArr[existingTaskLoc] = existingTask;
-
-                        $(`#commentCount_${taskObject.id}`).removeClass('d-none');
-                        $(`#commentCount_${taskObject.id}`).text(existingTask.comments.length);
-                        
-                        showFloatingAlert(`Comment added to T-${taskObject.id} successfully!`);
-                    }else if(type == "delete"){
-                        
-                        $("#"+taskObject.id).fadeOut(800, function() { $(this).remove(); });
-                        const temp = getTaskFromArray(taskObject.id);
-                        const existingTaskLoc = temp[0];
-                        const existingTask = temp[1];
-
+                    const temp = getTaskFromArray(task.id);
+                    const existingTaskLoc = temp[0];
+                    const existingTask = temp[1];
+                    if (existingTask.project_id != task.project_id) {
+                        $("#" + task.id).fadeOut(800, function() {
+                            $(this).remove();
+                        });
                         taskStats[existingTask.task_column] -= 1;
                         updateStats();
 
                         tasksArr.splice(existingTaskLoc, 1);
+                        
+                        showFloatingAlert(
+                            `T-${task.id} task moved to ${activeProjects[task.project_id]} successfully!`,
+                            "bg-warning");
+                        
+                    } else {
+                        task.comments = existingTask.comments;
+                        tasksArr[existingTaskLoc] = task;
+                        $(`#${task.id}`).html(getTaskHtml(task));
+                        $('[data-toggle="popover"]').popover({
+                            trigger: "hover"
+                        });
 
-                    }else if(type == "updateTaskColumn"){
-                        const temp = getTaskFromArray(taskObject.id);
-                        const existingTaskLoc = temp[0];
-                        const existingTask = temp[1];
+                        if (existingTask.task_column != task.task_column) {
+                            var div_column = task.task_column.replace(" ", "");
+                            $(`#${task.id}`).appendTo($("#column_" + div_column));
 
-                        taskStats[existingTask.task_column] -= 1;
-                        taskStats[taskObject.task_column] += 1;
-                        updateStats();
-
-                        existingTask.task_column = taskObject.task_column;
-                        tasksArr[existingTaskLoc] = existingTask;
-                        $(`#${taskObject.id}`).html(getTaskHtml(existingTask));
-                        $('[data-toggle="popover"]').popover({trigger: "hover" });
+                            taskStats[existingTask.task_column] -= 1;
+                            taskStats[task.task_column] += 1;
+                            updateStats();
+                            
+                        }
+                        showFloatingAlert(`T-${task.id} task updated successfully!`);
                     }
-                }else{
-                    showPopUp('Error', data.errorMsg);
-                }
-                
-              
-                
-            })
-            .catch((err) => {
-                console.log(err);
-                showPopUp('Error', "An unexpected error occured on server.");
-            })
-    }
+                    getTasks();
 
+                } else if (type == "addComment") {
+
+                    const temp = getTaskFromArray(taskObject.id);
+                    const existingTaskLoc = temp[0];
+                    const existingTask = temp[1];
+
+                    if (existingTask.comments == null) {
+                        existingTask.comments = [];
+
+                    }
+                    existingTask.comments.push(JSON.parse(data.jsonComment));
+                    tasksArr[existingTaskLoc] = existingTask;
+
+                    $(`#commentCount_${taskObject.id}`).removeClass('d-none');
+                    $(`#commentCount_${taskObject.id}`).text(existingTask.comments.length);
+
+                    showFloatingAlert(`Comment added to T-${taskObject.id} successfully!`);
+                } else if (type == "delete") {
+
+                    $("#" + taskObject.id).fadeOut(800, function() {
+                        $(this).remove();
+                    });
+                    const temp = getTaskFromArray(taskObject.id);
+                    const existingTaskLoc = temp[0];
+                    const existingTask = temp[1];
+
+                    taskStats[existingTask.task_column] -= 1;
+                    updateStats();
+
+                    tasksArr.splice(existingTaskLoc, 1);
+                    getTasks();
+
+                } else if (type == "updateTaskColumn") {
+                    const temp = getTaskFromArray(taskObject.id);
+                    const existingTaskLoc = temp[0];
+                    const existingTask = temp[1];
+
+                    taskStats[existingTask.task_column] -= 1;
+                    taskStats[taskObject.task_column] += 1;
+                    updateStats();
+
+                    existingTask.task_column = taskObject.task_column;
+                    tasksArr[existingTaskLoc] = existingTask;
+                    $(`#${taskObject.id}`).html(getTaskHtml(existingTask));
+                    $('[data-toggle="popover"]').popover({
+                        trigger: "hover"
+                    });
+                    getTasks();
+                }
+            } else {
+                showPopUp('Error', data.errorMsg);
+            }
+
+        })
+        .catch((err) => {
+            console.log(err);
+            showPopUp('Error', "An unexpected error occured on server.");
+        })
+}
 </script>
