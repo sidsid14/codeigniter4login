@@ -113,7 +113,7 @@
             <li class="breadcrumb-item active" aria-current="page">
                 <input type="checkbox" id="selectedView" checked data-size="small"
                     data-on="<i class='fas fa-list-ul'></i>&nbsp;&nbsp;List" data-off="<i class='fas fa-chart-line'></i>&nbsp;&nbsp;Graph&nbsp;"
-                    data-toggle="toggle"  data-offstyle="success">
+                    data-toggle="toggle" data-onstyle="outline-primary"  data-offstyle="outline-secondary">
             </li>
             <li class="breadcrumb-item active" aria-current="page">
                 <select class="selectpicker" id="selectedUserId" onchange="getTasks()" data-live-search="true" data-style="btn-outline-primary"
