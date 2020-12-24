@@ -1,4 +1,7 @@
 <style>
+.breadcrumb {
+    background-color: #fff;
+}
 .breadcrumb-item {
     font-size: 24px;
 }
@@ -113,7 +116,7 @@
                     data-toggle="toggle"  data-offstyle="success">
             </li>
             <li class="breadcrumb-item active" aria-current="page">
-                <select class="selectpicker" id="selectedUserId" onchange="getTasks()" data-live-search="true"
+                <select class="selectpicker" id="selectedUserId" onchange="getTasks()" data-live-search="true" data-style="btn-outline-primary"
                     data-size="8" data-width="fit" data-header="Select user">
                     <option data-icon="fas fa-users" value="ALL" selected>
                         All
@@ -510,6 +513,7 @@ function drawBar(chartContainerId, title, data) {
                 text: "No. of tasks assigned",
             }
         }
+        
 
     }
 
