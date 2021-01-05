@@ -372,8 +372,16 @@ class GenerateDocuments extends BaseController
 
 		if($pathList == "" || $pathList == null || $pathList == 'null'){
 			//JSON not available, Goto fresh download
-			$response = array('success' => "False", "description"=>'No downloads available');
-			echo json_encode( $response );	
+			//check if any documents are in approved state for the requested project
+			$docModel = new DocumentModel();
+			$dataCount = $docModel->getApprovedFilesCount($projectId);
+			if($dataCount == 0 || $dataCount == null){
+				$response = array('success' => "False", "description"=>'No downloads available');
+				echo json_encode( $response );
+			}else{
+				$response = array('success' => "False", "description"=>'Download path is not available');
+				echo json_encode( $response );	
+			}
 		}else{
 			//JSON is available, check all document's update-date is lowerthan the zipfile timestamp
 			$current_date =  gmdate("Y-m-d H:i:s");

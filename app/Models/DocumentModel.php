@@ -133,6 +133,19 @@ class DocumentModel extends Model{
         return $data;
     }
 
+    public function getApprovedFilesCount($id) {
+        $db      = \Config\Database::connect();
+        $sql = "SELECT count(*) as count FROM `docsgo-documents` WHERE `project-id`=".$id." AND status='Approved'";
+        $query = $db->query($sql);
+        $data = $query->getResult('array');
+        if(count($data)){
+            $data = $data[0]['count'];
+        }else{
+            $data = null;
+        }
+        return $data;
+    }
+
 
 
 }

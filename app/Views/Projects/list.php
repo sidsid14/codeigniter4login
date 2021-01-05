@@ -122,10 +122,17 @@ function checkGenerateDocuments(e, id){
     },
     success: function(response, textStatus, jqXHR){
       if((jqXHR.responseText).indexOf('success') >= 0){
-        console.log("JSON DATA");
         response = JSON.parse(response);
-        if(response.success == 'False' && (response.description == 'No downloads available') || (response.description == 'Download is deprecated')){
-          generateDocuments(e,id);
+        if(response.success == 'False'){
+          if((response.description == 'Download is deprecated') || (response.description == 'Download path is not available') ){
+            generateDocuments(e,id);
+          }
+          if(response.description == 'No downloads available'){
+            showPopUp("Projects", "There are no documents to download");
+            $(anchor).removeClass('disabled');
+            $(iTag).removeClass('fa-spinner fa-spin');
+            $(iTag).addClass('fa-download');
+          }
         }
       } else{
         console.log("BLOD DATA");

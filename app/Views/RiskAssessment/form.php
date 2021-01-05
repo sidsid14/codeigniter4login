@@ -63,20 +63,38 @@
               </div>
             </div>
 
+            <div><input type="hidden"  id="form-status" value="<?= $isEdit; ?>" /></div>
             <div class="col-12">
               <div class="form-group" id='risk_description'>
                 <label class = "font-weight-bold text-muted" for="description" >Description</label>
-                <textarea class="form-control" name="description" id="description" maxlength=100><?=
+                <textarea class="form-control" name="description" id="description"><?=
                 isset($member['description']) ? trim($member['description']) : ''
+                ?></textarea>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group" id='risk_description_soup'>
+                <label class = "font-weight-bold text-muted" for="description-soup" >Description</label>
+                <textarea class="form-control" name="description-soup" id="description-soup"><?=
+                isset($member['description-soup']) ? trim($member['description-soup']) : ''
                 ?></textarea>
               </div>
             </div>
 
             <div class="col-12">
-              <div class="form-group">
+              <div class="form-group" id='risk_hazard_analysis'>
               <label class = "font-weight-bold text-muted" for="hazard-analysis" >Hazard Analysis</label>
                 <textarea class="form-control" name="hazard-analysis" id="hazard-analysis" ><?=
                 isset($member['hazard-analysis']) ? trim($member['hazard-analysis']) : ''
+                ?></textarea>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="form-group" id='risk_hazard_analysis_soup'>
+              <label class = "font-weight-bold text-muted" for="hazard-analysis-soup" >Hazard Analysis</label>
+                <textarea class="form-control" name="hazard-analysis-soup" id="hazard-analysis-soup" ><?=
+                isset($member['hazard-analysis-soup']) ? trim($member['hazard-analysis-soup']) : ''
                 ?></textarea>
               </div>
             </div>
@@ -253,6 +271,20 @@ function toggleVulnerabilityTabs(id, id1) {
 
 function toggleVulnerability() {
   var selVal = $("#risk_type").val();
+    //Toggle text-area boxes based on the category selection
+    if(selVal == 'SOUP'){
+      //If its Edit-form no need to change the description changes, Else display soup boxes..
+      if($('#form-status').val() == true){
+        $('#risk_description, #risk_hazard_analysis').css('display', 'block');
+        $('#risk_description_soup, #risk_hazard_analysis_soup').css('display', 'none');
+      }else{
+        $('#risk_description, #risk_hazard_analysis').css('display', 'none');
+        $('#risk_description_soup, #risk_hazard_analysis_soup').css('display', 'block');
+      }
+  }else{
+      $('#risk_description, #risk_hazard_analysis').css('display', 'block');
+      $('#risk_description_soup, #risk_hazard_analysis_soup').css('display', 'none');
+  }
   if(selVal == 'Open-Issue' || selVal == 'SOUP') {
     $('#data-open-issue-soup-matrix, #data-open-issue-soup-rpn-matrix').css('display', 'block');
     $('#data-vulnerability-matrix, #data-vulnerability-baseScore-matrix').css('display', 'none');
