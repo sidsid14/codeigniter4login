@@ -31,54 +31,27 @@ class GenerateDocuments extends BaseController
 		error_reporting(E_ALL);
 
 		$params = $this->returnParams();
-		$typeNumber = $params[0];
-		switch($typeNumber) {
-			case 1:
-				$type = 'document';
-				break;
-			case 2:
-				$type = 'project';
-				break;
-			case 3:
-				$type = 'document';
-				break;
-		}
-		$main_id = $params[1];
+		$typeOfRequest = $params[0];
+		$type = $this->getActionType($params[0]);
+		$project_document_id = $params[1];
 
 		$model = new DocumentModel();
-		$str = $model->getDocumentsData($type, $main_id); 
-		if(isset($str) && count($str) == 0) {
+		$documentData = $model->getDocumentsData($type, $project_document_id); 
+		//Findout number of documents count
+		if(isset($documentData) && count($documentData) == 0) {
 			echo "no data";
 			return false;
 		}
-		//Fetching the doc-properties(Global seetings) from Model
-		$settingsModel = new SettingsModel();
-		$documentProperties = $settingsModel->getSettings("documentProperties");
-		$documentProperties = json_decode($documentProperties[0]['options'], true);
-		$documentTitle = ''; $documentIcon = ''; $documentFooterMsg='';
-		foreach($documentProperties as $key => $val){
-			if($val['key'] == "docTitle"){
-				$documentTitle = $val["value"];
-			}
-			if($val["key"] == "docIcon"){
-				$documentIcon = $val["value"];
-			}
-			if($val["key"] == "docConfidential"){
-				$documentFooterMsg = $val["value"];
-			}
-		}
 
-		$jsonGetId = $str;
-		
-		$idArray = array_keys($jsonGetId);
+		$docData = $this->getDocumentProperties();
+		$documentTitle = $docData['title']; $documentIcon = $docData["image"]; $documentFooterMsg = $docData["footer"];
+		$documentObject = array_keys($documentData);
 		$count = 0;
+		foreach ($documentObject as $id) {
+			$jsonMain = $documentData;
+			$fileName = preg_replace('/[^A-Za-z0-9\-]/', '_', $jsonMain[$id]['file-name']);
+			$fileName = $fileName.".docx";
 
-		foreach ($idArray as $id) {
-			$jsonMain = $str;
-			$fileNameLev1 = str_replace(",", "_", $jsonMain[$id]['file-name'] . ".docx");
-			$fileName = str_replace(" ", "_", $fileNameLev1);
-			$fileName = str_replace("&", "_", $fileName);
-			$fileName = str_replace("/", "_", $fileName);
 			$jsonObj = json_decode($jsonMain[$id]['json-object'], true);
 			$documentType = array_keys($jsonObj);
 			$json = $jsonObj[$documentType[0]];
@@ -86,9 +59,7 @@ class GenerateDocuments extends BaseController
 			// Creating the new document...
 			$phpWord = new \PhpOffice\PhpWord\PhpWord();
 			$phpWord->getSettings()->setUpdateFields(true);
-
 			$section = $phpWord->addSection();
-
 			//Applying the paragraph styles...
 			$phpWord->addTitleStyle(1, array('name' => $json['section-font'], 'size' => $json['section-font-size'], 'bold' => TRUE));
 			$phpWord->setDefaultParagraphStyle(
@@ -109,7 +80,7 @@ class GenerateDocuments extends BaseController
 					)
 			);
 		
-			//Header for all pages
+			//#-1 Adding Header section
 			$subsequent = $section->addHeader();
 			$documentIconImage = $documentIcon; 
 			if($documentIconImage == ''){
@@ -123,63 +94,44 @@ class GenerateDocuments extends BaseController
 				$documentFooterMsg = 'Murata Vios CONFIDENTIAL';
 			}
 		
-			//Footer for all pages
+			//#-2 Footer for all pages
 			$footer = $section->addFooter();
 			$footer->addPreserveText($documentFooterMsg.'                              Page {PAGE} of {NUMPAGES}                             ' . $json['cp-line4'] . ' ' . $json['cp-line5'], null, array('alignment' => \PhpOffice\PhpWord\SimpleType\Jc::LEFT));
 
-			//#-2: Adding iamge at first page header line
-			$section->addTextBreak();
-			$section->addTextBreak();
+			//#-3: Adding iamge at first page header line
+			$section->addTextBreak(2);
 			$section->addImage($documentIconImage, array('width' => 167, 'height' => 140, 'align' => 'center'));
-			$section->addTextBreak();
-			$section->addTextBreak();
+			$section->addTextBreak(2);
 			
-
 			// Inline font style
-			$fontStyle['name'] = 'Arial';
-			$fontStyle['size'] = 16;
-			$fontStyle['bold'] = TRUE;
-
-			$cp_line3 = $json['cp-line3'];
-			$fontStyle['name'] = 'Arial';
-			$fontStyle['size'] = 16;
-			$fontStyle['bold'] = TRUE;		
-			$firstHeaderStyles = array( 
-				'spaceBefore' => 215, 'spaceAfter' => 8, 'align' => 'center'
-			);
+			$fontStyle['name'] = 'Arial';  $fontStyle['size'] = 16;  $fontStyle['bold'] = TRUE;
+			$firstHeaderStyles = array('spaceBefore' => 215, 'spaceAfter' => 8, 'align' => 'center');
 			$DocID = 'Doc ID: '.$json['cp-line4'];
+
 			$section->addText($json['cp-line3'], $fontStyle, $firstHeaderStyles);
 			$section->addText($DocID, $fontStyle, $firstHeaderStyles);
-			$section->addTextBreak();
-			$section->addTextBreak();
-			$section->addTextBreak();
+			$section->addTextBreak(3);
 
 			$fontStyle['name'] = $json['section-font'];
 			$fontStyle['size'] = $json['section-font-size'];
 			$fontStyle['bold'] = TRUE;
+			//#-3: Adding change history section
 			$section->addText('Change History', $fontStyle);
-
-			$fontStyle['name'] = $json['section-font'];
-			$fontStyle['size'] = $json['section-font-size'];
-			$fontStyle['bold'] = FALSE;
-
 			$tableContent = $pandoc->convert($json['cp-change-history'], "gfm", "html5");
 			$tableContent = $this->addTableStylesToContent($tableContent);
 			\PhpOffice\PhpWord\Shared\Html::addHtml($section, $tableContent, false, false);
-
 			$section->addTextBreak();
 
 			$section = $phpWord->addSection();
 			$fontStyle12 = array('spaceAfter' => 60, 'size' => $json['section-font']);
-			$fontStyle10 = array('size' => 10);
 			$phpWord->addTitleStyle(null, array('size' => $json['section-font'], 'bold' => true));
 			$phpWord->addTitleStyle(1, array('size' => $json['section-font'], 'color' => '333333', 'bold' => true));
 			$phpWord->addTitleStyle(2, array('size' => $json['section-font'], 'color' => '666666'));
 			$phpWord->addTitleStyle(3, array('size' => $json['section-font'], 'italic' => true));
 			$phpWord->addTitleStyle(4, array('size' => $json['section-font']));
 			// Add text elements
+			$fontStyle['bold'] = FALSE;
 			$section->addText('TABLE OF CONTENTS', $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);
-			// $section->addTitle('TABLE OF CONTENTS', 0);
 			$section->addTextBreak(2);
 
 			// Add TOC...
@@ -193,27 +145,6 @@ class GenerateDocuments extends BaseController
 					$contentSection = '<b></b>';
 					$org = $json['sections'][$i]['content'];
 					$contentSection = $pandoc->convert($org, "gfm", "html5");
-					//DONT DELETE THE BELOW CODE< HANDLING MULTIPLE SECNARIOS FOR DOC RENDER VIEWS|ISSUES
-					/*
-					if($json['sections'][$i]['content'] != ''){
-						if ((strpos($json['sections'][$i]['title'], 'Risk Assessment') !== false) || (strpos($json['sections'][$i]['title'], 'Risk Management') !== false)){
-							$org = $json['sections'][$i]['content'];
-							$org = str_replace("<br>", "", $org);
-							$org = str_replace("<br/>", "", $org);
-							if( (strpos($org, '```') !== false) || (strpos($org, '``') !== false) || (strpos($org, '````') !== false)){
-								$org = handleCodeblocks($org);
-							}
-							$contentSection = $pandoc->convert($org, "gfm", "html5");
-						}else{
-							$org = $json['sections'][$i]['content'];
-							if((strpos($org, '```') !== false) || (strpos($org, '``') !== false) || (strpos($org, '````') !== false)){
-								$org = handleCodeblocks($org);
-							}
-							$org = htmlspecialchars($org);
-							$contentSection = $pandoc->convert($org, "gfm", "html5");	
-						}
-					}
-					*/
 					if (strpos($contentSection, '<table>') !== false) {
 						$tableContentFormatted = $this->addTableStylesToContent($contentSection);
 						//setOutputEscapingEnabled is added for gfm markdown
@@ -223,7 +154,6 @@ class GenerateDocuments extends BaseController
 						\PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
 						\PhpOffice\PhpWord\Shared\Html::addHtml($section, $contentSection, false, false);
 					}
-					
 					$section->addTextBreak();
 				}
 			}
@@ -243,15 +173,15 @@ class GenerateDocuments extends BaseController
 				return false;
 			}
 			try{
-				if ($type == "project") {
+				if ($typeOfRequest == 2) {
 					$objWriter->save($fileName);
 					$directoryName = "Project_Documents";
 					if (!is_dir($directoryName)) {
 						mkdir($directoryName, 0777);
 					}
 					rename($fileName, $directoryName . '/' . $fileName);
-					if (count($idArray) == $count) {
-						$zip_file = $directoryName .'_'.$main_id.'.zip';
+					if (count($documentObject) == $count) {
+						$zip_file = $directoryName .'_'.$project_document_id.'.zip';
 						$rootPath = realpath($directoryName);
 						// / Initiate a new instance of ZipArchive  
 						$zip = new ZipArchive();  
@@ -290,12 +220,12 @@ class GenerateDocuments extends BaseController
 					}
 				}else{
 					$rootDirName = $_SERVER['DOCUMENT_ROOT'];
-					$directoryName = "Project_Documents_".$str[0]['project-id'];		
+					$directoryName = "Project_Documents_".$documentData[0]['project-id'];		
 					if (!is_dir($directoryName)) {
 						mkdir($directoryName, 0777);
 					}
 					$objWriter->save($directoryName.'/'.$fileName);
-					if($typeNumber == 1){
+					if($typeOfRequest == 1){
 						header("Cache-Control: no-cache");
 						header("Content-Description: File Transfer");
 						header("Content-Disposition: attachment; filename=".$fileName);
@@ -324,6 +254,41 @@ class GenerateDocuments extends BaseController
 		}
 	}
 
+	public function getActionType($id){
+		switch($id) {
+			case 1:
+				$type = 'document';
+				break;
+			case 2:
+				$type = 'project';
+				break;
+			case 3:
+				$type = 'document';
+				break;
+		}
+		return $type;
+	}
+
+	public function getDocumentProperties(){
+		//Fetching the doc-properties(Global seetings) from Model
+		$settingsModel = new SettingsModel();
+		$documentProperties = $settingsModel->getSettings("documentProperties");
+		$documentProperties = json_decode($documentProperties[0]['options'], true);
+		$docData = [ "title" => "",  "image" => "",  "footer" => "" ];
+		foreach($documentProperties as $key => $val){
+			if($val['key'] == "docTitle"){
+				$docData["title"] = $val["value"];
+			}
+			if($val["key"] == "docIcon"){
+				$docData["image"] = $val["value"];
+			}
+			if($val["key"] == "docConfidential"){
+				$docData["footer"] = $val["value"];
+			}
+		}
+		return $docData;
+	}
+
 	function sectionNumber($sectionStr) {
 		return (int) filter_var($sectionStr, FILTER_SANITIZE_NUMBER_INT);
 	}
@@ -347,13 +312,6 @@ class GenerateDocuments extends BaseController
 			$content = str_replace('<header id="title-block-header">', '<header id="title-block-header" style="display: none">', $content);
 		}
 		$content = str_replace('<h1 id=', '<h1 style="font-size: x-large;font-weight: bold;" id=', $content);
-		return $content;
-	}
-
-	function handleCodeblocks($content) {
-		$content = str_replace("```", "", $content);
-		$content = str_replace("````", "", $content);
-		$content = str_replace("``", "", $content);
 		return $content;
 	}
 
@@ -421,7 +379,6 @@ class GenerateDocuments extends BaseController
 		echo json_encode( $response );	
 	}
 
-	
 	public function returnProjectID(){
 		$uri = $this->request->uri;
 		$id = $uri->getSegment(3);
