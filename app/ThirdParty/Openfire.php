@@ -27,8 +27,6 @@ class Openfire
 
     private function postReq($url, $payload = "", $requestType = "POST")
     {
-        echo $url;
-        echo $payload;
         $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLINFO_HEADER_OUT, true);
