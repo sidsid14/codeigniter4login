@@ -155,6 +155,18 @@
         max-width:235px;
     }
 
+    .website-footer{
+        background-color: #313783;
+        color: #fff!important;
+        font-size: 14px;
+        bottom: 0;
+        position: fixed;
+        left: 0;
+        right: 0;
+        text-align: center;
+        z-index: 1;
+        height: 30px;
+    }
     /* Side menu icon styles */
     /* .nav__icon {
         font-size: 0.9rem
