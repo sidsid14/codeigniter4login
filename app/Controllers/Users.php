@@ -2,6 +2,7 @@
 
 // use App\Models\UserModel;
 use App\Models\TeamModel;
+use TP\Tools\Openfire;
 
 class Users extends BaseController
 {
@@ -57,50 +58,6 @@ class Users extends BaseController
 		return true;
 	}
 
-	// public function register(){
-	// 	$data = [];
-	// 	helper(['form']);
-
-	// 	if ($this->request->getMethod() == 'post') {
-	// 		//let's do the validation here
-	// 		$rules = [
-	// 			'name' => 'required|min_length[3]|max_length[50]',
-	// 			'email' => 'required|min_length[6]|max_length[50]|valid_email|is_unique[docsgo-users.email]',
-	// 			'password' => 'required|min_length[8]|max_length[255]',
-	// 			'password_confirm' => 'matches[password]',
-	// 			'pass_code' => 'required|max_length[255]|validatePassCode[pass_code]',
-	// 		];
-
-	// 		$errors = [
-	// 			'pass_code' => [
-	// 				'validatePassCode' => 'Pass Code incorrect. Contact admin for a pass code.'
-	// 			]
-	// 		];
-
-	// 		if (! $this->validate($rules, $errors)) {
-	// 			$data['validation'] = $this->validator;
-	// 		}else{
-	// 			$model = new UserModel();
-
-	// 			$newData = [
-	// 				'name' => $this->request->getVar('name'),
-	// 				'email' => $this->request->getVar('email'),
-	// 				'password' => $this->request->getVar('password'),
-	// 			];
-	// 			$model->save($newData);
-	// 			$session = session();
-	// 			$session->setFlashdata('success', 'Successful Registration');
-	// 			return redirect()->to('/');
-
-	// 		}
-	// 	}
-
-
-	// 	echo view('templates/header', $data);
-	// 	echo view('register');
-	// 	echo view('templates/footer');
-	// }
-
 	public function profile(){
 		
 		$data = [];
@@ -121,7 +78,6 @@ class Users extends BaseController
 				$rules['password_confirm'] = 'matches[password]';
 			}
 
-
 			if (! $this->validate($rules)) {
 				$data['validation'] = $this->validator;
 			}else{
@@ -129,15 +85,20 @@ class Users extends BaseController
 				$newData = [
 					'id' => session()->get('id'),
 					'name' => $this->request->getPost('name'),
-					];
-					if($this->request->getPost('password') != ''){
-						$newData['password'] = $this->request->getPost('password');
-					}
+				];
+				if($this->request->getPost('password') != ''){
+					$newData['password'] = $this->request->getPost('password');
+				}
+
 				$model->save($newData);
 
-				session()->setFlashdata('success', 'Successfuly Updated');
-				return redirect()->to('/profile');
+				if(getenv('OF_ENABLED') == "true"){
+					$this->updateOpenfireUser($newData);
+				}
 
+				session()->setFlashdata('success', 'Successfuly Updated');
+
+				return redirect()->to('/profile');
 			}
 		}
 
@@ -148,31 +109,19 @@ class Users extends BaseController
 		echo view('templates/footer');
 	}
 
-	// public function viewUsers(){
-	// 	$data = [];
-	// 	$data['addBtn'] = False;
-	// 	$data['backUrl'] = "/";
-	// 	if (session()->get('is-admin')){
-			
-	// 		$data['pageTitle'] = 'Users';
-	
-	// 		$model = new UserModel();
-	// 		$users = $model->getUsers();
-			
-	// 		$data['data'] = $users;
-	// 		echo view('templates/header', $data);
-	// 		echo view('templates/pageTitle', $data);
-	// 		echo view('Admin/Users/list', $data);
-	// 		echo view('templates/footer');
-	// 	}else{
-			
-	// 		$data['pageTitle'] = 'You are not authorized to view this page.';
-	// 		echo view('templates/header', $data);
-	// 		echo view('templates/pageTitle', $data);
-	// 		echo view('templates/footer');
-	// 	}
+	private function updateOpenfireUser($user){
+		$user['email'] = session()->get('email');
+		$username = substr($user['email'], 0, strrpos($user['email'], '@'));
+		$userDetails = [
+			"email" => $user['email'],
+			"name" => $user['name'], 
+			"password" => $user['password'], 
+			"username" => $username, 
+		];
 		
-	// }
+		$openfire = new Openfire();
+		$openfire->updateUser($userDetails);
+	}
 
 	public function updateAdminStatus(){
 		$response = array();
@@ -195,7 +144,5 @@ class Users extends BaseController
 		session()->destroy();
 		return redirect()->to('/');
 	}
-
-	//--------------------------------------------------------------------
 
 }

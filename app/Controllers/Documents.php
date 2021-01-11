@@ -11,6 +11,7 @@ use App\Models\TraceabilityMatrixModel;
 use App\Models\RiskAssessmentModel;
 use App\Models\AcronymsModel;
 use App\Models\SettingsModel;
+use TP\Tools\Openfire;
 class Documents extends BaseController
 {
 	public function index()
@@ -458,7 +459,14 @@ class Documents extends BaseController
 			//Update Document
 			$documentModel->update($id, $postData);
 		}
-
+		
+		if($postData['status'] == 'Request Review'){
+			$baseUrl = getenv('app.baseURL');
+			$notificationMessage = $revision['who']." has requested review of D-".$id;
+			$notificationMessage .= "\nLink - ".$baseUrl."/documents/add?id=".$id;
+			
+			$this->sendOpenfireNotification($postData['reviewer-id'], $notificationMessage);
+		}
 		
 		$response["success"] = "True";
 		$response["id"] = $id;
@@ -505,6 +513,17 @@ class Documents extends BaseController
 		
 	}
 
+	 //This code sends a notification message to openfire
+    //Author of the document is updated about new comments.
+    private function sendOpenfireNotification($userId, $message){
+        if(getenv('OF_ENABLED') == "true"){
+            $openfire = new Openfire();
+            $teamModel = new TeamModel();
+            $userName = $teamModel->getUsername($userId);
+            $openfire->sendNotification($userName, $message);
+        }
+	}
+	
 	public function delete(){
 		
 		$uri = $this->request->uri;

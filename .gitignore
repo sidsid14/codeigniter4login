@@ -7,3 +7,4 @@ public/diagrams/
 public/storage/repository/
 public/uploads/
 .gitignore
+.vscode

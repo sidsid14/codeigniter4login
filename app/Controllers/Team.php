@@ -2,6 +2,7 @@
 
 use App\Models\TeamModel;
 use App\Models\SettingsModel;
+use TP\Tools\Openfire;
 
 class Team extends BaseController
 {
@@ -12,10 +13,9 @@ class Team extends BaseController
 		$data['addBtn'] = True;
 		$data['addUrl'] = "/team/add";
 
-		// helper(['form']);
 		$model = new TeamModel();
 		$data['data'] = $model->orderBy('is-manager', 'desc')->orderBy('name', 'asc')->findAll();	
-		
+
 		echo view('templates/header');
 		echo view('templates/pageTitle', $data);
 		echo view('Team/list',$data);
@@ -113,6 +113,9 @@ class Team extends BaseController
 					}else{
 						$message = 'Team member successfully added.';
 						$this->addStorageUser($newData);
+						if(getenv('OF_ENABLED') == "true"){
+							$this->addOpenfireUser($newData);
+						}
 					}
 
 					$model->save($newData);
@@ -130,7 +133,6 @@ class Team extends BaseController
 			echo view('templates/pageTitle', $data);
 			echo view('templates/footer');
 		}
-		
 	
 	}
 
@@ -152,11 +154,32 @@ class Team extends BaseController
 		file_put_contents('storage/private/users.json', $storageUsers);
 	}
 
+	private function addOpenfireUser($user){
+		$username = substr($user['email'], 0, strrpos($user['email'], '@'));
+		$userDetails = [
+			"email" => $user['email'],
+			"name" => $user['name'], 
+			"password" => getenv('PASS_CODE'), 
+			"username" => $username, 
+		];
+		
+		$openfire = new Openfire();
+		$openfire->createUser($userDetails);
+		$openfire->addUserToGroup($username, getenv('OF_DEFAULT_GROUP'));
+		
+	}
+	
 	public function delete(){
 		if (session()->get('is-admin')){
 			$id = $this->returnParams();
 			$model = new TeamModel();
+			$user = $model->find($id);
+
+			$username = substr($user['email'], 0, strrpos($user['email'], '@'));
+			$openfire = new Openfire();
+			$openfire->deleteUser($username);	
 			$model->delete($id);
+
 			$response = array('success' => "True");
 			echo json_encode( $response );
 		}

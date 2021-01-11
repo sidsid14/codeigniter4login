@@ -482,7 +482,7 @@
                     <div>
                         <div class="form-group hide reviewbox p-2">
                             <textarea class="form-control" name="description" id="description"></textarea>
-                            <div class="d-flex w-100 justify-content-end mt-2">
+                            <div class="d-flex w-100 justify-content-center mt-2">
                                 <?php
                                 $showStatus = false;
                                 $showCategory = true;
@@ -537,10 +537,10 @@
                                     </div>
                                 </div>
                                 <?php endif ?>
-                                <div style="margin-top:31px;margin-right:10px">
-                                    <button title="Save" class="btn btn-success ml-4"
+                                <div class="row" style="margin-top:31px;">
+                                    <button title="Save" style="height:40px" class="btn btn-success ml-4"
                                         onclick="saveReview('<?= $reviewId ?>')"><i class="fas fa-save"></i></button>
-                                    <button title="Cancel" class="btn btn-dark ml-1" onclick="showReview()"><i
+                                    <button title="Cancel" style="height:40px" class="btn btn-dark ml-1" onclick="showReview()"><i
                                             class="fas fa-times"></i></button>
                                 </div>
                             </div>

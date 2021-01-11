@@ -5,6 +5,7 @@ use App\Models\ProjectModel;
 use App\Models\ReviewModel;
 use App\Models\SettingsModel;
 use App\Models\TeamModel;
+use TP\Tools\Openfire;
 
 class Reviews extends BaseController
 {
@@ -149,16 +150,22 @@ class Reviews extends BaseController
             $response["success"] = "True";
             $currentTime = gmdate("Y-m-d H:i:s");
 
+            $docId = $this->request->getVar('docId');
             $reviewId = $this->request->getVar('id');
             $status = $this->request->getVar('status');
             $commentId = $this->request->getVar('commentId');
             $message = $this->request->getVar('description');
+            $reviewerName = session()->get('name');
 
+            $notificationMessage = ""; 
+        
             if($commentId == ""){
                 $commentId = uniqid();
                 $response["message"] = "Success! Comment added.";
+                $notificationMessage = $reviewerName.' just added review comments on your document D-'.$docId.'.';
             }else{
                 $response["message"] = "Success! Comment updated.";
+                $notificationMessage = $reviewerName.' has updated review comments on your document D-'.$docId.'.';
             }
             
             $reviewModel = new ReviewModel();
@@ -194,17 +201,20 @@ class Reviews extends BaseController
 
             $documentModel = new DocumentModel();
 
-            $docId = $this->request->getVar('docId');
             $doc = $documentModel->where('id', $docId)->first();
 
             $revision["dateTime"] = $currentTime;
-            $revision["who"] = session()->get("name");
+            $revision["who"] = $reviewerName;
             $revision["type"] = "Reviewed";
             $revision["log"] = "Review comments added.";
-
             if ($doc['status'] != $status) {
                 $revision["log"] .= " Document status updated to " . $status;
+                $notificationMessage .= 'Also, updated its status to '. $status.'.';
             }
+            
+            $baseUrl = getenv('app.baseURL');
+            $notificationMessage .= "\nName - ".$doc["file-name"]." \nComment - ".$message." \nLink - ".$baseUrl."/documents/add?id=".$docId;
+            
             $revisionHistory = $doc["revision-history"];
             if ($revisionHistory != null) {
                 $revisionHistory = json_decode($revisionHistory, true);
@@ -222,7 +232,7 @@ class Reviews extends BaseController
             ];
 
             $documentModel->update($docId, $docData);
-
+            $this->sendOpenfireNotification($doc['author-id'], $notificationMessage);
             
             $response['reviewId'] = $reviewId;
             $response["revisionHistory"] = json_encode($revisionHistory);
@@ -232,6 +242,16 @@ class Reviews extends BaseController
         }
     }
 
+    //This code sends a notification message to openfire
+    //Author of the document is updated about new comments.
+    private function sendOpenfireNotification($userId, $message){
+        if(getenv('OF_ENABLED') == "true"){
+            $openfire = new Openfire();
+            $teamModel = new TeamModel();
+            $userName = $teamModel->getUsername($userId);
+            $openfire->sendNotification($userName, $message);
+        }
+    }
 
     public function add()
     {
@@ -316,6 +336,7 @@ class Reviews extends BaseController
                 ],
             ];
 
+            $reviewStatus =  $this->request->getVar('status');
             $newData = [
                 "assigned-to" => $this->request->getVar('assigned-to'),
                 "context" => $this->request->getVar('context'),
@@ -324,10 +345,12 @@ class Reviews extends BaseController
                 "review-by" => $this->request->getVar('review-by'),
                 "review-name" => $this->request->getVar('review-name'),
                 "review-ref" => $this->request->getVar('review-ref'),
-                "status" => $this->request->getVar('status'),
+                "status" => $reviewStatus, 
                 'updated-at' => $currentTime,
                 "category" => $this->request->getVar('category'),
             ];
+
+            $baseUrl = getenv('app.baseURL');
 
             if (!$this->validate($rules, $errors)) {
                 $data['validation'] = $this->validator;
@@ -339,10 +362,27 @@ class Reviews extends BaseController
                     $data['review'] = $model->where('id', $id)->first();
                     $message = 'Review successfully updated.';
                     $session->setFlashdata('success', $message);
+
+                    if($reviewStatus == 'Request Review'){
+                        $authorName = session()->get('name');
+                        $notificationMessage = $authorName." has requested review of R-".$id;
+                        $notificationMessage .= "\nLink - ".$baseUrl."/reviews/add/".$id;
+        
+                        $this->sendOpenfireNotification($newData['review-by'], $notificationMessage);
+                    }
                 } else {
                     $reviewId = $model->insert($newData);
                     $message = 'Review successfully added.';
                     $session->setFlashdata('success', $message);
+
+                    if($reviewStatus == 'Request Review'){
+                        $authorName = session()->get('name');
+                        $notificationMessage = $authorName." has requested review of R-".$reviewId;
+                        $notificationMessage .= "\nLink - ".$baseUrl."/reviews/add/".$reviewId;
+                        
+                        $this->sendOpenfireNotification($newData['review-by'], $notificationMessage);
+                    }
+                    
                     return redirect()->to('/reviews/add/' . $reviewId);
                 }
 
@@ -363,13 +403,17 @@ class Reviews extends BaseController
         $commentId = $this->request->getVar('commentId');
 		$message = $this->request->getVar('message');
         $reviewStatus = $this->request->getVar('reviewStatus');
-        
+        $reviewerName = session()->get('name');
+
+        $notificationMessage = ""; 
+
         if ($commentId != "") {
             $responseMessage = "Success! Comment updated.";
-
+            $notificationMessage = $reviewerName ." has updated review comments on your review R-".$reviewId.'.';
         } else {
             $commentId = uniqid();
             $responseMessage = "Success! Comment added.";
+            $notificationMessage = $reviewerName ." just added review comments on your review R-".$reviewId.'.';
         }
         list($comment, $comments) = $this->addToComments($reviewId, $commentId, $message);
 
@@ -377,15 +421,23 @@ class Reviews extends BaseController
             "description" => json_encode($comments),
 		];
 
+        $reviewModel = new ReviewModel();
+        $review = $reviewModel->find($reviewId);
+
+        $baseUrl = getenv('app.baseURL');
+
 		if($reviewStatus != ""){
 			$data["status"] = $reviewStatus;
-			$response["updateStatus"] = "True";
+            $response["updateStatus"] = "True";
+            $notificationMessage .= "Also, updated its status to ".$reviewStatus;
 		}else{
 			$response["updateStatus"] = "False";
 		}
-        $reviewModel = new ReviewModel();
         $reviewModel->update($reviewId, $data);
         
+        $notificationMessage .= "\nName - ".$review['context']." \nComment - ".$message." \nLink - ".$baseUrl."/reviews/add/".$reviewId;
+        $this->sendOpenfireNotification($review['assigned-to'], $notificationMessage);
+
         $response["comment"] = $comment;
         $response["message"] = $responseMessage;
 

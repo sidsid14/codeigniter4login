@@ -52,7 +52,7 @@ button[data-id="selectedUserId"]{
 }
 
 .truncate {
-    width: 130px;
+    width: 116px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
