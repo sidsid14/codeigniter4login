@@ -66,7 +66,9 @@ class GenerateDocuments extends BaseController
 					array(
 						'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH,
 						'spaceAfter' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(0),
+						'spaceBefore' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(3),
 						'spacing' => 100,
+						'indentation' => array('left' => 540)
 					)
 			);
 			$multilevelNumberingStyleName = 'multilevel';
@@ -109,28 +111,28 @@ class GenerateDocuments extends BaseController
 			$DocID = 'Doc ID: '.$json['cp-line4'];
 
 			$section->addText($json['cp-line3'], $fontStyle, $firstHeaderStyles);
-			$section->addText($DocID, $fontStyle, $firstHeaderStyles);
+			$section->addText($DocID, $fontStyle, array('spaceBefore' => 0, 'spaceAfter' => 11, 'align' => 'center'));
 			$section->addTextBreak(3);
 
 			$fontStyle['name'] = $json['section-font'];
 			$fontStyle['size'] = $json['section-font-size'];
 			$fontStyle['bold'] = TRUE;
 			//#-3: Adding change history section
-			$section->addText('Change History', $fontStyle);
+			$section->addText('Change History', $fontStyle, array('spaceBefore' => 0, 'spaceAfter' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(11)));
 			$tableContent = $pandoc->convert($json['cp-change-history'], "gfm", "html5");
 			$tableContent = $this->addTableStylesToContent($tableContent);
 			\PhpOffice\PhpWord\Shared\Html::addHtml($section, $tableContent, false, false);
 			$section->addTextBreak();
 
 			$section = $phpWord->addSection();
-			$fontStyle12 = array('spaceAfter' => 60, 'size' => $json['section-font']);
+			$fontStyle12 = array('spaceAfter' => 60, 'size' => $json['section-font'], 'bold' => true);
 			$phpWord->addTitleStyle(null, array('size' => $json['section-font'], 'bold' => true));
 			$phpWord->addTitleStyle(1, array('size' => $json['section-font'], 'color' => '333333', 'bold' => true));
 			$phpWord->addTitleStyle(2, array('size' => $json['section-font'], 'color' => '666666'));
 			$phpWord->addTitleStyle(3, array('size' => $json['section-font'], 'italic' => true));
 			$phpWord->addTitleStyle(4, array('size' => $json['section-font']));
 			// Add text elements
-			$fontStyle['bold'] = FALSE;
+			// $fontStyle['bold'] = FALSE;
 			$section->addText('TABLE OF CONTENTS', $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);
 			$section->addTextBreak(2);
 
@@ -297,7 +299,7 @@ class GenerateDocuments extends BaseController
 		$fontFamily = 'Arial, sans-serif';
 		$fontSize = '11';
 		$replaceContent = str_replace("<table>", '<table class="pandoc-mark-css" style="border-spacing: 0 10px; layout: fixed; font-family:' . $fontFamily . '; font-size: ' . $fontSize . ';width: 100%; table-layout: fixed; word-wrap: break-word; padding: 10px; border: 1px #000000 solid; border-collapse: collapse;" border="1" cellpadding="5">', $rawContent);
-		$replaceContent = str_replace("<th>", "<th style='padding-top: 8px;font-weight: bold; height: 50px;text-align: center; background-color:#cbebf2;'>", $replaceContent);
+		$replaceContent = str_replace("<th>", "<th style='padding-top: 8px;font-weight: bold; text-align: center; background-color:#d9d9d9;'>", $replaceContent);
 		$replaceContent = str_replace("<br/>", " <br/> ", $replaceContent);
 		$replaceContent = str_replace("</table>", " </table><br/> ", $replaceContent);
 		return $replaceContent;
