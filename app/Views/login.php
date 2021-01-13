@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="/assets/css/login-style.css?1.0" />
+<link rel="stylesheet" href="/assets/css/login-style.css?1.1" />
 
  <div class="container">
       <div class="forms-container">

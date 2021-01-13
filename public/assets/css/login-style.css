@@ -214,9 +214,9 @@ input.no-autofill-bkg:-webkit-autofill::first-line {
   }
   .signin-signup {
     width: 100%;
-    top: 70%;
-    transform: translate(-50%, -100%);
+    top: 32%;
     transition: 1s 0.8s ease-in-out;
+    transform: translate(-50%, 0);
   }
 
   .signin-signup,
@@ -242,7 +242,7 @@ input.no-autofill-bkg:-webkit-autofill::first-line {
   }
 
   .image {
-    width: 200px;
+    width: 100px;
     transition: transform 0.9s ease-in-out;
     transition-delay: 0.6s;
   }
@@ -279,15 +279,6 @@ input.no-autofill-bkg:-webkit-autofill::first-line {
     transition: 2s ease-in-out;
   }
 
-  .container .left-panel .image,
-  .container .left-panel .content {
-    transform: translateY(-300px);
-  }
-
-  .container .signin-signup {
-    top: 5%;
-    transform: translate(-50%, 0);
-  }
 }
 
 @media (min-width: 576px){
@@ -297,9 +288,6 @@ input.no-autofill-bkg:-webkit-autofill::first-line {
 }
 
 @media (max-width: 570px) {
-  .container .signin-signup {
-    top: 32%;
-  }
   form {
     padding: 0 1.5rem;
   }
