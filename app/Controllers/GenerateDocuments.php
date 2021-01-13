@@ -68,7 +68,6 @@ class GenerateDocuments extends BaseController
 						'spaceAfter' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(0),
 						'spaceBefore' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(3),
 						'spacing' => 100,
-						'indentation' => array('left' => 540)
 					)
 			);
 			$multilevelNumberingStyleName = 'multilevel';
