@@ -88,7 +88,13 @@ form.sign-in-form {
 }
 
 input.no-autofill-bkg:-webkit-autofill {
-  -webkit-background-clip: text;
+  -webkit-background-clip: text;  
+}
+
+input.no-autofill-bkg:-webkit-autofill::first-line {
+      font-family: "Poppins", sans-serif;
+      font-size: 1rem;
+      font-weight: bold;
 }
 
 .input-field input::placeholder {
@@ -140,7 +146,7 @@ input.no-autofill-bkg:-webkit-autofill {
 }
 
 .image {
-  width: 30%;
+  width: 37%;
   transition: transform 1.1s ease-in-out;
   transition-delay: 0.4s;
 }
@@ -291,6 +297,9 @@ input.no-autofill-bkg:-webkit-autofill {
 }
 
 @media (max-width: 570px) {
+  .container .signin-signup {
+    top: 32%;
+  }
   form {
     padding: 0 1.5rem;
   }
