@@ -1,48 +1,40 @@
-<style>
-body{
-  padding:0px;
-}
-</style>
-<div class="container">
-  <div class="row justify-content-center">
-    <div class="col-12 col-sm-8 col-md-6 col-lg-5 mt-5 pt-2 pb-3 form-color">
-      <div class="container">
-        <div class="row">
-            <div class="col"><h3 class="mt-5 text-muted">Login</h3></div>
-            <div class="col"><img class="float-right" src="/Docsgo-Logo.png" height="100px" width="100px" alt="Card image cap"></div>
-        </div>
-        <hr>
-        <?php if (session()->get('success')): ?>
-          <div class="alert alert-success" role="alert">
-            <?= session()->get('success') ?>
-          </div>
-        <?php endif; ?>
-        <form class="" action="/" method="post">
-          <div class="form-group">
-           <label for="email">Email address</label>
-           <input type="text" class="form-control" name="email" id="email" value="<?= set_value('email') ?>">
-          </div>
-          <div class="form-group">
-           <label for="password">Password</label>
-           <input type="password" class="form-control" name="password" id="password" value="">
-          </div>
-          <?php if (isset($validation)): ?>
+<link rel="stylesheet" href="/assets/css/login-style.css" />
+
+ <div class="container">
+      <div class="forms-container">
+        <div class="signin-signup">
+          <form action="/" class="sign-in-form" method="post">
+            <?php if (isset($validation)): ?>
             <div class="col-12">
               <div class="alert alert-danger" role="alert">
                 <?= $validation->listErrors() ?>
               </div>
             </div>
-          <?php endif; ?>
-          <div class="row justify-content-center">
-            <div class="col-12">
-              <button type="submit" class="btn btn-primary">Login</button>
+            <?php endif; ?>
+            <h2 class="title">Sign in</h2>
+            <div class="input-field">
+              <i class="fas fa-user"></i>
+              <input type="text" placeholder="Email" class="no-autofill-bkg"  name="email" id="email" value="<?= set_value('email') ?>">
+         
+              <!-- <input type="text" placeholder="Username" /> -->
             </div>
-            <!-- <div class="col-12 col-sm-8 text-right">
-              <a href="/register">Don't have an account yet?</a>
-            </div> -->
+            <div class="input-field">
+              <i class="fas fa-lock"></i>
+              <input type="password" placeholder="Password" class="no-autofill-bkg"  name="password" id="password" value="" />
+            </div>
+            <input type="submit" value="Login" class="btn solid" />
+          </form>
+        </div>
+      </div>
+
+      <div class="panels-container">
+        <div class="panel left-panel">
+          <img style="margin:0 auto" src="http://info.viosrdtest.in/Docsgo-Logo.png" class="image" alt="" />
+          <div class="content">
+            <h3>Project Data Reporting Tool</h3>
+            <p>
+           A central place to view, generate all important project reports from the various data sources.</p>
           </div>
-        </form>
+        </div>
       </div>
     </div>
-  </div>
-</div>

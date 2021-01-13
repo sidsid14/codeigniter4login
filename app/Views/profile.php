@@ -54,4 +54,7 @@
       </div>
     </div>
   </div>
-
+<footer class="website-footer">
+    <p><b>Note:</b> Please configure Docsgo IM using this <a target="_blank" href="/openfire/docsgoIM_config_document.pdf"><b
+                >configuration document</b></a> so as to get real time update of your documents and reviews.</p>
+</footer>

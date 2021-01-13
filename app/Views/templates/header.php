@@ -7,7 +7,9 @@
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/assets/css/style.css?1.0" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.0/css/all.css" />
-    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" />
+    <!-- <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" -->
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap" />
+
     <link rel="stylesheet" href="/assets/css/bootstrap4-toggle.min.css" />
     <link rel="stylesheet" href="/assets/css/simplemde_v1.11.1.min.css" />
     <link rel="stylesheet" href="/assets/css/bootstrap-select_v1.13.14.min.css" />
@@ -53,7 +55,8 @@
     }
 
     body {
-        font-family: "Open Sans";
+        /* font-family: "Open Sans"; */
+        font-family: "Poppins", sans-serif
     }
 
 
