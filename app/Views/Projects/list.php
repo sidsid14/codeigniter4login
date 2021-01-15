@@ -23,10 +23,11 @@
           <th scope="col">#</th>
           <th scope="col">Project Name</th>
           <th scope="col">Project Version</th>
-          <th scope="col" style="width:40%">Description</th>
+          <th scope="col" style="min-width:300px;">Description</th>
           <th scope="col">Start Date</th>
           <th scope="col">End Date</th>           
-          <th scope="col" style="width:200px">Action</th>
+          <th scope="col" style="min-width:75px">Action</th>
+          <th scope="col" style="min-width:75px">Update</th>
         </tr>
       </thead>
       <tbody class="bg-white">
@@ -42,12 +43,14 @@
                 <a href="/taskboard?project-id=<?php echo $row['project-id'];?>" title="Taskboard" class="btn btn-info">
                       <i class="fas fa-tasks"></i>
                     </a>
-                    <a href="/projects/add/<?php echo $row['project-id'];?>" class="btn btn-warning ml-2">
-                        <i class="fa fa-edit"></i>
-                    </a>
                     <a title="Download" href="#" onclick="checkGenerateDocuments(this, <?php echo $row['project-id'];?>)" 
                       class="btn btn-primary ml-2">
                         <i class="fa fa-download"></i>
+                    </a>
+                </td>
+                <td>
+                    <a href="/projects/add/<?php echo $row['project-id'];?>" class="btn btn-warning ml-2">
+                        <i class="fa fa-edit"></i>
                     </a>
                     <?php if (session()->get('is-admin')): ?>
                     <a onclick="deleteProject(<?php echo $row['project-id'];?>)" class="btn btn-danger ml-2">
