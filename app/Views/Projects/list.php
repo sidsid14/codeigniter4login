@@ -26,8 +26,8 @@
           <th scope="col" style="min-width:300px;">Description</th>
           <th scope="col">Start Date</th>
           <th scope="col">End Date</th>           
-          <th scope="col" style="min-width:75px">Action</th>
-          <th scope="col" style="min-width:75px">Update</th>
+          <th scope="col" style="min-width:80px">Action</th>
+          <th scope="col" style="min-width:90px">Update</th>
         </tr>
       </thead>
       <tbody class="bg-white">

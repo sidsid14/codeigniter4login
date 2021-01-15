@@ -351,15 +351,15 @@
                 </div>
                 <?php endif; ?>
                 <div class="<?= $col ?>">
-                    <a href="/profile" title="My Profile" class="nav__link">
-                        <div class="nav__icon">
+                    <a href="/profile" style="display:flex;" title="My Profile" class="nav__link">
+                        <div class="nav__icon" style="margin:0 auto;">
                             <img src="/assets/images/person-circle.svg" class="icon__image">
                         </div>
                     </a>
                 </div>
                 <div class="<?= $col ?>">
-                    <a href="/logout" title="Log Out" class="nav__link">
-                        <div class="nav__icon">
+                    <a href="/logout" style="display:flex;" title="Log Out" class="nav__link">
+                        <div class="nav__icon" style="margin:0 auto;">
                             <img src="/assets/images/logout.svg" class="icon__image">
                         </div>
                     </a>
