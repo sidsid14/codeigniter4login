@@ -108,13 +108,13 @@ class InventoryMaster extends BaseController
 		if ($this->request->getMethod() == 'post') {
 			/* Checking the 'cal_date', if its exceeds the current date then status should be 'cal-overdue' */
 			$status = $this->request->getVar('status');
-			if((int)$this->request->getVar('cal_date')){
-				$cal_date = strtotime($this->request->getVar('cal_date')) + (330*60);
-				$today = strtotime(gmdate("Y-m-d")) + (330*60);
-				if($cal_date < $today){
-					$status = $data['statusList'][3];
-				}
-			}
+			// if((int)$this->request->getVar('cal_date')){
+			// 	$cal_date = strtotime($this->request->getVar('cal_date')) + (330*60);
+			// 	$today = strtotime(gmdate("Y-m-d")) + (330*60);
+			// 	if($cal_date > $today){
+			// 		$status = $data['statusList'][3];
+			// 	}
+			// }
 			if($status == ''){
 				$status = 'active';
 			}
