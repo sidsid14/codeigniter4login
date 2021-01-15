@@ -992,6 +992,15 @@ function getTaskHtml(newTask) {
                                 </button>
                                 <span id="attachmentCount_${newTask.id}" class="dot sec counter counter-lg">${attachmentsCount}</span>`;
     }
+    var descp = "";
+    if(newTask.description != null){
+        descp = safeString(newTask.description);
+        if(descp.length > 400){
+            descp = descp.substring(0,400);
+            descp += " ...";
+        }
+    }
+
     var taskHtml = `
                         <div class=" text-muted">
                             <div class="float-left pl-2 pt-2">
@@ -1010,7 +1019,7 @@ function getTaskHtml(newTask) {
                             </div>
                         </div>
                         <div class="card-body" style="padding:0.75rem">
-                            <p style="font-size:14px;line-height: 1.5;" data-toggle="popover" data-placement="top" data-content="${newTask.description == null ? '' : newTask.description}" class="card-text task_title">${newTask.title}</p>
+                            <p style="font-size:14px;line-height: 1.5;" data-toggle="popover" data-placement="top" data-content="${descp}" class="card-text task_title">${newTask.title}</p>
                         </div>
                         <div class="card-footer text-muted text-right" style="padding:4px">
                             <div class="float-left">
@@ -1024,6 +1033,10 @@ function getTaskHtml(newTask) {
                     `;
 
     return taskHtml;
+}
+
+function safeString(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
 function getCarouselHtml(taskId) {
