@@ -159,7 +159,7 @@ class InventoryMaster extends BaseController
 		echo view('templates/header');
 		echo view('templates/pageTitle', $data);
 		echo view('InventoryMaster/form', $data);
-		echo view('templates/footer');
+		// echo view('templates/footer');
 	}
 
 	public function delete(){
