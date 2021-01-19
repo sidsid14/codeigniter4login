@@ -590,6 +590,9 @@ class Html
                 case 'border-style':
                     $styles['borderStyle'] = self::mapBorderStyle($cValue);
                     break;
+                case 'padding-left':
+                        $styles['paddingLeft'] =  Converter::cssToPoint($cValue);
+                        break;        
                 case 'width':
                     if (preg_match('/([0-9]+[a-z]+)/', $cValue, $matches)) {
                         $styles['width'] = Converter::cssToTwip($matches[1]);
