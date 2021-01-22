@@ -61,26 +61,15 @@ class GenerateDocuments extends BaseController
 			$phpWord->getSettings()->setUpdateFields(true);
 			$section = $phpWord->addSection();
 			//Applying the paragraph styles...
-			$phpWord->addTitleStyle(1, array('name' => 'Arial', 'size' => $json['section-font-size'], 'bold' => TRUE));
 			$phpWord->setDefaultParagraphStyle(
-					array(
-						'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH,
-						'spaceAfter' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(0),
-						'spaceBefore' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(3),
-						'spacing' => 100,
-					)
+				array(
+					'alignment' => \PhpOffice\PhpWord\SimpleType\Jc::BOTH,
+					'spaceAfter' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(0),
+					'spaceBefore' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(3),
+					'spacing' => 100,
+				)
 			);
-			$multilevelNumberingStyleName = 'multilevel';
-			$phpWord->addNumberingStyle(
-					$multilevelNumberingStyleName, array(
-				'type' => 'multilevel',
-				'levels' => array(
-					array('format' => 'decimal', 'text' => '%1.', 'left' => 500, 'hanging' => 360, 'tabPos' => 500),
-					array('format' => 'upperLetter', 'text' => '%2.', 'left' => 720, 'hanging' => 360, 'tabPos' => 720),
-				),
-					)
-			);
-		
+
 			//#-1 Adding Header section
 			$subsequent = $section->addHeader();
 			$documentIconImage = $documentIcon; 
@@ -115,7 +104,6 @@ class GenerateDocuments extends BaseController
 			$section->addTextBreak(3);
 
 			//#-3: Adding change history section
-			$fontStyle['name'] = 11;
 			$fontStyle['size'] = $json['section-font-size'];
 			$fontStyle['bold'] = TRUE;
 			$section->addText('Change History', $fontStyle, array('spaceBefore' => 0, 'spaceAfter' => \PhpOffice\PhpWord\Shared\Converter::pointToTwip(11)));
@@ -123,20 +111,32 @@ class GenerateDocuments extends BaseController
 			$tableContent = $this->addTableStylesToContent($tableContent);
 			\PhpOffice\PhpWord\Shared\Html::addHtml($section, $tableContent, false, false);
 			$section->addTextBreak();
+			//Adding indexing for the TOC, Titles subtitles...
+			$phpWord->addNumberingStyle(
+				'hNum',
+				array('type' => 'multilevel', 'levels' => array(
+					array('pStyle' => 'Heading1', 'format' => 'decimal', 'text' => '%1'),
+					array('pStyle' => 'Heading2', 'format' => 'decimal', 'text' => '%1.%2'),
+					array('pStyle' => 'Heading3', 'format' => 'decimal', 'text' => '%1.%2.%3'),
+					array('pStyle' => 'Heading4', 'format' => 'decimal', 'text' => '%1.%2.%3.%4'),
+					array('pStyle' => 'Heading5', 'format' => 'decimal', 'text' => '%1.%2.%3.%4.%5'),
+					)
+				)
+			);
+			$phpWord->addTitleStyle(1, array('size' => 11, 'name' => 'Arial', 'bold' => true), array('numStyle' => 'hNum', 'numLevel' => 0));
+			$phpWord->addTitleStyle(2, array('size' => 11, 'name' => 'Arial', 'bold' => true), array('numStyle' => 'hNum', 'numLevel' => 1));
+			$phpWord->addTitleStyle(3, array('size' => 11, 'name' => 'Arial', 'bold' => true), array('numStyle' => 'hNum', 'numLevel' => 2));
+			$phpWord->addTitleStyle(4, array('size' => 11, 'name' => 'Arial', 'bold' => true), array('numStyle' => 'hNum', 'numLevel' => 3));
+			$phpWord->addTitleStyle(5, array('size' => 11, 'name' => 'Arial', 'bold' => true), array('numStyle' => 'hNum', 'numLevel' => 4));
 
 			// Add TOC...
 			$section = $phpWord->addSection();
 			$fontStyle12 = array('spaceAfter' => 60, 'size' => 11, 'bold' => true, 'name'=>'Arial');
-			$phpWord->addTitleStyle(null, array('size' => 11, 'bold' => true, 'name'=>'Arial'));
-			$phpWord->addTitleStyle(1, array('size' => 11, 'color' => '333333', 'bold' => true, 'name'=>'Arial'));
-			$phpWord->addTitleStyle(2, array('size' => 11, 'color' => '666666', 'name'=>'Arial'));
-			$phpWord->addTitleStyle(3, array('size' => 11, 'italic' => true, 'name'=>'Arial'));
-			$phpWord->addTitleStyle(4, array('size' => 11));
 			// Add text elements
 			$section->addText('TABLE OF CONTENTS', $fontStyle, ['align' => \PhpOffice\PhpWord\Style\Cell::VALIGN_CENTER]);
 			$section->addTextBreak(2);
 
-			$toc = $section->addTOC($fontStyle12, 'tabLeader');
+			$toc = $section->addTOC($fontStyle12);
 			$section->addTextBreak(2);
 
 			// Add Sections
@@ -144,7 +144,7 @@ class GenerateDocuments extends BaseController
 			$phpWord->setDefaultFontName('Arial');
 			try{
 				for ($i = 0; $i < count($json['sections']); $i++) {
-					$section->addTitle($i + 1 . ". " . strtoupper($json['sections'][$i]['title']));
+					$section->addTitle(strtoupper($json['sections'][$i]['title']), 1);
 					$spaceStyle = array('spaceBefore' => 11); $fontStyle['name'] = 'Arial';
 					$section->addText('', $fontStyle, $spaceStyle);
 					$contentSection = '<b></b>';
