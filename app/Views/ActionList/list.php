@@ -65,6 +65,19 @@ body {
     transition: all 0.6s ease-in-out;
 }
 
+.revision-modal-close{
+    position: absolute;
+    right: 3px;
+    top: 2px;
+    color: #6c757d;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 12px;
+}
+
+.revision-modal-close:hover:before{
+    color: black;
+}
 .edit-modal {
     width: 400px;
     z-index: 2;
@@ -440,13 +453,17 @@ $(document).ready(function() {
 function hideItemModal() {
 	$(".edit-modal").removeClass("show-right");
 	$(".edit-modal").addClass("hide-right");
-	$(".revision-modal").removeClass("show-left");
-	$(".reviedit-modal").addClass("hide-left");
+	hideRevisionModal();
 }
 
 function showItemModal() {
 	$(".edit-modal").removeClass("hide-right");
 	$(".edit-modal").addClass("show-right");
+}
+
+function hideRevisionModal(){
+	$(".revision-modal").removeClass("show-left");
+	$(".reviedit-modal").addClass("hide-left");
 }
 
 function addItem() {
@@ -865,6 +882,7 @@ function getRevisionHtml(actionItem){
 		<div class="timeline scroll scroll-primary"> 
 	            <header class="text-center font-weight-bold">
 	                <span class="item-header text-secondary">Revision Log</span>
+			<i class="fas fa-times revision-modal-close" onclick="hideRevisionModal()"></i>
 	            </header>
 		    <ul>`;
 	let revisions = "";
