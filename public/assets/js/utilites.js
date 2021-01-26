@@ -117,10 +117,16 @@ function showPopUp(title, message){
         });
 }
 
-function formatDate(utcDate) {
-    let utc = new Date(utcDate)
-    var ist = new Date(utc.getTime() + ( 5.5 * 60 * 60 * 1000 ));
-    var date = ist;
+function formatDate(utcDate, useOffset = true) {
+    let utc = new Date(utcDate);
+    var date;
+
+    if(useOffset){
+       date = new Date(utc.getTime() + ( 5.5 * 60 * 60 * 1000 ));
+    }else{
+        date = utcDate;
+    }
+    
     var year = date.getFullYear();
     var month = date.getMonth() + 1;
     month = month < 10 ? '0' + month : '' + month;
@@ -138,9 +144,40 @@ function formatDate(utcDate) {
     return year+"-"+month+"-"+day+" "+strTime;
 }
 
+function getCurrentDateForDB(){
+    let date = new Date(new Date().toUTCString().substr(0, 25));
+   
+    var year = date.getFullYear();
+    var month = date.getMonth() + 1;
+    month = month < 10 ? '0' + month : '' + month;
+    var day = date.getDate();
+    day = day < 10 ? '0' + day : '' + day;
+    var hours = date.getHours();
+    hours = hours < 10 ? '0'+hours : hours;
+    var minutes = date.getMinutes();
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    var seconds = date.getSeconds();
+    seconds = seconds < 10 ? '0'+seconds : seconds;
+    
+    var strTime = hours + ':' + minutes + ':' + seconds;
+    return year+"-"+month+"-"+day+" "+strTime;
+
+}
+
 function showFloatingAlert(message , bgClass = "bg-success"){
+    $(".floating-alert").removeClass("bg-success bg-danger bg-warning");
     $(".floating-alert").addClass(bgClass);
-    $(".floating-alert").text(message);
+    let icon = "";
+
+    if(bgClass == "bg-success"){
+        icon = '<i style="font-size:18px;margin-right: 4px;" class="fa fa-check-circle" aria-hidden="true"></i> ';
+    }else if(bgClass == "bg-warning"){
+        icon = '<i style="font-size:18px;margin-right: 4px;" class="fa fa-info-circle" aria-hidden="true"></i> ';
+    }else{
+        icon = '<i style="font-size:18px;margin-right: 4px;" class="fa fa-exclamation-triangle" aria-hidden="true"></i> ';
+    }
+
+    $(".floating-alert").html(icon+message);
     
     $('.floating-alert').show('slide', {direction: 'right'}, 1000);
 

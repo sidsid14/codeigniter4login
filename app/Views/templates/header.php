@@ -5,10 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/assets/css/style.css?1.0" />
+    <link rel="stylesheet" href="/assets/css/style.css?1.1" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.0/css/all.css" />
     <!-- <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans" -->
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap" />
+    <link rel="stylesheet" type="text/css"
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap" />
 
     <link rel="stylesheet" href="/assets/css/bootstrap4-toggle.min.css" />
     <link rel="stylesheet" href="/assets/css/simplemde_v1.11.1.min.css" />
@@ -27,7 +28,7 @@
     <script nomodule="" src="https://unpkg.com/ionicons@5.1.2/dist/ionicons/ionicons.js"></script> -->
 
     <script type="text/javascript" src="/assets/js/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="/assets/js/utilites.js?1.0"></script>
+    <script type="text/javascript" src="/assets/js/utilites.js?1.1"></script>
     <script type="text/javascript" src="/assets/js/popper.min.js"></script>
     <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
 
@@ -154,13 +155,13 @@
         border: 1px solid;
     }
 
-    .dropdown-menu{
-        max-width:235px;
+    .dropdown-menu {
+        max-width: 235px;
     }
 
-    .website-footer{
+    .website-footer {
         background-color: #313783;
-        color: #fff!important;
+        color: #fff !important;
         font-size: 14px;
         bottom: 0;
         position: fixed;
@@ -170,6 +171,7 @@
         z-index: 1;
         height: 30px;
     }
+
     /* Side menu icon styles */
     /* .nav__icon {
         font-size: 0.9rem
@@ -209,15 +211,15 @@
         <div class="l-navbar" id="navbar">
             <nav class="my_nav">
                 <div class="text-center">
-                        <a href="/projects" class="nav__logo" title="Documents on the go." title="DocsGo">
-                            <img src="/Docsgo-Logo.png" height="50px" alt="DocsGo" >
-                        </a>
+                    <a href="/projects" class="nav__logo" title="Documents on the go." title="DocsGo">
+                        <img src="/Docsgo-Logo.png" height="50px" alt="DocsGo">
+                    </a>
                     <div class="nav__brand">
                         <div class="nav__icon">
-                            <img src="/assets/images/menu-outline.svg" style="margin-left: 10px;cursor: pointer;" class="icon__image"
-                                id="nav-toggle">
+                            <img src="/assets/images/menu-outline.svg" style="margin-left: 10px;cursor: pointer;"
+                                class="icon__image" id="nav-toggle">
                         </div>
-                        
+
                     </div>
                     <div class="nav__list">
                         <a href="/projects" title="Projects"
@@ -229,14 +231,14 @@
 
                             <span class="nav__name">Projects</span>
                         </a>
-                        <a href="/team" title="Team"
-                            class="nav__link my_nav_link <?= ($uri->getSegment(1) == 'team'   ? 'active-nav-link' : '') ?>">
-                            <div class="nav__icon">
-                                <img src="/assets/images/team.svg" class="icon__image"
-                                    style="filter: <?= ($uri->getSegment(1) == 'team'  ? 'invert(1)' : '') ?>;">
-                            </div>
-                            <span class="nav__name">Team</span>
-                        </a>
+               		<a href="/actionList" title="Action List"
+               		     class="nav__link my_nav_link <?= (strpos($currentUrl , 'actionList')   ? 'active-nav-link' : '') ?>">
+               		     <div class="nav__icon">
+               		         <img src="/assets/images/flash-outline.svg" class="icon__image"
+               		             style="filter: <?= (strpos($currentUrl , 'actionList')   ? 'invert(1)' : '') ?>;">
+               		     </div>
+               		     <span class="nav__name">Action List</span>
+               		</a>
                         <a href="/reviews" title="Review Register"
                             class="nav__link my_nav_link <?= ($uri->getSegment(1) == 'reviews'   ? 'active-nav-link' : '') ?>">
                             <div class="nav__icon">
@@ -255,11 +257,11 @@
                                     style="filter: <?= (($uri->getSegment(1) == 'documents' || $uri->getSegment(1) == 'documents-templates' || $uri->getSegment(1) == 'documents-master' || $uri->getSegment(1) == 'documents-acronyms') ? 'invert(1)' : '') ?>;">
                         </div>
                         </a>
-                        <a href="/documents" title="Documents" style="margin-left: 5px;" 
+                        <a href="/documents" title="Documents" style="margin-left: 5px;"
                             class="nav__name my_nav_link <?= (($uri->getSegment(1) == 'documents' || $uri->getSegment(1) == 'documents-templates' || $uri->getSegment(1) == 'documents-master' || $uri->getSegment(1) == 'documents-acronyms') ? 'text-light' : '')  ?>"">Documents</a>
 
                                 <div class=" nav__icon collapse__link">
-                            <img src="/assets/images/chevron-down.svg" class="icon__image" 
+                            <img src="/assets/images/chevron-down.svg" class="icon__image"
                                 style="width: 1em;height: 1em;filter: <?= (($uri->getSegment(1) == 'documents' || $uri->getSegment(1) == 'documents-templates' || $uri->getSegment(1) == 'documents-master' || $uri->getSegment(1) == 'documents-acronyms') ? 'invert(1)' : '') ?>;">
                     </div>
 
@@ -282,6 +284,7 @@
                     <span class="nav__name">Draw Diagram</span>
                 </a>
 
+
                 <a href="/risk-assessment" title="Risk Assessment"
                     class="nav__link my_nav_link <?= ($uri->getSegment(1) == 'risk-assessment'   ? 'active-nav-link' : '') ?>">
                     <div class="nav__icon">
@@ -299,7 +302,7 @@
                                 style="filter: <?= ((($uri->getSegment(1) == 'requirements') || $uri->getSegment(1) == 'test-cases' || $uri->getSegment(1) == 'traceability-matrix')  ? 'invert(1)' : '') ?>;">
                         </div>
                     </a>
-                    <a href="/traceability-matrix" title="Traceability Matrix" style="margin-left: 5px;" 
+                    <a href="/traceability-matrix" title="Traceability Matrix" style="margin-left: 5px;"
                         class="nav__name collapse__sublink my_nav_link <?= ((($uri->getSegment(1) == 'requirements') || $uri->getSegment(1) == 'test-cases' || $uri->getSegment(1) == 'traceability-matrix')  ? 'text-light' : '') ?>">Traceability</a>
 
                     <div class="nav__icon collapse__link">
@@ -321,6 +324,15 @@
                     </div>
                     <span class="nav__name">Assets</span>
                 </a>
+
+		<a href="/team" title="Team"
+		    class="nav__link my_nav_link <?= ($uri->getSegment(1) == 'team'   ? 'active-nav-link' : '') ?>">
+		    <div class="nav__icon">
+			<img src="/assets/images/team.svg" class="icon__image"
+			    style="filter: <?= ($uri->getSegment(1) == 'team'  ? 'invert(1)' : '') ?>;">
+		    </div>
+		    <span class="nav__name">Team</span>
+		</a>
 
                 <a target="_blank" href="/storage/repo" title="Storage" class="nav__link my_nav_link">
                     <div class="nav__icon">

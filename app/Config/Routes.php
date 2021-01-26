@@ -132,6 +132,11 @@ $routes->get('diagrams/getDiagrams', 'Diagram::getDiagrams',['filter' => 'auth']
 $routes->get('diagrams/draw', 'Diagram::draw',['filter' => 'auth']);
 $routes->post('diagrams/save', 'Diagram::save',['filter' => 'auth']);
 $routes->post('diagrams/delete', 'Diagram::delete',['filter' => 'auth']);
+
+
+$routes->get('actionList', 'ActionList::index',['filter' => 'auth']);
+$routes->post('actionList/update', 'ActionList::update',['filter' => 'auth']);
+$routes->post('actionList/delete', 'ActionList::delete',['filter' => 'auth']);
 /**
  * --------------------------------------------------------------------
  * Additional Routing
