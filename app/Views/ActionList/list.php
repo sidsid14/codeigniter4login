@@ -88,7 +88,6 @@ body {
     backdrop-filter: blur(5px);
     background: rgba(255,255,255,0.4);
     box-shadow: 5px 10px 22px -12px #607D8B;
-    padding: 15px;
     border-radius: 8px;
     transition: all 0.6s ease-in-out;
 }
@@ -103,6 +102,7 @@ body {
     overflow-y: auto;
     max-height: 74vh;
     overflow-x: hidden;
+    padding: 15px;
 }
 
 .item-priority {
@@ -305,7 +305,7 @@ body {
 		    <div class="col-12">
 			<div class="form-group">
 			    <label class="text-muted" for="description">Description</label>
-			    <textarea required class="form-control" placeholder="Describe action here..."
+			    <textarea required class="form-control scroll scroll-dark" placeholder="Describe action here..."
 				style="height: 165px;" name="description" id="description"></textarea>
 			    <div class="invalid-feedback">
 				Please provide some description.
