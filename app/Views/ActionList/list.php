@@ -99,6 +99,12 @@ body {
     border-bottom: 0.1px solid #6c757d;
 }
 
+.item-body{
+    overflow-y: auto;
+    max-height: 74vh;
+    overflow-x: hidden;
+}
+
 .item-priority {
     font-size: 14px;
     cursor: default;
@@ -263,12 +269,12 @@ body {
 	    <header class="text-center">
 		<span id="editModalTitle" class="item-header font-weight-bold text-secondary">Edit Item</span>
 	    </header>
-	    <div class="item-body mt-4 mb-5">
+	    <div class="item-body scroll scroll-primary mt-4 mb-5">
 		<input type="hidden" id="item_id" value="">
 		<input type="hidden" id="item_state" value="">
 		<input type="hidden" id="item_owner" value="">
 		<div class="row ">
-		    <div class="col-6">
+		    <div class="col-4 pr-0">
 			<div class="form-group">
 			    <label class="text-muted" for="priority">Priority</label>
 			    <select class="form-control select-box" name="priority" id="priority">
@@ -278,7 +284,9 @@ body {
 			    </select>
 			</div>
 		    </div>
-		    <div class="col-6">
+
+
+		    <div class="col-5 pr-0" style="max-width: 45.666667%;">
 			<div class="form-group">
 			    <label required class="text-muted" for="due_date">Due Date</label>
 			    <input type="date" class="form-control" name="due_date" id="due_date" value="">
@@ -288,6 +296,12 @@ body {
 			</div>
 		    </div>
 
+		    <div class="col-2">
+			<div class="form-group">
+			    <label class="text-muted" for="sharing">Sharing</label><br />
+			    <input type="checkbox" id="sharing" checked data-toggle="toggle">
+			</div>
+		    </div>
 		    <div class="col-12">
 			<div class="form-group">
 			    <label class="text-muted" for="description">Description</label>
@@ -299,21 +313,15 @@ body {
 			</div>
 		    </div>
 
-		    <div class="col-9">
+		    <div class="col-12">
 			<div class="form-group">
 			    <label class="text-muted" for="completion" id="percentLabel">%
 				completed</label>
-			    <input type="range" value="0" max="100" min="0" class="form-control-range custom-range mt-3"
+			    <input type="range" value="0" max="100" min="0" class="form-control-range custom-range"
 				id="completion">
 			</div>
 		    </div>
 
-		    <div class="col-3">
-			<div class="form-group">
-			    <label class="text-muted" for="sharing">Sharing</label><br />
-			    <input type="checkbox" id="sharing" checked data-toggle="toggle">
-			</div>
-		    </div>
 
 		    <div class="col-12">
 			<div class="form-group">
@@ -429,7 +437,7 @@ class ActionItem {
 
 $(document).ready(function() {
 	$('.select-box').select2();
-
+	$(".select2-selection--multiple").addClass('scroll scroll-dark');
 	teamMembers = <?=json_encode($teamMembers)?>;
 	actionItems =
 		<?=json_encode($data, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE)?>;
@@ -443,7 +451,6 @@ $(document).ready(function() {
 		const actionHtml = getActionHtml(actionItems[i]);
 		$("." + actionItems[i].action.state + "_items").prepend(actionHtml);
 	}
-	console.log(actionItems);
 
 	$('[data-toggle="popover"]').popover({
 	trigger: "hover"
@@ -696,8 +703,8 @@ function buildRevisionLog(actionItem, type) {
 }
 
 function getUpdatedFields(updatedVersion) {
-	const checkForKeys = ['sharing', 'description', 'priority', 'completion', 'due_date'];
-	const labelForKeys = ['Sharing', 'Description', 'Priority', 'Completion', 'Due Date']
+	const checkForKeys = ['responsible_id', 'sharing', 'description', 'priority', 'completion', 'due_date'];
+	const labelForKeys = ['Responsible', 'Sharing', 'Description', 'Priority', 'Completion', 'Due Date']
 		let updatedFields = [];
 	const [itemLoc, previousVersion] = getObjectFromArray(updatedVersion.id, actionItems);
 
@@ -718,10 +725,18 @@ function getUpdatedFields(updatedVersion) {
 			}
 		} else {
 			if (keyIndex > -1) {
-				var prevVal = previousVersion[key];
-				var updatedVal = updatedVersion[key];
-				if (prevVal != updatedVal) {
-					updatedFields.push(labelForKeys[keyIndex])
+				if(key == 'responsible_id'){
+					var prevVal = previousVersion[key].split(",").sort().join(",");
+					var updatedVal = updatedVersion[key].split(",").sort().join(",");
+					if (prevVal != updatedVal) {
+						updatedFields.push(labelForKeys[keyIndex])
+					}
+				}else{
+					var prevVal = previousVersion[key];
+					var updatedVal = updatedVersion[key];
+					if (prevVal != updatedVal) {
+						updatedFields.push(labelForKeys[keyIndex])
+					}
 				}
 			}
 		}
