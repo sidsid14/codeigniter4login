@@ -96,7 +96,6 @@ body {
     font-size: 14px;
     line-height: 1.5;
     white-space: pre-line;
-    text-align: center;
 }
 
 .item-footer-font {
