@@ -356,54 +356,6 @@ body {
 
 <script>
 var actionItems = [];
-// var actionItems = [{
-//         sharing: false,
-//         completion: "50",
-//         description: "It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English.",
-//         due_date: "2021-01-14",
-//         id: 1,
-//         owner: 1,
-//         priority: "HIGH",
-//         responsible: "3,24,10",
-//         state: "todo",
-//     },
-//     {
-//         sharing: false,
-//         completion: "90",
-//         description: "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text.",
-//         due_date: "2021-01-19",
-//         id: 2,
-//         owner: 1,
-//         priority: "MEDIUM",
-//         responsible: "3",
-//         state: "onhold",
-//     }, {
-//         sharing: true,
-//         completion: "10",
-//         description: "Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC, making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature, discovered the undoubtable source.",
-//         due_date: "2021-01-06",
-//         id: 3,
-//         owner: 1,
-//         priority: "LOW",
-//         responsible: "3",
-//         state: "todo",
-//     },
-//     {
-//        completion: 16,
-//        description: `1. Praesent scelerisque sapien eget felis euismod laoreet iaculis nec ligula.
-// 2.Donec non risus sit amet nulla interdum egestas.
-// 3.Cras in turpis faucibus, suscipit est non, molestie libero.
-// 4.Fusce at lectus euismod, rhoncus dolor vel, tristique orci.
-// 5.Vivamus in enim ut felis bibendum tincidunt.`,
-//        due_date: "2021-01-21",
-//        id: 4,
-//        owner: 1,
-//        priority: "MEDIUM",
-//        responsible: "1",
-//        sharing: true,
-//        state: "todo",
-//     }
-// ];
 
 var owner_id = <?=session()->get('id')?>,
 	teamMembers;
@@ -436,6 +388,10 @@ class ActionItem {
 }
 
 $(document).ready(function() {
+	$('#description').on('input', function() {
+		  $(this).outerHeight(38).outerHeight(this.scrollHeight+3);
+	});
+
 	$('.select-box').select2();
 	$(".select2-selection--multiple").addClass('scroll scroll-dark');
 	teamMembers = <?=json_encode($teamMembers)?>;
@@ -482,10 +438,10 @@ function addItem() {
 	$("#item_owner").val(owner_id);
 
 	$("#description").val("");
+	$("#description").outerHeight(138).outerHeight($("#description")[0].scrollHeight+3);
 
 	$("#responsible_id").val(owner_id);
 	$("#priority").val("High");
-	// $("#due_date").val("");
 	$('#due_date').val(new Date().toISOString().slice(0, 10));
 	$("#completion").val(0);
 	output.innerHTML = "0% completed";
@@ -506,6 +462,7 @@ function editItem(id) {
 	$("#item_state").val(item.action.state);
 	$("#item_owner").val(item.owner_id);
 	$("#description").val(item.action.description);
+	$("#description").outerHeight(138).outerHeight($("#description")[0].scrollHeight+3);
 	$("#responsible_id").val(item.responsible_id.split(','));
 	$("#priority").val(item.action.priority);
 	$("#due_date").val(item.action.due_date);
