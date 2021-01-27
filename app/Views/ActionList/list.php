@@ -384,7 +384,7 @@ class ActionItem {
 
 $(document).ready(function() {
 	$('#description').on('input', function() {
-		  $(this).outerHeight(38).outerHeight(this.scrollHeight+3);
+		  $(this).outerHeight(138).outerHeight(this.scrollHeight+3);
 	});
 
 	$('.select-box').select2();
