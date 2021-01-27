@@ -3,12 +3,9 @@
 
 <style>
 body {
-    /* background-color: #eff4f7; */
     background: #C9D6FF;
-    /* fallback for old browsers */
     background: -webkit-linear-gradient(to bottom, #E2E2E2, #C9D6FF);
     background: linear-gradient(to right, #E2E2E2, #C9D6FF);
-    /* background: linear-gradient(to bottom, #E2E2E2, #C9D6FF); W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
     height: 100vh;
 }
 
@@ -25,10 +22,6 @@ body {
     border-radius: 5px;
 }
 
-/* .actionItems {
-    position: relative;
-    width: 100%;
-} */
 .truncate {
     width: 116px;
     white-space: nowrap;
@@ -78,6 +71,7 @@ body {
 .revision-modal-close:hover:before{
     color: black;
 }
+
 .edit-modal {
     width: 400px;
     z-index: 2;
@@ -94,7 +88,6 @@ body {
 
 .item-header {
     font-size: 18px;
-    /* border-bottom: 1px solid; */
     border-bottom: 0.1px solid #6c757d;
 }
 
@@ -103,6 +96,7 @@ body {
     max-height: 74vh;
     overflow-x: hidden;
     padding: 15px;
+	margin-bottom: 62px;
 }
 
 .item-priority {
@@ -170,9 +164,10 @@ body {
 	height: 100%;
 	border-radius: 8px;
 	color:#fff;
-	padding:30px 10px 10px 10px;
+	padding:10px 10px 10px 10px;
 	overflow-y: auto;
 }
+
 .timeline ul{
 	list-style-type:none;
 	border-left:2px solid lightgray;
@@ -266,10 +261,10 @@ body {
 
     <div class="edit-modal">
 	<form novalidate>
-	    <header class="text-center">
+	    <header class="text-center p-2">
 		<span id="editModalTitle" class="item-header font-weight-bold text-secondary">Edit Item</span>
 	    </header>
-	    <div class="item-body scroll scroll-primary mt-4 mb-5">
+	    <div class="item-body scroll scroll-primary ">
 		<input type="hidden" id="item_id" value="">
 		<input type="hidden" id="item_state" value="">
 		<input type="hidden" id="item_owner" value="">
