@@ -387,8 +387,12 @@ $(document).ready(function() {
 		  $(this).outerHeight(138).outerHeight(this.scrollHeight+3);
 	});
 
-	$('.select-box').select2();
+	$('#priority').select2();
+	$('#responsible_id').select2(
+		{dropdownAdapter: $.fn.select2.amd.require('select2/selectAllAdapter')}
+	);
 	$(".select2-selection--multiple").addClass('scroll scroll-dark');
+
 	teamMembers = <?=json_encode($teamMembers)?>;
 	actionItems =
 		<?=json_encode($data, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE)?>;
@@ -407,6 +411,56 @@ $(document).ready(function() {
 	trigger: "hover"
 	});
 });
+
+
+
+$.fn.select2.amd.define('select2/selectAllAdapter', [
+    'select2/utils',
+    'select2/dropdown',
+    'select2/dropdown/attachBody'
+], function (Utils, Dropdown, AttachBody) {
+
+    function SelectAll() { }
+    SelectAll.prototype.render = function (decorated) {
+        var self = this,
+            $rendered = decorated.call(this),
+            $selectAll = $(
+                '<button class="btn btn-xm btn-default" type="button" style="margin-left:6px;"><i class="fa fa-check-square-o"></i> Select All</button>'
+            ),
+            $unselectAll = $(
+                '<button class="btn btn-xm btn-default" type="button" style="margin-left:6px;"><i class="fa fa-square-o"></i> Unselect All</button>'
+            ),
+            $btnContainer = $('<div style="padding:5px;text-align:center;">').append($selectAll).append($unselectAll);
+        if (!this.$element.prop("multiple")) {
+            // this isn't a multi-select -> don't add the buttons!
+            return $rendered;
+        }
+        $rendered.find('.select2-dropdown').prepend($btnContainer);
+        $selectAll.on('click', function (e) {
+			self.$element.find('option').prop('selected', 'selected').end().select2();
+			self.$element.select2(
+				{dropdownAdapter: $.fn.select2.amd.require('select2/selectAllAdapter')}
+			);
+        });
+        $unselectAll.on('click', function (e) {
+			self.$element.find('option').prop('selected', false).end().select2();
+			self.$element.select2(
+				{dropdownAdapter: $.fn.select2.amd.require('select2/selectAllAdapter')}
+			);
+        });
+        return $rendered;
+    };
+
+    return Utils.Decorate(
+        Utils.Decorate(
+            Dropdown,
+            AttachBody
+        ),
+        SelectAll
+    );
+
+});
+
 
 function hideItemModal() {
 	$(".edit-modal").removeClass("show-right");
