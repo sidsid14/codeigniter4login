@@ -158,6 +158,25 @@ body {
     height: 39px !important;
 }
 
+.ack-icon{
+	color: #6c757d;
+    margin-top: -5px;
+    cursor: pointer;
+    padding: 7px;
+    margin-left: 16px;
+	float: right;
+	transition: all 0.5s ease-in;
+}
+
+.ack-icon:hover{
+	/* background-color: rgb( 0 0 0 / 80%); */
+	color: #28a745;
+}
+
+.acknowledged{
+	color: #28a745 !important;
+}
+
 /* Timeline styles*/
 .timeline{
 	width:100%;
@@ -375,11 +394,12 @@ class ActionItem {
 		"state": 'todo',
 		"due_date": '',
 		"created_date": '',
-		"completion_date": ''
+		"completion_date": '',
+		"ack": ''
 	},
-		this.revision_history = [];
+	this.revision_history = [];
 
-}
+	}
 }
 
 $(document).ready(function() {
@@ -539,7 +559,7 @@ $('form').on('submit', function(e) {
 		let update = true;	
 
 		if (item_id == "") {
-
+			actionItem.action.ack = `${owner_id}`;
 			let created_date = getCurrentDateForDB();
 
 			if (actionItem.action.completion == 100) {
@@ -562,6 +582,7 @@ $('form').on('submit', function(e) {
 				update = false;
 			}else{
 				let [itemLoc, item] = getObjectFromArray(item_id, actionItems);
+				actionItem.action.ack = item.action.ack;
 				actionItem.action.completion_date = item.action.completion_date;
 				actionItem.action.created_date = item.action.created_date;
 				actionItem.revision_history = item.revision_history;
@@ -640,6 +661,20 @@ function updateInDB(url, data, type, optionaMessage=""){
 			});
 
 			message = `Action L-${actionItem.id} moved to ${response.stateLabel} successfully!`;
+		}else if (type == "ack"){
+
+			const actionItem = JSON.parse(data.actionItem);	
+			const actionHtml = getActionHtml(actionItem);
+
+			$("#actionItem_" + actionItem.id).remove();
+
+			$("." + actionItem.action.state + "_items").prepend(actionHtml);
+
+			$('[data-toggle="popover"]').popover({
+				trigger: "hover"
+			});
+
+			message = `Action L-${actionItem.id} acknowledged!`;
 		}
 		showFloatingAlert(message);
 })
@@ -705,6 +740,13 @@ function buildRevisionLog(actionItem, type) {
 		} else {
 			return false;
 		}
+	} else if (type = "ack"){
+		return {
+		log: "Action acknowledged",
+			who: owner_id,
+			type: "ack",
+			dateTime: update_date
+		};
 	}
 }
 
@@ -777,7 +819,8 @@ function getActionHtml(actionItem) {
 		completionLabel = "Completed in "+secondsToDhms(actionItem.action.created_date, actionItem.action.completion_date);
 	}
 
-	sharingImage = "";
+	let sharingImage = "";
+	let acknowledgeIcon = "";
 
 	if (actionItem.sharing == 1) {
 		sharingImage = `
@@ -785,6 +828,33 @@ function getActionHtml(actionItem) {
 		<i style="font-size:14px;" class="fa fa-share-alt " aria-hidden="true"></i>
 	    </span>
 	`;
+		let	item_ack = actionItem.action.ack;
+		if(item_ack == ""){
+			item_ack = [];
+		}else{
+			item_ack = item_ack.split(',').sort();
+		}
+
+		let ack_title = "Acknowledge";
+		let ack_title_content = "Let people know you are working on it!";
+
+		if(item_ack.length){
+			ack_title = `Acknowledged by ${item_ack.length} of ${actionItem.responsible_id.split(',').length}`;
+			ack_title_content = "";
+			item_ack.forEach((pid, index) => {
+				ack_title_content += teamMembers[pid];
+				if (index < item_ack.length - 1) {
+					ack_title_content += ', ';
+				}
+			});
+		}
+
+		const ack_flag = item_ack.includes(`${owner_id}`) ? 'acknowledged': "";
+
+		acknowledgeIcon = `<i data-toggle="popover" id="btn_ack_${actionItem.id}" 
+								onclick="acknowledgeAction(${actionItem.id})"
+								title="${ack_title}" data-content="${ack_title_content}"
+								class="fa fa-check-circle ack-icon ${ack_flag}" aria-hidden="true"></i>`;
 	}
 
 	const responsibleIds = actionItem.responsible_id;
@@ -815,16 +885,16 @@ function getActionHtml(actionItem) {
 
 	if (actionItem.action.state == "todo") {
 		moveItemHtml += `
-	<div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-	    <button class="dropdown-item" type="button" onclick="moveItem(${actionItem.id},'onhold')">On Hold</button>
-	    <button class="dropdown-item" type="button" onclick="moveItem(${actionItem.id},'completed')">Completed</button>
-	</div>`;
+		<div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+			<button class="dropdown-item" type="button" onclick="moveItem(${actionItem.id},'onhold')">On Hold</button>
+			<button class="dropdown-item" type="button" onclick="moveItem(${actionItem.id},'completed')">Completed</button>
+		</div>`;
 	} else if (actionItem.action.state == "onhold") {
 		moveItemHtml += `
-	<div class="dropdown-menu" aria-labelledby="dropdownMenu2">
-	    <button class="dropdown-item" type="button" onclick="moveItem(${actionItem.id},'todo')">To Do</button>
-	    <button class="dropdown-item" type="button" onclick="moveItem(${actionItem.id},'completed')">Completed</button>
-	</div>`;
+		<div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+			<button class="dropdown-item" type="button" onclick="moveItem(${actionItem.id},'todo')">To Do</button>
+			<button class="dropdown-item" type="button" onclick="moveItem(${actionItem.id},'completed')">Completed</button>
+		</div>`;
 	}
 
 	let deleteIcon = "";
@@ -849,7 +919,8 @@ function getActionHtml(actionItem) {
 
 			    </div>
 			    <div class="col-4 text-center item-header">
-				<span class="text-secondary">L-${actionItem.id}</span>
+					<span class="text-secondary" style="${acknowledgeIcon != "" ? 'margin-left: 45px;' : ''}">L-${actionItem.id}</span>
+					${acknowledgeIcon}
 			    </div>
 			    <div class="col-4 text-right">
 				<div class="button-group">
@@ -893,6 +964,33 @@ function getActionHtml(actionItem) {
 	return actionHtml;
 }
 
+function acknowledgeAction(itemId){
+	const ackBtn = "btn_ack_"+itemId;
+	$("#"+ackBtn).addClass('acknowledged');
+
+	let [itemLoc, item] = getObjectFromArray(itemId, actionItems);
+	console.log(item.action.ack);
+	
+	let ack_list = item.action.ack;
+	if(ack_list == ""){
+		ack_list = [];
+	}else{
+		ack_list = item.action.ack.split(',');
+	}
+
+	if(!ack_list.includes(""+owner_id)){
+		ack_list.push(owner_id);
+		item.action.ack = ack_list.join(',');
+		item.update_date = getCurrentDateForDB();
+		item.revision_history.push(buildRevisionLog(item, "ack"));
+		const data = {actionItem:JSON.stringify(item) };	
+		updateInDB('/actionList/update', data, 'ack');
+		actionItems[itemLoc] = item;
+		$('.popover').remove();
+	}
+
+}
+
 function getRevisionHtml(actionItem){
 	var revision_history = actionItem.revision_history;
 	let revisionHtml = `
@@ -912,7 +1010,10 @@ function getRevisionHtml(actionItem){
 			headColor = 'text-success';
 		}else if (type == "created"){
 			headColor = 'text-danger';
-		}else{
+		}else if (type == "ack"){
+			headColor = 'text-info';
+		}
+		else{
 			headColor = 'text-primary';
 		}	
            	revisions += `
@@ -974,6 +1075,7 @@ function deleteItem(itemId) {
 	callback: function(result) {
 		if (result) {
 			updateInDB('/actionList/delete', {id: itemId}, 'delete');
+			$('.popover').remove();
 		} else {
 			console.log('Delete Cancelled');
 		}
