@@ -809,22 +809,18 @@ function getActionHtml(actionItem) {
 		totalResponsible = `(${responsibleArr.length}) `;
 	}
 
-	let moveItemHtml = ``;
+	let moveItemHtml = `<button class="btn btn-default ml-1 btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	    					Move To
+						</button>`;
 
 	if (actionItem.action.state == "todo") {
-		moveItemHtml = `
-	<button class="btn btn-secondary ml-1 btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-	    Move To
-	</button>
+		moveItemHtml += `
 	<div class="dropdown-menu" aria-labelledby="dropdownMenu2">
 	    <button class="dropdown-item" type="button" onclick="moveItem(${actionItem.id},'onhold')">On Hold</button>
 	    <button class="dropdown-item" type="button" onclick="moveItem(${actionItem.id},'completed')">Completed</button>
 	</div>`;
 	} else if (actionItem.action.state == "onhold") {
-		moveItemHtml = `
-	<button class="btn btn-secondary ml-1 btn-sm dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-	    Move To
-	</button>
+		moveItemHtml += `
 	<div class="dropdown-menu" aria-labelledby="dropdownMenu2">
 	    <button class="dropdown-item" type="button" onclick="moveItem(${actionItem.id},'todo')">To Do</button>
 	    <button class="dropdown-item" type="button" onclick="moveItem(${actionItem.id},'completed')">Completed</button>
