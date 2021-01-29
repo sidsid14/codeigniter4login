@@ -169,7 +169,6 @@ body {
 }
 
 .ack-icon:hover{
-	/* background-color: rgb( 0 0 0 / 80%); */
 	color: #28a745;
 }
 
@@ -180,7 +179,7 @@ body {
 /* Timeline styles*/
 .timeline{
 	width:100%;
-	height: 100%;
+	height: 92%;
 	border-radius: 8px;
 	color:#fff;
 	padding:10px 10px 10px 10px;
@@ -199,10 +198,10 @@ body {
 	transition:.5s;
 }
 .revision-time{
-        font-size: 11px;
-        text-align: right;
-        float: right;
-        width: 100%;
+	font-size: 11px;
+	text-align: right;
+	float: right;
+	width: 100%;
 }
 .timeline ul li .content h3{
 	font-size:16px;
@@ -225,8 +224,8 @@ body {
 	transition:.5s;
 }
 .timeline ul li:hover{
-        background-color:#dee2e6;
-        border-radius: 8px;
+	background-color:#dee2e6;
+	border-radius: 8px;
 }
 
 .timeline ul li:hover:before{
@@ -995,12 +994,12 @@ function acknowledgeAction(itemId){
 function getRevisionHtml(actionItem){
 	var revision_history = actionItem.revision_history;
 	let revisionHtml = `
-		<div class="timeline scroll scroll-primary"> 
-	            <header class="text-center font-weight-bold">
+	            <header class="text-center font-weight-bold p-2">
 	                <span class="item-header text-secondary">Revision Log</span>
 			<i class="fas fa-times revision-modal-close" onclick="hideRevisionModal()"></i>
 	            </header>
-		    <ul>`;
+		<div class="timeline scroll scroll-primary"> 
+		    <ul class="">`;
 	let revisions = "";
 	for(var i = (revision_history.length-1); i>=0; i--){
 		let type = revision_history[i].type;
