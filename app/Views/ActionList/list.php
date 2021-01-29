@@ -205,26 +205,27 @@ body {
         width: 100%;
 }
 .timeline ul li .content h3{
-	font-size:17px;
+	font-size:16px;
 	padding-top:5px;
 }
 .timeline ul li .content p{
 	padding:5px 0px 15px 0px;
-	font-size:15px;
+	font-size:14px;
+	margin-bottom: 0px;
 }
 .timeline ul li:before{
 	position:absolute;
 	content:'';
 	width:10px;
 	height:10px;
-	background-color:#007bff;
+	background-color: #6c757d;
 	border-radius:50%;
 	left:-11px;
 	top:28px;
 	transition:.5s;
 }
 .timeline ul li:hover{
-        background-color: rgb(255 255 255 / 80%);
+        background-color:#dee2e6;
         border-radius: 8px;
 }
 
