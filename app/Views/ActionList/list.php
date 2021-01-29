@@ -182,7 +182,7 @@ body {
 	height: 92%;
 	border-radius: 8px;
 	color:#fff;
-	padding:10px 10px 10px 10px;
+	padding:10px 1px 10px 10px;
 	overflow-y: auto;
 }
 
