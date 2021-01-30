@@ -163,8 +163,8 @@ body {
     margin-top: -5px;
     cursor: pointer;
     padding: 7px;
-    margin-left: 16px;
-	float: right;
+    margin-left: 8px;
+	font-size:20px;
 	transition: all 0.5s ease-in;
 }
 
@@ -810,7 +810,10 @@ function getActionHtml(actionItem) {
 	let completionLabel = "";
 	let progressColor = "bg-teal";
 
-	if (actionItem.action.completion < 33) {
+
+	if (actionItem.action.completion < 10) {
+		completionLabel = actionItem.action.completion ;
+	} else if (actionItem.action.completion < 33) {
 		completionLabel = actionItem.action.completion + "%";
 	} else if(actionItem.action.completion < 100){
 		completionLabel = actionItem.action.completion + "% Completed";
@@ -909,8 +912,8 @@ function getActionHtml(actionItem) {
 
 	let actionHtml = `
 		    <div class="card mt-3 actionItem " id="actionItem_${actionItem.id}">
-			<div class="row p-2">
-			    <div class="col-4">
+			<div class="row p-2" style=" justify-content: space-between; border-bottom: 0.1px solid #6c757d2e; width: 100%; margin-left: auto; margin-right: auto; ">
+			    <div class="col-12 col-sm-5 col-lg-3 pl-0">
 				<span data-toggle="popover" data-content="${actionItem.action.priority}" title="Priority" class="badge ${priorityColor} p-2 item-priority"
 				    >${actionItem.action.priority}</span>
 
@@ -918,11 +921,11 @@ function getActionHtml(actionItem) {
 				${moveItemHtml}
 
 			    </div>
-			    <div class="col-4 text-center item-header">
-					<span class="text-secondary" style="${acknowledgeIcon != "" ? 'margin-left: 45px;' : ''}">L-${actionItem.id}</span>
+			    <div class="col-6 col-sm-3 col-lg-2">
+					<span class="text-secondary" style="font-size:20px">L-${actionItem.id}</span>
 					${acknowledgeIcon}
 			    </div>
-			    <div class="col-4 text-right">
+			    <div class="col-6 col-sm-3 col-lg-2 text-right pr-0">
 				<div class="button-group">
 
 
