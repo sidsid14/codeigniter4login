@@ -67,8 +67,18 @@ class RiskAssessmentModel extends Model{
             $temp['id'] = $row['id'];
             $temp['hazard-analysis'] = $row['hazard-analysis'];
             $temp['project_id'] = $row['project_id'];
-            $temp['risk'] = $row['risk'];
             $temp['risk_type'] = $row['risk_type'];
+            switch($temp['risk_type']){
+                case 'Vulnerability':
+                    $temp['risk'] = 'V- '.$row['risk'];
+                    break;
+                case 'SOUP':
+                    $temp['risk'] = 'S- '.$row['risk'];
+                    break;
+                case 'Open-Issue':
+                    $temp['risk'] = 'OI- '.$row['risk'];
+                    break;
+            }
             $temp['status'] = $row['status'];
             
             if($row['assessment'] == "" ){

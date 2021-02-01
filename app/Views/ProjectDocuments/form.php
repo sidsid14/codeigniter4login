@@ -728,7 +728,8 @@ function insertTable(sectionId, tableName, columnValues) {
                 }
 
                 var value = record[index];
-                content += value.replace(/(\r\n|\n|\r)/gm, "") + " |";
+                if(value != null)
+                    content += value.replace(/(\r\n|\n|\r)/gm, "") + " |";
 
                 if (j == (indexes.length - 1)) {
                     content += "\n";
@@ -743,6 +744,9 @@ function insertTable(sectionId, tableName, columnValues) {
             var record = table.find(x => x.id === id);
             indexes.forEach((index, i) => {
                 var value = record[index];
+                if(index == 'risk'){
+                    value= value.replace(/V- |S- |OI- /g,'');
+                }
                 content += "|" + capitalize(index) + "|" + value.replace(/(\r\n|\n|\r)/gm, "") +
                     "|\r\n";
                 if (i == 0) {
