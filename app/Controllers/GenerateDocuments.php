@@ -115,7 +115,7 @@ class GenerateDocuments extends BaseController
 			$phpWord->addNumberingStyle(
 				'hNum',
 				array('type' => 'multilevel', 'levels' => array(
-					array('pStyle' => 'Heading1', 'format' => 'decimal', 'text' => '%1'),
+					array('pStyle' => 'Heading1', 'format' => 'decimal', 'text' => '%1.0'),
 					array('pStyle' => 'Heading2', 'format' => 'decimal', 'text' => '%1.%2'),
 					array('pStyle' => 'Heading3', 'format' => 'decimal', 'text' => '%1.%2.%3'),
 					array('pStyle' => 'Heading4', 'format' => 'decimal', 'text' => '%1.%2.%3.%4'),
@@ -124,10 +124,10 @@ class GenerateDocuments extends BaseController
 				)
 			);
 			$phpWord->addTitleStyle(1, array('size' => 11, 'name' => 'Arial', 'bold' => true), array('numStyle' => 'hNum', 'numLevel' => 0));
-			$phpWord->addTitleStyle(2, array('size' => 11, 'name' => 'Arial', 'bold' => true), array('numStyle' => 'hNum', 'numLevel' => 1));
-			$phpWord->addTitleStyle(3, array('size' => 11, 'name' => 'Arial', 'bold' => true), array('numStyle' => 'hNum', 'numLevel' => 2));
-			$phpWord->addTitleStyle(4, array('size' => 11, 'name' => 'Arial', 'bold' => true), array('numStyle' => 'hNum', 'numLevel' => 3));
-			$phpWord->addTitleStyle(5, array('size' => 11, 'name' => 'Arial', 'bold' => true), array('numStyle' => 'hNum', 'numLevel' => 4));
+			$phpWord->addTitleStyle(2, array('size' => 11, 'name' => 'Arial', 'bold' => false), array('numStyle' => 'hNum', 'numLevel' => 1));
+			$phpWord->addTitleStyle(3, array('size' => 11, 'name' => 'Arial', 'bold' => false), array('numStyle' => 'hNum', 'numLevel' => 2));
+			$phpWord->addTitleStyle(4, array('size' => 11, 'name' => 'Arial', 'bold' => false), array('numStyle' => 'hNum', 'numLevel' => 3));
+			$phpWord->addTitleStyle(5, array('size' => 11, 'name' => 'Arial', 'bold' => false), array('numStyle' => 'hNum', 'numLevel' => 4));
 
 			// Add TOC...
 			$section = $phpWord->addSection();
