@@ -38,7 +38,7 @@
 }
 
 .withReviewBox {
-    max-height: 311px;
+    max-height: 211px;
 }
 
 .withoutReviewBox {
@@ -50,7 +50,7 @@
 }
 
 .reviewDiv {
-    max-width: 520px;
+    max-width: 450px;
 }
 
 .sectionLinks{
@@ -69,6 +69,12 @@
 
 .sectionLinksNav > .nav-link.active{
     background-color: #007bff !important;
+}
+
+@media (max-width: 1480px){
+    .reviewDiv{
+        max-width:412px;
+    }
 }
 
 </style>

@@ -28,7 +28,7 @@
     <script nomodule="" src="https://unpkg.com/ionicons@5.1.2/dist/ionicons/ionicons.js"></script> -->
 
     <script type="text/javascript" src="/assets/js/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="/assets/js/utilites.js?1.1"></script>
+    <script type="text/javascript" src="/assets/js/utilites.js?1.2"></script>
     <script type="text/javascript" src="/assets/js/popper.min.js"></script>
     <script type="text/javascript" src="/assets/js/bootstrap.min.js"></script>
 

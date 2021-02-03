@@ -366,8 +366,11 @@ function showReview() {
         $(".commentsList").addClass("withReviewBox");
         $(".reviewbox").fadeIn();
 
+
         $codemirror.refresh();
         textareaFocus($codemirror);
+            var scroller = $codemirror.display.scroller;
+            $(scroller).css('height','190px');
     } else {
         $codemirror.getDoc().setValue("");
         $(".commentsList").removeClass("withReviewBox");
