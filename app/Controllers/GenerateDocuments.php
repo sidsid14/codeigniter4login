@@ -142,6 +142,7 @@ class GenerateDocuments extends BaseController
 			// Add Sections
 			$section = $phpWord->addSection();
 			$phpWord->setDefaultFontName('Arial');
+			$phpWord->setDefaultFontsize(11);
 			try{
 				for ($i = 0; $i < count($json['sections']); $i++) {
 					$section->addTitle(strtoupper($json['sections'][$i]['title']), 1);
