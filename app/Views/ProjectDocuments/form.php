@@ -121,7 +121,7 @@
                     <div class="card-header" style="border:0px !important;">
                         <div class="row pl-2 pr-2">
                             <div class="">
-                                <h3 style="width: 550px;font-size:1.2rem;margin:0px;padding-top:8px;" class="truncate" data-toggle="popover" data-placement="top"
+                                <h3 style="width: 650px;font-size:1.2rem;margin:0px;padding-top:8px;" class="truncate" data-toggle="popover" data-placement="top"
                                     data-content="<?= $heading ?>"><?= $heading ?></h3>
                             </div>
                             <div class="ml-auto">
