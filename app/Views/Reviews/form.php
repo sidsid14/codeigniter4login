@@ -42,9 +42,9 @@
         <div class="col-12 col-lg-7 ml-3 pr-0 pl-0">
             <div class="form-color">
                 <div class="card-header" style="border:0px !important;">
-                    <div class="row p-2">
+                    <div class="row pl-2 pr-2">
                         <div class="">
-                            <h3 style="width: 600px;" class="truncate" data-toggle="popover" data-placement="top"
+                            <h3 style="width: 600px;font-size:1.2rem;margin:0px;padding-top:8px;" class="truncate" data-toggle="popover" data-placement="top"
                                 data-content="<?= $formTitle ?>"><?= $formTitle ?></h3>
                         </div>
                         <div class="ml-auto">
@@ -79,7 +79,7 @@
                             value="<?= isset($review['id']) ? $review['id']: '' ?>" />
                         <div class="col-12 col-sm-3">
                             <div class="form-group">
-                                <label class="font-weight-bold text-muted" for="project-name">Project</label>
+                                <label class=" text-muted" for="project-name">Project</label>
                                 <button style="width:175px;" type="button" id="project-name" data-toggle="popover"
                                     data-placement="top" data-content="<?= $project_name ?>"
                                     class="btn btn-info truncate"><?= $project_name ?></button>
@@ -87,7 +87,7 @@
                         </div>
                         <div class="col-12 col-sm-3">
                             <div class="form-group">
-                                <label class="font-weight-bold text-muted" for="category">Category</label>
+                                <label class=" text-muted" for="category">Category</label>
                                 <select class="form-control  selectpicker" data-live-search="true" data-size="8"
                                     name="category" id="category">
                                     <option value="" disabled <?= isset($review['category']) ? '' : 'selected' ?>>
@@ -103,14 +103,14 @@
                         </div>
                         <div class="col-12  col-sm-3">
                             <div class="form-group">
-                                <label class="font-weight-bold text-muted" for="review-name">Name</label>
+                                <label class=" text-muted" for="review-name">Name</label>
                                 <input type="text" class="form-control" required name="review-name" id="review-name"
                                     value="<?= isset($review['review-name']) ? $review['review-name'] : '' ?>">
                             </div>
                         </div>
                         <div class="col-12 col-sm-3">
                             <div class="form-group">
-                                <label class="font-weight-bold text-muted" for="assigned-to">Author</label>
+                                <label class=" text-muted" for="assigned-to">Author</label>
                                 <select class="form-control  selectpicker" data-live-search="true" data-size="8"
                                     name="assigned-to" id="assigned-to">
                                     <option value="" disabled <?= isset($review['assigned-to']) ? '' : 'selected' ?>>
@@ -126,14 +126,14 @@
                         </div>
                         <div class="col-12 col-sm-8">
                             <div class="form-group">
-                                <label class="font-weight-bold text-muted" for="context">Review Item</label>
+                                <label class=" text-muted" for="context">Review Item</label>
                                 <input maxlength=60 type="text" class="form-control" required name="context"
                                     id="context" value="<?= isset($review['context']) ? $review['context'] : '' ?>">
                             </div>
                         </div>
                         <div class="col-12 col-sm-4">
                             <div class="form-group">
-                                <label class="font-weight-bold text-muted" for="review-by">Reviewer</label>
+                                <label class=" text-muted" for="review-by">Reviewer</label>
                                 <select class="form-control  selectpicker" data-live-search="true" data-size="8"
                                     name="review-by" id="review-by">
                                     <option value="" disabled <?= isset($review['review-by']) ? '' : 'selected' ?>>
@@ -151,7 +151,7 @@
                             class="col-12 differential <?=isset($review['category']) ? (($review['category'] == "Code") ? '' : 'd-none' ) : 'd-none'?>">
                             <div class="form-group">
                                 <div class="row">
-                                    <div class="col-10"><label class="font-weight-bold text-muted" for="code-diff">Code
+                                    <div class="col-10"><label class=" text-muted" for="code-diff">Code
                                             Diff</label>
                                     </div>
                                     <div class="col-2">
@@ -171,7 +171,7 @@
                         </div>
                         <div class="col-12 ">
                             <div class="form-group">
-                                <label class="font-weight-bold text-muted" for="review-ref">Author's Note</label>
+                                <label class=" text-muted" for="review-ref">Author's Note</label>
                                 <textarea class="form-control" name="review-ref" id="review-ref"><?=
                            isset($review['review-ref']) ? trim($review['review-ref']) : ''
                            ?></textarea>
@@ -190,7 +190,7 @@
                         <?php if($showSubmit): ?>
                         <div class="col-12 col-sm-4 statusDiv">
                             <div class="form-group">
-                                <label class="font-weight-bold text-muted" for="status">Status</label>
+                                <label class=" text-muted" for="status">Status</label>
                                 <select class="form-control  selectpicker" data-live-search="true" data-size="8"
                                     name="status" id="status">
                                     <option value="" disabled>

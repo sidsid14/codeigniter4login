@@ -119,9 +119,9 @@
                 <div class="card  mt-2 form-color" style="border:0px !important;">
                     <!-- Document Title -->
                     <div class="card-header" style="border:0px !important;">
-                        <div class="row p-2">
+                        <div class="row pl-2 pr-2">
                             <div class="">
-                                <h3 style="width: 550px;" class="truncate" data-toggle="popover" data-placement="top"
+                                <h3 style="width: 550px;font-size:1.2rem;margin:0px;padding-top:8px;" class="truncate" data-toggle="popover" data-placement="top"
                                     data-content="<?= $heading ?>"><?= $heading ?></h3>
                             </div>
                             <div class="ml-auto">
@@ -176,7 +176,7 @@
 
                                 <div class="col-12 col-sm-4">
                                     <div class="form-group">
-                                        <label class="font-weight-bold text-muted" for="project-name">Project</label>
+                                        <label class=" text-muted" for="project-name">Project</label>
                                         <br />
                                         <button type="button" id="project-name"
                                             class="btn btn-info"><?= $project_name ?>
@@ -190,7 +190,7 @@
 
                                 <div class="col-12 col-sm-6 <?= isset($projectDocument["id"]) ? 'd-none' : '' ?>">
                                     <div class="form-group">
-                                        <label class="font-weight-bold text-muted" for="existingDocs">Fill From
+                                        <label class=" text-muted" for="existingDocs">Fill From
                                             Existing</label>
                                         <div class="input-group">
                                             <?php 
@@ -234,7 +234,7 @@
 
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label class="font-weight-bold text-muted" for="cp-line3">Title</label>
+                                        <label class=" text-muted" for="cp-line3">Title</label>
                                         <input required type="text" class="form-control" name="cp-line3" id="cp-line3"
                                             value="<?= $title  ?>" maxlength="64">
                                     </div>
@@ -242,7 +242,7 @@
 
                                 <div class="col-4">
                                     <div class="form-group">
-                                        <label class="font-weight-bold text-muted" for="reviewer-id">Reviewer</label>
+                                        <label class=" text-muted" for="reviewer-id">Reviewer</label>
                                         <select class="form-control selectpicker" data-live-search="true" data-size="8"
                                             id="reviewer-id" name="reviewer-id" requried>
                                             <option disabled selected value> -- select a reviewer -- </option>
@@ -258,7 +258,7 @@
 
                                 <div class="col-12 col-sm-2">
                                     <div class="form-group">
-                                        <label class="font-weight-bold text-muted" for="cp-line5">Revision</label>
+                                        <label class=" text-muted" for="cp-line5">Revision</label>
                                         <input type="text" class="form-control" name="cp-line5" id="cp-line5"
                                             value="<?= $jsonObject["cp-line5"] ?>">
                                     </div>
@@ -266,7 +266,7 @@
 
                                 <div class="col-12 col-sm-9">
                                     <div class="form-group">
-                                        <label class="font-weight-bold text-muted" for="cp-approval-matrix">Approval
+                                        <label class=" text-muted" for="cp-approval-matrix">Approval
                                             Matrix</label>
                                         <input type="text" class="form-control" name="cp-approval-matrix"
                                             id="cp-approval-matrix" value="<?= $jsonObject["cp-approval-matrix"] ?>">
@@ -275,7 +275,7 @@
 
                                 <div class="col-12 col-sm-3">
                                     <div class="form-group">
-                                        <label class="font-weight-bold text-muted" for="cp-line4">Document ID</label>
+                                        <label class=" text-muted" for="cp-line4">Document ID</label>
                                         <input type="text" class="form-control" name="cp-line4" id="cp-line4"
                                             value="<?= $jsonObject["cp-line4"] ?>">
                                     </div>
@@ -283,7 +283,7 @@
 
                                 <div class="col-12">
                                     <div class="form-group">
-                                        <label class="font-weight-bold text-muted" for="cp-change-history">Change
+                                        <label class=" text-muted" for="cp-change-history">Change
                                             History</label>
                                         <textarea class="form-control" name="cp-change-history"
                                             id="cp-change-history"><?= $jsonObject["cp-change-history"] ?></textarea>
@@ -442,7 +442,7 @@
                                     <tr>
                                         <th scope="col">#</th>
                                         <th scope="col">Revision log</th>
-                                        <th scope="col">User name</th>
+                                        <th scope="col">User</th>
                                         <th scope="col" style="width:125px">Timestamp</th>
                                     </tr>
                                 </thead>
@@ -472,7 +472,7 @@
                         <div class="row">
                             <div class="col-10">
                                 <h5 class="text-primary mt-2 reviewHeading">
-                                    <?= isset($documentReview['id']) ? 'R-'.$documentReview['id']: ' Review' ?> Comments
+                                    <?= isset($documentReview['id']) ? '<a target="_blank" href="/reviews/add/'.$documentReview['id'].'">'.'R-'.$documentReview['id'].'</a>': ' Review' ?> Comments
                                 </h5>
                             </div>
                             <div class="col-2">
@@ -508,7 +508,7 @@
                                 <?php if($showCategory): ?>
                                 <div style="width:165px">
                                     <div class="form-group">
-                                        <label class="font-weight-bold text-muted" for="reviewCategory">Category</label>
+                                        <label class=" text-muted" for="reviewCategory">Category</label>
                                         <select class="form-control selectpicker" data-live-search="true" data-size="8"
                                             name="reviewCategory" id="reviewCategory">
                                             <option value="" disabled>
@@ -529,7 +529,7 @@
                                 <?php if($showStatus): ?>
                                 <div style="width:165px;margin-left:10px">
                                     <div class="form-group">
-                                        <label class="font-weight-bold text-muted" for="reviewStatus">Status</label>
+                                        <label class=" text-muted" for="reviewStatus">Status</label>
                                         <select class="form-control selectpicker" data-live-search="true" data-size="8"
                                             name="reviewStatus" id="reviewStatus">
                                             <option value="" disabled>
