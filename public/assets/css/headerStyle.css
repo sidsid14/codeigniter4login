@@ -184,8 +184,6 @@ a{
   position:absolute;
   content: "\f054";
   font-weight: 900;
-  /* width:100%;
-  height: 100%; */
   line-height: 30px;
   text-align: center;
   font-size: 16px;
@@ -195,7 +193,6 @@ a{
 
 .toggle-menu:hover::before{
   color: white;
-  background:#007bff;
 }
 
 .toggle-menu.active::before{
