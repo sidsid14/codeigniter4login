@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/assets/css/simplemde_v1.11.1.min.css" />
     <link rel="stylesheet" href="/assets/css/bootstrap-select_v1.13.14.min.css" />
 
-    <link rel="stylesheet" href="/assets/css/headerStyle.css?1.0">
+    <link rel="stylesheet" href="/assets/css/headerStyle.css?1.1">
 
     <!-- For Showing Code Diff  -->
     <link rel="stylesheet" href="/assets/css/github_diff.min.css" />
@@ -78,7 +78,7 @@
         position: fixed;
         bottom: 0px;
         padding: 8px;
-        width: 210px;
+        /* width: 210px; */
         left: 16px;
     }
 
@@ -209,19 +209,23 @@
     <body id="body-pd">
 
         <div class="l-navbar" id="navbar">
+            <div style="text-align:center;margin-left:-10px">
+                <a href="/projects" class="nav__logo" title="Documents on the go." title="DocsGo">
+                    <img src="/Docsgo-Logo.png" style="width:60px;height:60px" alt="DocsGo">
+                </a>
+            </div>
             <nav class="my_nav">
                 <div class="text-center">
-                    <a href="/projects" class="nav__logo" title="Documents on the go." title="DocsGo">
-                        <img src="/Docsgo-Logo.png" height="50px" alt="DocsGo">
-                    </a>
-                    <div class="nav__brand">
-                        <div class="nav__icon">
-                            <img src="/assets/images/menu-outline.svg" style="margin-left: 10px;cursor: pointer;"
-                                class="icon__image" id="nav-toggle">
-                        </div>
+                    <div class="nav__list mt-4">
+                        <a href="/dashboard" title="Dashboard"
+                            class="nav__link my_nav_link <?= ($uri->getSegment(1) == 'dashboard' ? 'active-nav-link' : '') ?>">
+                            <div class="nav__icon">
+                                <img src="/assets/images/dashboard.svg" class="icon__image"
+                                    style="filter: <?= ($uri->getSegment(1) == 'dashboard'  ? 'invert(1)' : '') ?>;">
+                            </div>
 
-                    </div>
-                    <div class="nav__list">
+                            <span class="nav__name">Dashboard</span>
+                        </a>
                         <a href="/projects" title="Projects"
                             class="nav__link my_nav_link <?= ($uri->getSegment(1) == 'projects'  || $uri->getSegment(1) == 'taskboard'  ? 'active-nav-link' : '') ?>">
                             <div class="nav__icon">
@@ -231,14 +235,14 @@
 
                             <span class="nav__name">Projects</span>
                         </a>
-               		<a href="/actionList" title="Action List"
-               		     class="nav__link my_nav_link <?= (strpos($currentUrl , 'actionList')   ? 'active-nav-link' : '') ?>">
-               		     <div class="nav__icon">
-               		         <img src="/assets/images/flash-outline.svg" class="icon__image"
-               		             style="filter: <?= (strpos($currentUrl , 'actionList')   ? 'invert(1)' : '') ?>;">
-               		     </div>
-               		     <span class="nav__name">Action List</span>
-               		</a>
+                        <a href="/actionList" title="Action List"
+                            class="nav__link my_nav_link <?= (strpos($currentUrl , 'actionList')   ? 'active-nav-link' : '') ?>">
+                            <div class="nav__icon">
+                                <img src="/assets/images/flash-outline.svg" class="icon__image"
+                                    style="filter: <?= (strpos($currentUrl , 'actionList')   ? 'invert(1)' : '') ?>;">
+                            </div>
+                            <span class="nav__name">Action List</span>
+                        </a>
                         <a href="/reviews" title="Review Register"
                             class="nav__link my_nav_link <?= ($uri->getSegment(1) == 'reviews'   ? 'active-nav-link' : '') ?>">
                             <div class="nav__icon">
@@ -325,14 +329,14 @@
                     <span class="nav__name">Assets</span>
                 </a>
 
-		<a href="/team" title="Team"
-		    class="nav__link my_nav_link <?= ($uri->getSegment(1) == 'team'   ? 'active-nav-link' : '') ?>">
-		    <div class="nav__icon">
-			<img src="/assets/images/team.svg" class="icon__image"
-			    style="filter: <?= ($uri->getSegment(1) == 'team'  ? 'invert(1)' : '') ?>;">
-		    </div>
-		    <span class="nav__name">Team</span>
-		</a>
+                <a href="/team" title="Team"
+                    class="nav__link my_nav_link <?= ($uri->getSegment(1) == 'team'   ? 'active-nav-link' : '') ?>">
+                    <div class="nav__icon">
+                        <img src="/assets/images/team.svg" class="icon__image"
+                            style="filter: <?= ($uri->getSegment(1) == 'team'  ? 'invert(1)' : '') ?>;">
+                    </div>
+                    <span class="nav__name">Team</span>
+                </a>
 
                 <a target="_blank" href="/storage/repo" title="Storage" class="nav__link my_nav_link">
                     <div class="nav__icon">
@@ -340,13 +344,15 @@
                     </div>
                     <span class="nav__name">Storage</span>
                 </a>
+
+                <div class="toggle" id="nav-toggle"></div>
         </div>
 
 
         </div>
 
         <div class="sidebar-footer">
-            <a href="/logout" class="nav__link" title="LogOut" id="only-logout" style="width:45px">
+            <a href="/logout" class="nav__link" title="LogOut" id="only-logout" style="width:38px">
                 <div class="nav__icon">
                     <img src="/assets/images/logout.svg" class="icon__image">
                 </div>
@@ -364,7 +370,7 @@
                 <?php endif; ?>
                 <div class="<?= $col ?>">
                     <a href="/profile" style="display:flex;" title="My Profile" class="nav__link">
-                        <div class="nav__icon" style="margin:0 auto;">
+                        <div class="nav__icon" style="margin-left:2px">
                             <img src="/assets/images/person-circle.svg" class="icon__image">
                         </div>
                     </a>

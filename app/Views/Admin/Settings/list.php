@@ -223,6 +223,18 @@
                         <input type="text" class="form-control" id="apiKey-testLink" >                                             
                     </div>
 
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" >Jenkins url</span>
+                        </div>
+                        <input type="text" class="form-control" id="jenkins" >&nbsp;
+
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" >Job Name</span>
+                        </div>
+                        <input type="text" class="form-control" id="apiKey-jenkins" >                                             
+                    </div>
+
                     <div class="row">
                         <div class="col text-center">
                             <button class="btn btn-primary" onclick="saveConfig()">Save</button>
@@ -427,6 +439,9 @@
         var testUrl = $("#testLink").val();
         var sonarUrlKey = $("#apiKey-sonar").val();
         var testUrlKey = $("#apiKey-testLink").val();
+        var jenkinsUrl = $("#jenkins").val();
+        var jenkinsKey = $("#apiKey-jenkins").val();
+
         if(sonarUrl  != "" || testUrl != ""){
             var configIndex = configData.findIndex(x => x.identifier === identifier);
             var existingOptions = JSON.parse(configData[configIndex]["options"]);
@@ -439,6 +454,10 @@
                 if(existingOptions[z]["key"] == "testLink"){
                     existingOptions[z]["url"] = testUrl;
                     existingOptions[z]["apiKey"] = testUrlKey;
+                }
+                if(existingOptions[z]["key"] == "jenkins"){
+                    existingOptions[z]["url"] = jenkinsUrl;
+                    existingOptions[z]["apiKey"] = jenkinsKey;
                 }
             }
             

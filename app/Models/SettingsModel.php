@@ -45,4 +45,23 @@ class SettingsModel extends Model{
         return $data;
     }
 
+    public function getThirdPartyConfig($key = ""){
+        $settingsModel = new SettingsModel();
+		$thirdParty = $settingsModel->where("identifier","third-party")->first();
+        $thirdParty = json_decode($thirdParty["options"], true);
+        $thirdPartyObj = array();
+        foreach($thirdParty as $details){
+             $thirdPartyObj[$details["key"]] = array(
+                "url" => $details["url"],
+                "key" => $details["apiKey"]
+             );
+            // $thirdPartyObj[$details["key"]]=array($details["url"], $details["apiKey"]);
+        }
+        if($key != ""){
+            return $thirdPartyObj[$key];
+        }else{
+            return $thirdPartyObj;
+        }
+    }
+
 }
