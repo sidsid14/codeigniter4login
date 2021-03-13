@@ -1,16 +1,12 @@
 <style>
 body {
-    /* background #fff; */
     background-color: rgb(239, 244, 247);
-    /* min-height: 100vh; */
-    /* background: #C9D6FF;
-    background: -webkit-linear-gradient(to bottom, #E2E2E2, #C9D6FF);
-    background: linear-gradient(to right, #E2E2E2, #C9D6FF); */
 }
-.toggle{
 
+.toggle-menu{
     border: 5px solid rgb(239, 244, 247);
 }
+
 .breadcrumb {
     background-color: #fff;
 }
@@ -22,15 +18,11 @@ body {
 .card {
     box-shadow: 0px 1px 22px -12px #607D8B;
     background-color: #fff;
-    /* background: linear-gradient(to bottom,  #B76CF7, #EB95FC); */
     padding: 6px 12px;
     border-radius: 8px;
     width: 95%;
     margin-left: auto;
     margin-right: auto;
-    /* backdrop-filter: blur(5px); */
-    /* background: rgba(255, 255, 255, 0.4); */
-    /* box-shadow: 5px 10px 22px -12px #607d8b; */
 }
 
 .card:hover {
@@ -39,7 +31,6 @@ body {
 
 .card-body {
     padding: 5px;
-    /* border-bottom: 0.1px solid #6c757d2e; */
 }
 
 ul {
@@ -55,17 +46,6 @@ ul li>p::before {
     content: counter(my-awesome-counter) ". ";
     color: "#6c757d";
 
-}
-
-.red-gradient {
-    /* background: linear-gradient(to right, #F97C7F, #F8AD87); */
-    background: linear-gradient(to bottom, #B76CF7, #EB95FC);
-    color: #495057;
-}
-
-.yellow-gradient {
-    background: linear-gradient(to bottom, #FAB45C, #F8DE63);
-    color: #495057;
 }
 
 .sonarProject {
@@ -103,12 +83,7 @@ ul li>p::before {
     background: #6c757d;
 }
 
-/* .build-link {
-    color: #545b62;
-} */
-
 .build-link:hover {
-    /* color: #007bff !imporatant; */
     text-decoration: none;
     font-weight: 600;
 }
@@ -118,17 +93,6 @@ ul li>p::before {
     border:0.1rem solid #6c757d;
     cursor: default;
 }
-/* 
-.changeListItems:first-child
-{
-    border-top:0.1rem solid #6c757d;
-
-}
-.changeListItems:last-child
-{
-    border-bottom:0.1rem solid #6c757d;
-
-} */
 </style>
 
 <div class="fluid-container">
@@ -156,7 +120,6 @@ $(document).on({
 function getStats() {
     makeRequest("/dashboard/getStats")
         .then(response => {
-            // console.log(response);
             if (response.jenkins_stats != null) {
                 showJenkinsStats(response.jenkins_stats);
             }
@@ -213,7 +176,6 @@ function populateBuildStats(stats) {
     }
 
     const buildSpecificLinks = getJenkinsLinks(stats.url);
-    // console.log(buildSpecificLinks);
 
     let buildLinks = "";
     if(buildSpecificLinks){

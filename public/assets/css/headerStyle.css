@@ -163,7 +163,7 @@ a{
   transform: rotate(180deg);
 }
 
-.toggle{
+.toggle-menu{
   position: absolute;
   width:40px;
   height:40px;
@@ -175,11 +175,11 @@ a{
   border-radius: 50%;
 }
 
-.toggle:hover{
+.toggle-menu:hover{
   background:#007bff;
 }
 
-.toggle::before{
+.toggle-menu::before{
   font-family: 'Font Awesome 5 Free' !important;
   position:absolute;
   content: "\f054";
@@ -193,12 +193,12 @@ a{
   right: 9px;
 }
 
-.toggle:hover::before{
+.toggle-menu:hover::before{
   color: white;
   background:#007bff;
 }
 
-.toggle.active::before{
+.toggle-menu.active::before{
   content: "\f053";
   margin-right: 2px;
 }

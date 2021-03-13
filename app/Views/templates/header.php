@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/assets/css/simplemde_v1.11.1.min.css" />
     <link rel="stylesheet" href="/assets/css/bootstrap-select_v1.13.14.min.css" />
 
-    <link rel="stylesheet" href="/assets/css/headerStyle.css?1.1">
+    <link rel="stylesheet" href="/assets/css/headerStyle.css?1.2">
 
     <!-- For Showing Code Diff  -->
     <link rel="stylesheet" href="/assets/css/github_diff.min.css" />
@@ -345,7 +345,7 @@
                     <span class="nav__name">Storage</span>
                 </a>
 
-                <div class="toggle" id="nav-toggle"></div>
+                <div class="toggle-menu" id="nav-toggle"></div>
         </div>
 
 

@@ -9,7 +9,7 @@ body {
     height: 100vh;
 }
 
-.toggle{
+.toggle-menu{
     border: 5px solid #e0e1e5;
 }
 
