@@ -155,10 +155,13 @@ function populateBuildStats(stats) {
 
         for (let i = 0; i < changeLog.length; i++) {
             changesList += `
-                <li data-toggle="popover" data-content="${formatDate2(changeLog[i]["timestamp"])}"  
-                    class="list-group-item list-group-item-action changeListItems"   data-placement="top"
-                    title="${changeLog[i]["authorEmail"]}">
-                    <p class="para font-weight-light">${changeLog[i]["msg"]}</p>
+                <li   
+                    class="list-group-item list-group-item-action changeListItems"   >
+                    <p class="para font-weight-light"><i data-toggle="popover" data-content="${formatDate2(changeLog[i]["timestamp"])}" data-placement="left"
+                    title="${changeLog[i]["authorEmail"]}" class="fa fa-info-circle text-secondary" aria-hidden="true" style="
+    float: right;
+"></i>${changeLog[i]["msg"]}</p>
+                   
                 </li>
             `;
         }
