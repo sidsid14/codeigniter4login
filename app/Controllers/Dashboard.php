@@ -90,14 +90,18 @@ class Dashboard extends BaseController
                 "changeLog" => array(),
             );
 
-            $changeSets = count($jenkins_stats["changeSets"]) > 0 ? $jenkins_stats["changeSets"][0]["items"] : [];
+            $changeSets = $jenkins_stats["changeSets"];
             foreach ($changeSets as $changes) {
-                $changeLog = array(
-                    "authorEmail" => $changes["authorEmail"],
-                    "msg" => $changes["msg"],
-                    "timestamp" => $changes["timestamp"],
-                );
-                array_push($buildInfo["changeLog"], $changeLog);
+                if(isset($changes["items"])){
+                    foreach($changes["items"] as $item){
+                        $changeLog = array(
+                            "authorEmail" => $item["authorEmail"],
+                            "msg" => $item["msg"],
+                            "timestamp" => $item["timestamp"],
+                        );
+                        array_push($buildInfo["changeLog"], $changeLog);
+                    }
+                }
             }
 
             return $buildInfo;
