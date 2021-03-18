@@ -42,6 +42,7 @@ $routes->post('admin/settings/addEnums', 'Settings::addEnums',['filter' => 'auth
 $routes->post('admin/settings/updateRequirementValues', 'Settings::updateRequirementValues',['filter' => 'auth']);
 
 $routes->get('dashboard', 'Dashboard::index',['filter' => 'auth']);
+$routes->get('dashboard/getStats', 'Dashboard::getStats',['filter' => 'auth']);
 
 $routes->get('projects', 'Projects::index',['filter' => 'auth']);
 $routes->match(['get','post'],'projects/add', 'Projects::add',['filter' => 'auth']);

@@ -164,6 +164,50 @@ function getCurrentDateForDB(){
 
 }
 
+function formatDate2(timestamp) {
+    let date = new Date(timestamp);
+        
+    var year = date.getFullYear();
+    const monthArr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'July',
+     'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    var month = monthArr[date.getMonth()];
+    var day = date.getDate();
+    day = day < 10 ? '0' + day : '' + day;
+    var hours = date.getHours();
+    var ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    hours = hours < 10 ? '0' + hours : '' + hours;
+    var minutes = date.getMinutes();
+    minutes = minutes < 10 ? '0'+minutes : minutes;
+    
+    var strTime = hours + ':' + minutes + ' ' + ampm;
+    // return year+"-"+month+"-"+day+" "+strTime;
+    return month+" "+day+", "+strTime;
+}
+
+function secondsToDuration(seconds) {
+    var d = Math.floor(seconds / (3600 * 24));
+    var h = Math.floor(seconds % (3600 * 24) / 3600);
+    var m = Math.floor(seconds % 3600 / 60);
+    var s = Math.floor(seconds % 60);
+
+    var dDisplay = d > 0 ? d + (d == 1 ? " day" : " days") : "";
+    var hDisplay = h > 0 ? h + (h == 1 ? " hour" : " hours") : "";
+    var mDisplay = m > 0 ? m + (m == 1 ? " minute" : " minutes") : "";
+    var sDisplay = s > 0 ? s + (s == 1 ? " second" : " seconds") : "";
+
+    if (dDisplay != "") {
+        return dDisplay + (hDisplay == "" ? "" : ", " + hDisplay);
+    } else if (hDisplay != "") {
+        return hDisplay + (mDisplay == "" ? "" : ", " + mDisplay);
+    } else if(mDisplay != ""){
+        return mDisplay;
+	} else {
+        return sDisplay;
+    }
+}
+
 function showFloatingAlert(message , bgClass = "bg-success"){
     $(".floating-alert").removeClass("bg-success bg-danger bg-warning");
     $(".floating-alert").addClass(bgClass);

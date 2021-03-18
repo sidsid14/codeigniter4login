@@ -5,15 +5,13 @@ use TP\Tools\SonarQube;
 
 class RiskAssessmentModel extends Model{
     protected $table = 'docsgo-risks';
-    protected $allowedFields = ['project_id', 'risk_type', 'risk', 'description', 'component', 'hazard-analysis', 'baseScore_severity','status', 'assessment', 'update_date'];
+    protected $allowedFields = ['project_id', 'risk_type', 'risk', 'description', 'component', 'failure_mode', 'harm', 'cascade_effect', 'hazard-analysis', 'baseScore_severity','status', 'assessment', 'update_date'];
 
 
     function getRisks($status = '', $type = '') {
         $db      = \Config\Database::connect();
         $whereCondition = ""; $riskType = 'Vulnerability';
-        $riskCategory = ['Open-Issue', 'Vulnerability', 'SOUP'];
-        if(in_array($type, $riskCategory)) 
-            $riskType = $type;
+        $riskType = $type;
         if($status == "All"){
             $whereCondition = " WHERE risk_type = '".$riskType."' ";
         }else{
@@ -77,6 +75,9 @@ class RiskAssessmentModel extends Model{
                     break;
                 case 'Open-Issue':
                     $temp['risk'] = 'OI- '.$row['risk'];
+                    break;
+                case 'Scope-Items':
+                    $temp['risk'] = 'SI- '.$row['risk'];
                     break;
             }
             $temp['status'] = $row['status'];

@@ -82,8 +82,33 @@
             </div>
 
             <div class="col-12">
+              <div class="form-group" id='risk_failure_mode_scope'>
+                <label class = "font-weight-bold text-muted" for="failure_mode" >Failure Mode</label>
+                <textarea class="form-control" name="failure_mode" id="failure_mode"><?=
+                isset($member['failure_mode']) ? trim($member['failure_mode']) : ''
+                ?></textarea>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group" id='risk_harm_scope'>
+                <label class = "font-weight-bold text-muted" for="harm" >Harm</label>
+                <textarea class="form-control" name="harm" id="harm"><?=
+                isset($member['harm']) ? trim($member['harm']) : ''
+                ?></textarea>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group" id='risk_cascade_effect_scope'>
+                <label class = "font-weight-bold text-muted" for="cascade_effect" >Cascade Effect</label>
+                <textarea class="form-control" name="cascade_effect" id="cascade_effect"><?=
+                isset($member['cascade_effect']) ? trim($member['cascade_effect']) : ''
+                ?></textarea>
+              </div>
+            </div>
+
+            <div class="col-12">
               <div class="form-group" id='risk_hazard_analysis'>
-              <label class = "font-weight-bold text-muted" for="hazard-analysis" >Hazard Analysis</label>
+              <label class = "font-weight-bold text-muted" for="hazard-analysis" >Hazard Analysis & Mitigation</label>
                 <textarea class="form-control" name="hazard-analysis" id="hazard-analysis" ><?=
                 isset($member['hazard-analysis']) ? trim($member['hazard-analysis']) : ''
                 ?></textarea>
@@ -92,7 +117,7 @@
 
             <div class="col-12">
               <div class="form-group" id='risk_hazard_analysis_soup'>
-              <label class = "font-weight-bold text-muted" for="hazard-analysis-soup" >Hazard Analysis</label>
+              <label class = "font-weight-bold text-muted" for="hazard-analysis-soup" >Hazard Analysis & Mitigation</label>
                 <textarea class="form-control" name="hazard-analysis-soup" id="hazard-analysis-soup" ><?=
                 isset($member['hazard-analysis-soup']) ? trim($member['hazard-analysis-soup']) : ''
                 ?></textarea>
@@ -271,8 +296,10 @@ function toggleVulnerabilityTabs(id, id1) {
 
 function toggleVulnerability() {
   var selVal = $("#risk_type").val();
+  console.log("selVal:", selVal);
     //Toggle text-area boxes based on the category selection
-    if(selVal == 'SOUP'){
+    $('#risk_hazard_analysis, #risk_failure_mode_scope, #risk_harm_scope, #risk_cascade_effect_scope').css('display', 'none');
+  if(selVal == 'SOUP'){
       //If its Edit-form no need to change the description changes, Else display soup boxes..
       if($('#form-status').val() == true){
         $('#risk_description, #risk_hazard_analysis').css('display', 'block');
@@ -281,11 +308,15 @@ function toggleVulnerability() {
         $('#risk_description, #risk_hazard_analysis').css('display', 'none');
         $('#risk_description_soup, #risk_hazard_analysis_soup').css('display', 'block');
       }
+  }else if(selVal == 'Scope-Items'){
+      console.log("display scope items");
+      $('#risk_hazard_analysis, #risk_failure_mode_scope, #risk_harm_scope, #risk_cascade_effect_scope').css('display', 'block');
+      $('#risk_description, #risk_description_soup, #risk_hazard_analysis_soup').css('display', 'none');
   }else{
       $('#risk_description, #risk_hazard_analysis').css('display', 'block');
       $('#risk_description_soup, #risk_hazard_analysis_soup').css('display', 'none');
   }
-  if(selVal == 'Open-Issue' || selVal == 'SOUP') {
+  if(selVal != 'Vulnerability' ) {
     $('#data-open-issue-soup-matrix, #data-open-issue-soup-rpn-matrix').css('display', 'block');
     $('#data-vulnerability-matrix, #data-vulnerability-baseScore-matrix').css('display', 'none');
   } else if(selVal=='Vulnerability'){

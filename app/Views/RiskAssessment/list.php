@@ -72,7 +72,7 @@
                 <th scope="col">#</th>
                 <th scope="col" style="width:35px">ID</th>
                 <th scope="col">Risk</th>
-                <th scope="col" style="width:35%">Hazard Analysis</th>
+                <th scope="col" style="width:35%">Hazard Analysis & Mitigation</th>
                 <th scope="col"  style="width:83px"> <?= (($riskCategorySelected == 'Vulnerability') ? "CVSS 3.1 Base Score" : "RPN") ?> </th>
                 <th scope="col">Status</th>
                 <th scope="col" style="width:80px">Action</th>

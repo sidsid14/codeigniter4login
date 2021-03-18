@@ -312,10 +312,27 @@ The residual risk assessment after mitigation is given below.';
 				'status' => $this->request->getVar('status')
 			];
 			if($data['isEdit']) {
-				$newData['description'] = $this->request->getVar('description');
-				$newData['hazard-analysis'] = $this->request->getVar('hazard-analysis');
+				if($this->request->getVar('risk_type') == 'Scope-Items'){
+					//failure_mode, harm, cascade_effect
+					$newData['failure_mode'] = $this->request->getVar('failure_mode');  
+					$newData['harm'] = $this->request->getVar('harm');
+					$newData['cascade_effect'] = $this->request->getVar('cascade_effect');
+					$newData['hazard-analysis'] = $this->request->getVar('hazard-analysis');
+					$newData['description'] = '';
+				}else{
+					$newData['description'] = $this->request->getVar('description');
+					$newData['hazard-analysis'] = $this->request->getVar('hazard-analysis');
+				}
 			}else{
-				if($this->request->getVar('risk_type') == 'SOUP'){
+				//here we are differing the contents for SOUP or Vulnarebility & open-issues
+				if($this->request->getVar('risk_type') == 'Scope-Items'){
+					//failure_mode, harm, cascade_effect
+					$newData['failure_mode'] = $this->request->getVar('failure_mode');  
+					$newData['harm'] = $this->request->getVar('harm');
+					$newData['cascade_effect'] = $this->request->getVar('cascade_effect');
+					$newData['hazard-analysis'] = $this->request->getVar('hazard-analysis');
+					$newData['description'] = '';
+				}else if($this->request->getVar('risk_type') == 'SOUP'){
 					$newData['description'] = $this->request->getVar('description-soup');
 					$newData['hazard-analysis'] = $this->request->getVar('hazard-analysis-soup');
 				}else{
@@ -337,7 +354,7 @@ The residual risk assessment after mitigation is given below.';
 				'Attack Vector' => '','Attack Complexity' => '','Privileges Required' => '','User Interaction' =>'', 'Scope' => '',
 				'Confidentiality Impact' => '', 'Integrity Impact' => '','Availability Impact' => '','base_score' => ''
 			);
-			if($riskType == 'Open-Issue' || $riskType == 'SOUP'){
+			if($riskType != 'Vulnerability'){
 				$postDataMatrix['Severity'] = ($this->request->getVar('Severity-status-type')) ? explode('/', $this->request->getVar('Severity-status-type'))[1] : '';			
 				$postDataMatrix['Occurrence'] = ($this->request->getVar('Occurrence-status-type')) ? explode('/', $this->request->getVar('Occurrence-status-type'))[1] : '';	
 				$postDataMatrix['Detectability'] = ($this->request->getVar('Detectability-status-type')) ? explode('/', $this->request->getVar('Detectability-status-type'))[1] : '';
