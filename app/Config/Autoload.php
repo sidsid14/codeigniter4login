@@ -53,7 +53,8 @@ class Autoload extends \CodeIgniter\Config\AutoloadConfig
 			'App'         => APPPATH,                // To ensure filters, etc still found,
 			APP_NAMESPACE => APPPATH,                // For custom namespace
 			'Config'      => APPPATH . 'Config',
-			'TP\Tools'    => APPPATH . 'ThirdParty'
+			'TP\Tools'    => APPPATH . 'ThirdParty',
+			'Mpdf'        => '/var/www/html/vendor/mpdf/mpdf/src/Mpdf.php'
 		];
 
 		/**

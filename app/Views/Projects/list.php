@@ -47,6 +47,10 @@
                       class="btn btn-primary ml-2">
                         <i class="fa fa-download"></i>
                     </a>
+                    <a title="Docx" href="#" onclick="getWordDocumentFileList(this, <?php echo $row['project-id'];?>)" 
+                      class="btn btn-primary ml-2">
+                        <i class="fa fa-file-word"></i>
+                    </a>
                 </td>
                 <td>
                     <a href="/projects/add/<?php echo $row['project-id'];?>" class="btn btn-warning ml-2">
@@ -90,7 +94,6 @@ function deleteProject(id){
           url: '/projects/delete/'+id,
           type: 'GET',
           success: function(response){
-              console.log(response);
               response = JSON.parse(response);
               if(response.success == "True"){
                   $("#"+id).fadeOut(800)
@@ -138,7 +141,6 @@ function checkGenerateDocuments(e, id){
           }
         }
       } else{
-        console.log("BLOD DATA");
         var a = document.createElement('a');
         var binaryData = [];
         binaryData.push(response);
@@ -158,6 +160,136 @@ function checkGenerateDocuments(e, id){
     ajaxError: function (error) {
       showPopUp("Error", error);  
     }
+  });
+}
+
+function getWordDocumentFileList(e, id) {
+  var anchor = $(e);
+  var iTag  = anchor.find('i');
+  url = '/generate-documents/getWordDocumentFileList/'+id;
+  $.ajax({
+      url: url,
+      type: 'GET',
+      beforeSend: function() {
+        $(anchor).addClass('disabled');
+        $(iTag).removeClass('fa-file-word');
+        $(iTag).addClass('fa-spinner fa-spin');
+        console.log("before getWordDocumentFileList");
+      },
+      complete: function(){
+        console.log("complete getWordDocumentFileList");
+      },
+      success: function(response){
+        var data = JSON.parse(response);
+        if(data.success == 'False'){
+          if(data.description == 'No downloads available' || data.description == 'Download path is not available' || data.description == 'Download is deprecated11'){
+            showPopUp("Project Word Documents", "Latest PDF files are not available to download the word documents, Please download the PDF files.11");  
+            //remove loader
+            $(anchor).removeClass('disabled');
+            $(iTag).removeClass('fa-spinner fa-spin');
+            $(iTag).addClass('fa-file-word');
+          }
+        }
+        if(data.success == 'True'){
+          if(data.data.fileNames){
+            var fileNames = data.data.list;
+            //Download fresh files using file-name and id
+            startPDFDocxConvertion(e, id, fileNames);
+          }else{
+            var downloadPaths = data.data.list;
+            //Download existing files using download path
+            var { [Object.keys(downloadPaths).pop()]: lastItem } = downloadPaths;
+
+            Object.keys(downloadPaths).forEach(function(key, index) {
+              var path = downloadPaths[key]['download-path'];
+              var name = downloadPaths[key]['file-name'];
+              var id = downloadPaths[key]['id'];
+              var projectId = downloadPaths[key]['project-id'];
+              updateDownloadUrl(projectId, id, path, name, false, lastItem['file-name'], e);
+            });
+          }
+        }
+
+      },
+      ajaxError: function (error) {
+        showPopUp("Error", error);
+      }
+    });
+}
+
+function startPDFDocxConvertion(e, id, fileNames){
+  var anchor = $(e);
+  var iTag  = anchor.find('i');
+
+  var { [Object.keys(fileNames).pop()]: lastItem } = fileNames;
+  var lastItem = Object.keys(fileNames).filter(function(key) {return fileNames[key] === lastItem})[0];
+  
+  Object.keys(fileNames).forEach(function(key) {
+    url = '/generate-documents/startPDFDocxConvertion/'+id+'/'+key;
+    $.ajax({
+        url: url,
+        type: 'GET',
+        beforeSend: function() {
+          $(anchor).addClass('disabled');
+          $(iTag).removeClass('fa-file-word')
+          $(iTag).addClass('fa-spinner fa-spin')
+          console.log("before startPDFDocxConvertion");
+        },
+        complete: function(){
+          console.log("complete startPDFDocxConvertion");
+        },
+        success: function(response){
+          var response, originalFile, downloadUrl;
+          response = JSON.parse(response)
+          $('#wordDownload').attr('href', response.fileDownloadUrl);
+          originalFile = response.fileName;
+          downloadUrl = response.fileDownloadUrl;
+          updateDownloadUrl(id, fileNames[originalFile], downloadUrl, originalFile, true, lastItem, e);
+        },
+        ajaxError: function (error) {
+          $(anchor).removeClass('disabled');
+          $(iTag).removeClass('fa-spinner fa-spin');
+          $(iTag).addClass('fa-file-word');
+          showPopUp("Error", error);
+        }
+      });
+    
+  });
+  
+
+}
+
+
+function updateDownloadUrl(projectId, id, path, name, check, lastItem, e) {
+  var url = 'generate-documents/updateDownloadUrl';
+  var formData = {
+    'id': id, 'project-id': projectId, 'path': path, 'name': name, 'isDBUpdate' : check, 'lastItem': lastItem
+  }
+  var anchor = $(e);
+  var iTag  = anchor.find('i');
+  $.ajax({
+      type: 'POST',
+      url: 'generate-documents/updateDownloadUrl',
+      data: formData,
+      success: function(response, textStatus, jqXHR){
+        if((jqXHR.responseText).indexOf('success') >= 0){
+            console.log("display success blocks msgs");
+        }else{
+            console.log("else case to zip file:");
+            $(anchor).removeClass('disabled');
+            $(iTag).removeClass('fa-spinner fa-spin');
+            $(iTag).addClass('fa-file-word');
+            console.log("completed updateDownloadUrl");
+            window.location = response;
+            showPopUp("Project Word Documents", "File downloaded successfully");  
+          }
+      },
+      error: function(err) {
+          showPopUp("Error", "Error occured on server.");
+          $(anchor).removeClass('disabled');
+          $(iTag).removeClass('fa-spinner fa-spin');
+          $(iTag).addClass('fa-file-word');
+      }
   });
 }
 

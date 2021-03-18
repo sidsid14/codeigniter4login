@@ -85,6 +85,10 @@ $routes->match(['get','post'],'traceability-matrix/getIDDescription/(:num)/(:num
 $routes->match(['get','post'],'generate-documents/downloadDocuments/(:num)/(:num)', 'GenerateDocuments::downloadDocuments',['filter' => 'auth']);
 $routes->match(['get','post'],'generate-documents/checkGenerateDocuments/(:num)', 'GenerateDocuments::checkGenerateDocuments',['filter' => 'auth']);
 $routes->match(['get','post'],'generate-documents/updateGenerateDocumentPath/(:num)', 'GenerateDocuments::updateGenerateDocumentPath',['filter' => 'auth']);
+$routes->match(['get','post'],'generate-documents/startPDFDocxConvertion/(:num)/(:any)', 'GenerateDocuments::startPDFDocxConvertion',['filter' => 'auth']);
+$routes->match(['get','post'],'generate-documents/getWordDocumentFileList/(:num)', 'GenerateDocuments::getWordDocumentFileList',['filter' => 'auth']);
+$routes->post('generate-documents/updateDownloadUrl', 'GenerateDocuments::updateDownloadUrl',['filter' => 'auth']);
+
 
 $routes->get('reviews', 'Reviews::index',['filter' => 'auth']);
 $routes->get('reviews/getReviews', 'Reviews::getReviews', ['filter' => 'auth']);

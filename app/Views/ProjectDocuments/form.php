@@ -127,7 +127,7 @@
                             <div class="ml-auto">
                                 <?php if (isset($projectDocument)): ?>
 
-                                <a title="Preview" onclick="generatePreview(this, <?php echo $docId;?>)"
+                                <a title="Preview" onclick="generatePreviewOld(this, <?php echo $docId;?>)"
                                     class="ml-2 btn bg-purple text-light">
                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                 </a>

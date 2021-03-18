@@ -292,7 +292,7 @@ function generateDocuments(id) {
                 a.remove();
                 window.URL.revokeObjectURL(url);
                 showFloatingAlert("Success: File downloaded!");
-               
+
             }
         },
         error: function(error) {

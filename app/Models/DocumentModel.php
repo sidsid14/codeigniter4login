@@ -146,6 +146,65 @@ class DocumentModel extends Model{
         return $data;
     }
 
+    public function getDownloadPaths($id){
+        $db = \config\Database::connect();
+        $sql = " SELECT count(*) as count from `docsgo-documents` WHERE `project-id`= '".$id."' AND status ='Approved' AND `download-path` IS NULL;";
+        $query = $db->query($sql);
+        $data = $query->getResult('array');
+        if(count($data)){
+            $data = $data[0]['count'];
+            if($data > 0){
+                //grab the file names
+                $sql = "SELECT id, `file-name`, `download-path` FROM `docsgo-documents` WHERE `project-id`='".$id."' and status='Approved'";
+                $query = $db->query($sql);
+                $data = $query->getResult('array');
+                if(count($data)){
+                    $fileNames = [];
+                    $ar =[];
+                    for($i=0; $i<count($data);$i++){
+                        $name = preg_replace('/[^A-Za-z0-9\-]/', '_', $data[$i]['file-name']);
+                        $name = $name.'.pdf';
+                        $fileNames[$name] = $data[$i]['id'];
+                    }
+                    $dataList = [];
+                    $dataList['fileNames'] = true;
+                    $dataList['list'] = $fileNames;
+                    return $dataList;
+                }else{
+                    return null;
+                }
+            }else{
+                //grap the downloadpaths
+                $sql1 = "SELECT `file-name`,id, `project-id`,`download-path` from `docsgo-documents` WHERE `project-id`= '".$id."' AND status='Approved'";
+                $query = $db->query($sql1);
+                $data = $query->getResult('array');
+                $dataList = [];
+                $dataList['fileNames'] = false;
+                $dataList['list'] = $data;
+                return $dataList;
+            }
+        }else{
+            $data = null;
+        }
+    }
+
+    public function updateGenerateDownloadPath($projectId) {
+        $db = \Config\Database::connect();
+        $sql = "UPDATE `docsgo-documents` SET `download-path` = NULL WHERE `project-id` = '".$projectId."' ";
+        $query = $db->query($sql);
+        $data = $query->getResult('array');
+        return $data;
+    }
+
+    public function updateDownloadUrl($projectId, $id, $path) {
+        $db = \Config\Database::connect();
+        $sql = "UPDATE `docsgo-documents` SET `download-path` = '".$path."' WHERE `id` = '".$id."' AND `project-id` = '".$projectId."' ";
+
+        $query = $db->query($sql);
+        $data = $query->getResult('array');
+        return $data;
+    }
+
 
 
 }
