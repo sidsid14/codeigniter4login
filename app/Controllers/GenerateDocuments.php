@@ -230,7 +230,8 @@ class GenerateDocuments extends BaseController
 							if (!(ctype_upper($val))) { 
 								$changeHeader = $index.'.'.($x+1).'&nbsp;&nbsp;'.ucwords($val);
 							} 
-							$val = $val.'</h2>'; $changeHeader = $changeHeader.'</h2>';
+							$val = '>'.$val.'</h2>'; 
+							$changeHeader = '>'.$changeHeader.'</h2>';
 							$contentSection  = str_replace($val, $changeHeader, $contentSection);
 						}
 					}	
@@ -241,6 +242,9 @@ class GenerateDocuments extends BaseController
 					$contentSection = str_replace("<code>", '<code style="font-family: frutiger;">', $contentSection);
 
 					if (strpos($contentSection, '<table>') !== false) {
+						if(strtolower($json['sections'][$i]['title']) == 'traceability matrix'){
+							$contentSection = str_replace('<br/>', '; ', $contentSection);
+						}
 						$contentSection = str_replace('</table>', '</table><br/>', $contentSection);
 						$contentSection = str_replace('</table><br/><strong>', '</table><strong>', $contentSection);
 						$tableContentFormatted = $this->addTableStylesToContent($contentSection, '100');
@@ -263,7 +267,6 @@ class GenerateDocuments extends BaseController
 					}
 					$mpdf->WriteHTML('<br>');
 				}
-				// exit;
 			}
 			catch (Error $e) {
 				echo "Error caught: " . $e->getMessage();
@@ -508,7 +511,7 @@ class GenerateDocuments extends BaseController
 		
 		//PDF to DOCX Convertion
 		$url = 'https://api2.docconversionapi.com/jobs/create';
-		$filePath = 'https://info.viosrdtest.in/Project_Documents_'.$projectId.'9/'.$fileName;
+		$filePath = 'https://info.viosrdtest.in/Project_Documents_'.$projectId.'/'.$fileName;
 		$fields = array(
 			'inputFile' => $filePath,
 			'conversionParameters' => '{"pdfType" : "1B", "fitToPage" : true}',
@@ -524,19 +527,9 @@ class GenerateDocuments extends BaseController
 		//open connection
 		$ch = curl_init();
 		//set the url, number of POST vars, POST data
-		// kokkiligaddasirisha@gmail.com/kvrnlsg38
-		// Application ID: 7976cebc-cf1c-41bc-89c1-bd12f32c43a9
-		// Application Key: e1a11159-daad-4949-8112-1b13a9bb84de
-		//tammuraghava@gmail.com: Now
-		// Application ID: 698f735d-9c20-45c2-93e5-884b11610ab7
-		// Application Key: c75cd50d-ef12-4762-862a-26de832594e7
-		//raghava.tammu@xcubelabs.com: OVER::
-		// 'X-ApplicationID: 260022ef-6956-4f66-8ffa-553ae0c843ec',
-		// 'X-SecretKey: c9a52dbb-2fcd-4e29-b07e-a91abbc01116'
-		//
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-			'X-ApplicationID: 698f735d-9c20-45c2-93e5-884b11610ab7',
-			'X-SecretKey: c75cd50d-ef12-4762-862a-26de832594e7'
+			'X-ApplicationID: 7976cebc-cf1c-41bc-89c1-bd12f32c43a9',
+			'X-SecretKey: e1a11159-daad-4949-8112-1b13a9bb84de'
 		));
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_POST, count($fields));
@@ -651,7 +644,7 @@ class GenerateDocuments extends BaseController
 			if($data[0]['count'] > 0){
 				//JSON aviable, but its old one, so delete and goto fresh download
 				$this->updateGenerateDownloadPath($projectId);
-				$response = array('success' => "False", "description"=>"Download is deprecated11");
+				$response = array('success' => "False", "description"=>"Download is deprecated");
 				echo json_encode( $response );	
 			}else{
 				$model = new DocumentModel();
