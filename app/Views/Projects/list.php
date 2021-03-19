@@ -182,8 +182,8 @@ function getWordDocumentFileList(e, id) {
       success: function(response){
         var data = JSON.parse(response);
         if(data.success == 'False'){
-          if(data.description == 'No downloads available' || data.description == 'Download path is not available' || data.description == 'Download is deprecated11'){
-            showPopUp("Project Word Documents", "Latest PDF files are not available to download the word documents, Please download the PDF files.11");  
+          if(data.description == 'No downloads available' || data.description == 'Download path is not available' || data.description == 'Download is deprecated'){
+            showPopUp("Project Word Documents", "Latest PDF files are not available to download the word documents, Please download the PDF files.");  
             //remove loader
             $(anchor).removeClass('disabled');
             $(iTag).removeClass('fa-spinner fa-spin');

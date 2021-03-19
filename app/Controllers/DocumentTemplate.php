@@ -117,7 +117,7 @@ class DocumentTemplate extends BaseController
 		$tables['Reviews']['name'] = "reviews";
 		$tables['Reviews']['columns'] = "review-name,context,description,review-ref,status,project-name,reviewer,author";
 		$tables['RiskAssessment']['name'] = "riskAssessment";
-		$tables['RiskAssessment']['columns'] = "risk_type,risk,description,component,hazard-analysis,assessment,baseScore_severity,status";
+		$tables['RiskAssessment']['columns'] = "risk_type,risk,description,component,failure_mode,harm,cascade_effect,hazard-analysis,assessment,baseScore_severity,status";
 		$tables['Teams']['name'] = "teams";
 		$tables['Teams']['columns'] = "name,email,responsibility,role";
 		$tables['TraceabilityMatrix']['name'] = "traceabilityMatrix";

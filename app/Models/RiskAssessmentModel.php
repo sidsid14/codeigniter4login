@@ -66,6 +66,9 @@ class RiskAssessmentModel extends Model{
             $temp['hazard-analysis'] = $row['hazard-analysis'];
             $temp['project_id'] = $row['project_id'];
             $temp['risk_type'] = $row['risk_type'];
+            $temp['failure_mode'] = $row['failure_mode'];
+            $temp['harm'] = $row['harm'];
+            $temp['cascade_effect'] = $row['cascade_effect'];
             switch($temp['risk_type']){
                 case 'Vulnerability':
                     $temp['risk'] = 'V- '.$row['risk'];
