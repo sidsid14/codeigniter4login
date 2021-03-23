@@ -436,7 +436,7 @@ function toggleVulnerability() {
       if(selVal == "Vulnerability"){
         $("#rpnHeading").text("CVSS 3.1 Base Risk Assessment");
       }else{
-        $("#rpnHeading").text("Assing RPN");
+        $("#rpnHeading").text("Assign RPN");
       }
     }
     //Toggle text-area boxes based on the category selection
