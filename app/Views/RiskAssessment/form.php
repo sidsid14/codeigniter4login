@@ -326,17 +326,12 @@ br + br { display: none; }
                             </div>
                         </div>
 
-
-
                     </div>
                 </div>
             </div>
         </div>
 
     </div>
-
-
-
 
 </form>
 
@@ -351,28 +346,20 @@ $(document).ready(function() {
 let htmlView = false
 function toggleDetailsView(){
   if(!htmlView){
-    //Hide fields
     const detailsFields = $(".risk-details-fields textarea:visible");
     const detailsLabels = $(".risk-details-fields label:visible");
     $(".risk-details-fields").hide();
-    //show html
     $(detailsFields).each(function(index, el ){
       const label = "<label class='font-weight-bold text-muted pt-2' > "+$(detailsLabels[index]).text() + "</label>" ;
-
-      // $(".risk-details-html").append("<label class='font-weight-bold text-muted pt-2' > "+$(detailsLabels[index]).text() + "</label>" );
       const detail = $(el).val();
-      console.log(detail);
       const html = SimpleMDE.prototype.markdown(detail);
-      console.log(html);
       $(".risk-details-html").append(label+html);
     });
       $(".risk-details-html").addClass("activeDiv");
   }else{
-    //remove html
     $(".risk-details-html").removeClass("activeDiv");
     $(".risk-details-html").html("");
     $(".risk-details-fields").show();
-    //show fields
   }
   htmlView = !htmlView;
 }
