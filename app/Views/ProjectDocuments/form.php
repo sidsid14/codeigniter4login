@@ -127,7 +127,7 @@
                             <div class="ml-auto">
                                 <?php if (isset($projectDocument)): ?>
 
-                                <a title="Preview" onclick="generatePreviewOld(this, <?php echo $docId;?>)"
+                                <a title="Preview" onclick="generatePreview(this, <?php echo $docId;?>)"
                                     class="ml-2 btn bg-purple text-light">
                                     <i class="fa fa-eye" aria-hidden="true"></i>
                                 </a>
@@ -1088,17 +1088,18 @@ function generatePreview(e, id) {
             if (response == "no data") {
                 showPopUp("Project Documents", "No file is available to download");
             } else {
-                var listTags = 3;
-                var el = '.bootbox-body p:lt(' + listTags + ')';
-                showPreview("PREVIEW", response, 'lg');
-                $(el).css('text-align', 'center').addClass('first-header-tags');
-                $('.first-header-tags img').css({
-                    'width': '167px',
-                    'height': '140px'
-                });
-                setTimeout(() => {
-                    $('.bootbox-alert').scrollTop(0);
-                }, 500);
+                var a = document.createElement('a');
+                var binaryData = [];
+                binaryData.push(response);
+                window.URL.createObjectURL(new Blob(binaryData, {
+                    type: "application/zip"
+                }))
+                a.href = url;
+                document.body.append(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
+                showFloatingAlert("Success: File downloaded!");
             }
         },
         error: function(error) {

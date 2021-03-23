@@ -220,21 +220,9 @@ class GenerateDocuments extends BaseController
 					$contentSection = '<b></b>';
 					$org = $json['sections'][$i]['content'];
 					$contentSection = $pandoc->convert($org, "gfm", "html5");
-					//Adding sub heading numbering and changing the font ctype display
-					$new = preg_replace("/\s+/",' ',$contentSection);  
-					preg_match_all( '|<h2(.*)>(.*)</h2>|iU', $new, $h2);
-					if(!empty($h2)) {
-						$list = $h2[2];
-						foreach($list as $x => $val) {
-							$changeHeader = $index.'.'.($x+1).'&nbsp;&nbsp;'.$val;
-							if (!(ctype_upper($val))) { 
-								$changeHeader = $index.'.'.($x+1).'&nbsp;&nbsp;'.ucwords($val);
-							} 
-							$val = '>'.$val.'</h2>'; 
-							$changeHeader = '>'.$changeHeader.'</h2>';
-							$contentSection  = str_replace($val, $changeHeader, $contentSection);
-						}
-					}	
+					//Adding the sub,sub-sub indexing values
+					$contentSection = $this->handleSubIndexNumbers($contentSection, $index);
+	
 					//Adjusting the sub heading content display position, applying the font to code block
 					$contentSection = str_replace("<h2 ", '<h2 style="position: absolute; margin-left: -28pt; font-weight: normal;" ', $contentSection);
 					$contentSection = str_replace("<h3 ", '<h3 style="position: absolute; margin-left: -28pt; font-weight: normal;" ', $contentSection);
@@ -336,6 +324,8 @@ class GenerateDocuments extends BaseController
 					ob_clean();
 					if($typeOfRequest == 1){
 						$mpdf->Output($fileName, 'D');
+					}else{
+						$mpdf->Output($fileName, 'D');
 					}
 				}
 			}
@@ -345,6 +335,64 @@ class GenerateDocuments extends BaseController
 			}
 				
 		}
+	}
+
+	public function handleSubIndexNumbers($data, $index){
+		preg_match_all( '|<h[^>]+>(.*)</h[^>]+>|iU', $data, $matches);
+		//if any h2, h3 matches found
+		if(count($matches[0]) >= 1){
+			$h3TagPosition = 0;	
+			$h3TagIncrement = 0;
+			$h3TagLoopIncrement = 0;
+			$h3ParentIndex = 0;
+			$currentIndex = 0;
+			foreach ($matches[0] as $x => $val) {
+				$key = $x;
+				//findout h3 is exists or not....
+				$h3Exist = strpos($val, '</h3>');
+				$orgVal = $val;
+				if($h3Exist){
+					if($h3TagPosition == 0){
+						$h3TagLoopIncrement = 0;
+						$x = $currentIndex;
+						if($currentIndex == 0){
+							$x = $x;
+						}
+						$h3ParentIndex = $x;
+						$h3TagPosition = $h3ParentIndex;
+					}
+					$incKey = $index.".".$h3ParentIndex.".".($h3TagLoopIncrement+1)." ";
+					$h3TagIncrement = $h3TagIncrement+1;
+					$h3TagLoopIncrement = $h3TagLoopIncrement +1;
+					$val = str_replace(">", ">".$incKey, $val);
+					//update the index numbering string into original string
+					$data = $this->updateSubIndexNumbers($orgVal, $incKey, $data, 'h3');
+				}else{
+					$orgVal = $val;
+					$h3TagPosition = 0;
+					$h3TagLoopIncrement = 0;
+					$currentIndex = ($x+1-$h3TagIncrement); 
+					$incKey = $index.".".($x+1-$h3TagIncrement)." ";
+					$data = $this->updateSubIndexNumbers($orgVal, $incKey, $data, 'h2');
+				}
+			}
+
+		}
+		return $data;
+	}
+
+	public function updateSubIndexNumbers($orgVal, $incKey, $data, $type) {
+		$orgValString = preg_replace("/\s+/",' ',$orgVal);  
+		preg_match_all( '|<'.$type.'(.*)>(.*)</'.$type.'>|iU', $orgValString, $orgValMatch);
+		if(!empty($orgValMatch)) {
+			$changeHeader = $orgValMatch[2][0];
+			$newValue = '">'.$incKey.$changeHeader;
+			if (!(ctype_upper($changeHeader))) { 
+				$newValue = '">'.$incKey.ucwords($changeHeader);
+			}
+			$data  = str_replace('">'.$changeHeader, $newValue, $data);
+		}
+		return $data;
 	}
 
 	public function addWordWrap($tableContentFormatted) {
