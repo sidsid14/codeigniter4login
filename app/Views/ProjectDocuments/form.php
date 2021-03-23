@@ -603,7 +603,7 @@ $(document).ready(function() {
     <?php endif; ?>
 
     <?php if (isset($existingDocs)): ?>
-    existingDocList = <?= json_encode($existingDocs) ?>;
+    existingDocList = <?= json_encode($existingDocs,  JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?>;
     <?php endif; ?>
 
 
@@ -616,7 +616,7 @@ $(document).ready(function() {
 
     <?php if (isset($documentReview)): ?>
     $(".reviewDiv").removeClass('d-none');
-    var savedReview = <?= json_encode($documentReview) ?>;
+    var savedReview = <?= json_encode($documentReview,  JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE) ?>;
     documentReview.id = savedReview["id"];
     documentReview.docId = "<?= $projectDocument['id'] ?>";
     documentReview.projectId = savedReview["project-id"];

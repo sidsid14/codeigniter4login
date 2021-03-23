@@ -105,6 +105,7 @@ table tr:last-child td:last-child {
 .scroll {
   overflow: scroll;
   overflow-x: hidden;
+  cursor:default;
 }
 
 .scroll::-webkit-scrollbar {
