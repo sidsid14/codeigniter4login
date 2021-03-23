@@ -350,7 +350,7 @@ function toggleDetailsView(){
     const detailsLabels = $(".risk-details-fields label:visible");
     $(".risk-details-fields").hide();
     $(detailsFields).each(function(index, el ){
-      const label = "<label class='font-weight-bold text-muted pt-2' > "+$(detailsLabels[index]).text() + "</label>" ;
+      const label = "<label style='background:#fff;padding: 0px 8px 6px 8px; border-radius: 10px;' class='font-weight-bold text-muted pt-2' > "+$(detailsLabels[index]).text() + "</label>" ;
       const detail = $(el).val();
       const html = SimpleMDE.prototype.markdown(detail);
       $(".risk-details-html").append(label+html);
