@@ -138,6 +138,8 @@ class GenerateDocuments extends BaseController
 			//#-5: Adding change history section
 			$mpdf->WriteHTML('<div style="position: absolute; left:80; right: 0; top: 450; bottom: 0;font-family: frutiger;font-weight: bold;">Change History</div>');
 			$tableContent = $pandoc->convert($json['cp-change-history'], "gfm", "html5");
+			print_r($json["cp-change-history"]);
+			exit;
 			$tableContent = $this->addTableStylesToContent($tableContent, '90');
 			$mpdf->WriteHTML('<div style="position: absolute; left:80; right: 0; top: 480; bottom: 0;font-family: frutiger;">
 			' . $tableContent . '

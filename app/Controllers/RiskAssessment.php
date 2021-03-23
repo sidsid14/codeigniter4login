@@ -278,6 +278,7 @@ Hazard mitigation activities may seek to reduce the severity of the hazard, the 
 **Residual Risk**
 The residual risk assessment after mitigation is given below.';
 
+		$data["id"] = $id;
 		if($id == ""){
 			$data['action'] = "add";
 			$data['formTitle'] = "Add Risk Assessment";
@@ -421,7 +422,7 @@ The residual risk assessment after mitigation is given below.';
 		echo view('templates/header');
 		echo view('templates/pageTitle', $data);
 		echo view('RiskAssessment/form', $data);
-		echo view('templates/footer');
+		// echo view('templates/footer');
 	}
 
 	private function getRiskTypecategories() {
