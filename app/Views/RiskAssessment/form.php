@@ -24,6 +24,8 @@
   /* white-space:pre-wrap; */
 }
 
+br + br { display: none; }
+
 </style>
 
 <form class="" action="/risk-assessment/<?= $action ?>" method="post">
@@ -355,8 +357,14 @@ function toggleDetailsView(){
     $(".risk-details-fields").hide();
     //show html
     $(detailsFields).each(function(index, el ){
-      $(".risk-details-html").append("<label class='font-weight-bold text-muted pt-2' > "+$(detailsLabels[index]).text() + "</label>" );
-      $(".risk-details-html").append("<br/>"+SimpleMDE.prototype.markdown($(el).val())+"<br/>");
+      const label = "<label class='font-weight-bold text-muted pt-2' > "+$(detailsLabels[index]).text() + "</label>" ;
+
+      // $(".risk-details-html").append("<label class='font-weight-bold text-muted pt-2' > "+$(detailsLabels[index]).text() + "</label>" );
+      const detail = $(el).val();
+      console.log(detail);
+      const html = SimpleMDE.prototype.markdown(detail);
+      console.log(html);
+      $(".risk-details-html").append(html);
     });
       $(".risk-details-html").addClass("activeDiv");
   }else{
