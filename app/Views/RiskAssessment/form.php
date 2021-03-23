@@ -20,6 +20,7 @@
   padding:10px;
   border-radius: 8px;
   background: #e9ecef;
+  word-wrap: break-word;
   /* white-space:pre-wrap; */
 }
 
