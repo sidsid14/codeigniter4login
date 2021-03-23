@@ -354,7 +354,7 @@ function toggleDetailsView(){
     $(".risk-details-fields").hide();
     //show html
     $(detailsFields).each(function(index, el ){
-      $(".risk-details-html").append("<label class='font-weight-bold text-muted pt-2'> "+$(detailsLabels[index]).text() + "</label>" );
+      $(".risk-details-html").append("<label class='font-weight-bold text-muted pt-2' style='white-space:normal'> "+$(detailsLabels[index]).text() + "</label>" );
       $(".risk-details-html").append("<br/>"+$(el).val()+"<br/>");
     });
       $(".risk-details-html").addClass("activeDiv");
