@@ -20,7 +20,7 @@
   padding:10px;
   border-radius: 8px;
   background: #e9ecef;
-  white-space:pre-wrap;
+  /* white-space:pre-wrap; */
 }
 
 </style>
@@ -354,8 +354,8 @@ function toggleDetailsView(){
     $(".risk-details-fields").hide();
     //show html
     $(detailsFields).each(function(index, el ){
-      $(".risk-details-html").append("<label class='font-weight-bold text-muted pt-2' style='white-space:normal'> "+$(detailsLabels[index]).text() + "</label>" );
-      $(".risk-details-html").append("<br/>"+$(el).val()+"<br/>");
+      $(".risk-details-html").append("<label class='font-weight-bold text-muted pt-2' > "+$(detailsLabels[index]).text() + "</label>" );
+      $(".risk-details-html").append("<br/>"+SimpleMDE.prototype.markdown($(el).val())+"<br/>");
     });
       $(".risk-details-html").addClass("activeDiv");
   }else{
