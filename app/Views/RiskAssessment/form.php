@@ -364,7 +364,7 @@ function toggleDetailsView(){
       console.log(detail);
       const html = SimpleMDE.prototype.markdown(detail);
       console.log(html);
-      $(".risk-details-html").append(html);
+      $(".risk-details-html").append(label+html);
     });
       $(".risk-details-html").addClass("activeDiv");
   }else{
