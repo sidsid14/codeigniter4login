@@ -26,7 +26,7 @@
           <th scope="col" style="min-width:300px;">Description</th>
           <th scope="col">Start Date</th>
           <th scope="col">End Date</th>           
-          <th scope="col" style="min-width:80px">Action</th>
+          <th scope="col" style="min-width:150px">Action</th>
           <th scope="col" style="min-width:90px">Update</th>
         </tr>
       </thead>
@@ -40,7 +40,7 @@
                 <td><?php echo $row['start-date'];?></td>
                 <td><?php echo $row['end-date'];?></td>
                 <td>
-                <a href="/taskboard?project-id=<?php echo $row['project-id'];?>" title="Taskboard" class="btn btn-info">
+                    <a href="/taskboard?project-id=<?php echo $row['project-id'];?>" title="Taskboard" class="btn btn-info">
                       <i class="fas fa-tasks"></i>
                     </a>
                     <a title="Download" href="#" onclick="checkGenerateDocuments(this, <?php echo $row['project-id'];?>)" 

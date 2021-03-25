@@ -76,7 +76,7 @@
                     <th scope="col">Author</th>
                     <th scope="col">Reviewer</th>
                     <th scope="col" style="width: 96px;">Update Date</th>
-                    <th scope="col" style="min-width:90px;max-width: 175px;">Actions</th>
+                    <th scope="col" style="min-width:135px;max-width: 175px;">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white " id="tbody"></tbody>

@@ -94,17 +94,10 @@ class GenerateDocuments extends BaseController
 
 			//#-1 Adding Header section
 			$documentIconImage = $documentIcon; 
-			if($documentIconImage == ''){
-				if (trim($json['cp-icon']) != "") {
-					$documentIconImage = $json['cp-icon'];
-				}else{
-					$documentIconImage = base_url().'/assets/images/logo.png';
-				}
-			}
 			if($documentFooterMsg == ''){
-				$documentFooterMsg = 'Murata Vios, Inc. CONFIDENTIAL';
+				$documentFooterMsg = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 			}
-			
+
 			//#-1 Footer for all pages
 			$mpdf->SetHTMLFooter('
 			<div style="font-family: frutiger; font-size: 11pt;">
@@ -222,13 +215,7 @@ class GenerateDocuments extends BaseController
 					$contentSection = $pandoc->convert($org, "gfm", "html5");
 					//Adding the sub,sub-sub indexing values
 					$contentSection = $this->handleSubIndexNumbers($contentSection, $index);
-	
-					//Adjusting the sub heading content display position, applying the font to code block
-					$contentSection = str_replace("<h2 ", '<h2 style="position: absolute; margin-left: -28pt; font-weight: normal;" ', $contentSection);
-					$contentSection = str_replace("<h3 ", '<h3 style="position: absolute; margin-left: -28pt; font-weight: normal;" ', $contentSection);
-					$contentSection = str_replace("<h4 ", '<h4 style="position: absolute; margin-left: -28pt; font-weight: normal;" ', $contentSection);
-					$contentSection = str_replace("<code>", '<code style="font-family: frutiger;">', $contentSection);
-
+					$contentSection = $this->handleSunHeadingAlignments($contentSection);
 					if (strpos($contentSection, '<table>') !== false) {
 						if(strtolower($json['sections'][$i]['title']) == 'traceability matrix'){
 							$contentSection = str_replace('<br/>', '; ', $contentSection);
@@ -325,7 +312,14 @@ class GenerateDocuments extends BaseController
 					if($typeOfRequest == 1){
 						$mpdf->Output($fileName, 'D');
 					}else{
-						$mpdf->Output($fileName, 'D');
+						$dir = "PreviewDocx";
+						if (!is_dir($dir)) {
+							mkdir($dir, 0777);
+						}
+						$mpdf->Output($dir.'/'.$fileName);
+						$response = array('success' => "True", "fileName"=>$dir.'/'.$fileName);
+						echo json_encode( $response );	
+						return false;
 					}
 				}
 			}
@@ -390,9 +384,18 @@ class GenerateDocuments extends BaseController
 			if (!(ctype_upper($changeHeader))) { 
 				$newValue = '">'.$incKey.ucwords($changeHeader);
 			}
-			$data  = str_replace('">'.$changeHeader, $newValue, $data);
+			//may be same heading name will be present in content also, so to avoid the number appending at that content we checked with tag(>,</) characters
+			$data  = str_replace('">'.$changeHeader.'</', $newValue.'</', $data);
 		}
 		return $data;
+	}
+
+	public function handleSunHeadingAlignments($contentSection){
+		//Adjusting the sub heading content display position, applying the font to code block
+		$contentSection = str_replace("<h2 ", '<h2 style="position: absolute; margin-left: -28pt; font-weight: normal;" ', $contentSection);
+		$contentSection = str_replace("<h3 ", '<h3 style="position: absolute; margin-left: -28pt; font-weight: normal;" ', $contentSection);
+		$contentSection = str_replace("<code>", '<code style="font-family: frutiger;">', $contentSection);
+		return $contentSection;
 	}
 
 	public function addWordWrap($tableContentFormatted) {

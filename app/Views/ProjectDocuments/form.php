@@ -1087,19 +1087,13 @@ function generatePreview(e, id) {
         success: function(response) {
             if (response == "no data") {
                 showPopUp("Project Documents", "No file is available to download");
-            } else {
-                var a = document.createElement('a');
-                var binaryData = [];
-                binaryData.push(response);
-                window.URL.createObjectURL(new Blob(binaryData, {
-                    type: "application/zip"
-                }))
-                a.href = url;
-                document.body.append(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
-                showFloatingAlert("Success: File downloaded!");
+            } 
+            response = JSON.parse(response);
+            if(response.success == 'True'){
+                var host = 'http://'+location.hostname+'/'+response.fileName;
+                window.open(host, '_blank');
+            }else {
+                showPopUp("Project Documents", "Unable to view the document");
             }
         },
         error: function(error) {
