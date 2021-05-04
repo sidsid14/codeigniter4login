@@ -105,7 +105,7 @@ class GenerateDocuments extends BaseController
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				Page<span style="font-weight: bold;"> {PAGENO} </span> of <span style="font-weight: bold;">{nb}</span> 
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<span>QFT-01-00 Rev. B</span>
+				<span>QFT-01-00 Rev. C</span>
 			</div>');
 
 			$mpdf->WriteHTML('&nbsp;');
