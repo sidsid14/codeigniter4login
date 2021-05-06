@@ -181,27 +181,26 @@ function createTracker(trackerList) {
         </tr>`)
     }
 
-    let firstSlot = 9;
+    let firstSlot = 18;
     if (trackerList != null) {
         TRACKER_LIST = JSON.parse(trackerList.action_list);
-        // console.log(TRACKER_LIST);
         for (const item in TRACKER_LIST) {
             updateSlotDescription(item, ACTIVITY_CATEGORY[TRACKER_LIST[item].category], TRACKER_LIST[item].description)
         }
         firstSlot = Object.keys(TRACKER_LIST)[0];
     }
 
-    const offset = $("#slot_" + firstSlot).offset().top;
+    setTimeout(function() {
+        var elem = document.getElementById("slot_" + firstSlot);
+        elem.scrollIntoView({
+            behavior: 'smooth'
+        });
+    }, 500);
 
     createHeaderText();
-
-    const data = getGraphStats();
-    updatePieChartData(data);
+    updatePieChartData(getGraphStats());
     getStackChartData();
 
-    $('tbody').animate({
-        scrollTop: offset
-    }, 2000);
 }
 
 function updateSlotDescription(slot_id, category, description) {
