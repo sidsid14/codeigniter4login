@@ -402,9 +402,16 @@ function initializePieChart() {
         labels: [],
         dataLabels: {
             formatter: function(val, opts) {
-                return opts.w.config.series[opts.seriesIndex]
+                return opts.w.config.series[opts.seriesIndex]*0.5
             },
         },
+        
+        // dataLabels: {
+        //     enabled: true,
+        //     formatter: function (val, opts) {
+        //         return val
+        //     },
+        // },
         responsive: [{
             breakpoint: 480,
             options: {
@@ -423,6 +430,17 @@ function initializePieChart() {
                     background: 'transparent',
                     labels: {
                         show: true,
+                        value: {
+                            show: true,
+                            fontSize: '16px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 400,
+                            color: undefined,
+                            offsetY: 16,
+                            formatter: function (val) {
+                                return (val*0.5)+"hrs"
+                            }
+                        },
                         total: {
                             show: true,
                             label: 'Total',
@@ -431,9 +449,10 @@ function initializePieChart() {
                             fontWeight: 600,
                             color: '#373d3f',
                             formatter: function(w) {
-                                return w.globals.seriesTotals.reduce((a, b) => {
+                                let total =  w.globals.seriesTotals.reduce((a, b) => {
                                     return a + b
-                                }, 0)
+                                }, 0);
+                                return (total*0.5)+" hrs";
                             }
                         }
                     }

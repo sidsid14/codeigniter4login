@@ -146,7 +146,7 @@ $routes->post('actionList/delete', 'ActionList::delete',['filter' => 'auth']);
 $routes->get('timeTracker', 'TimeTracker::index',['filter' => 'auth']);
 $routes->get('timeTracker/show', 'TimeTracker::show',['filter' => 'auth']);
 $routes->post('timeTracker/create', 'TimeTracker::create',['filter' => 'auth']);
-$routes->get('timeTracker/get-weekly-stats', 'TimeTracker::getWeeklyStats');
+$routes->get('timeTracker/get-weekly-stats', 'TimeTracker::getWeeklyStats', ['filter' => 'auth']);
 /**
  * --------------------------------------------------------------------
  * Additional Routing
