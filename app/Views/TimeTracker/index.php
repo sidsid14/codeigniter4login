@@ -405,13 +405,14 @@ function initializePieChart() {
                 return opts.w.config.series[opts.seriesIndex]*0.5
             },
         },
-        
-        // dataLabels: {
-        //     enabled: true,
-        //     formatter: function (val, opts) {
-        //         return val
-        //     },
-        // },
+        tooltip: {
+            y: {
+                formatter: function(val) {
+                    const unit = val > 1 ? 'activites': 'activity';
+                    return `${val} ${unit} ~ ${val*0.5} hrs`;
+                }
+            }
+        },
         responsive: [{
             breakpoint: 480,
             options: {
