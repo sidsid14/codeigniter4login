@@ -315,9 +315,13 @@ function createHeaderText() {
         let message = `Hi ${USERNAME}! You have logged in ${totalActivities} ${totalActivityUnit} for the day.`;
         if (tracker_date == today) {
             const currentDate = new Date();
-            const currentHour = currentDate.getHours();
+            let currentHour = currentDate.getHours()*2;
+            const currentMinutes = currentDate.getMinutes();
+            if(currentMinutes>30){
+                currentHour += 1;
+            }
             // console.log(currentHour*2);
-            const activitesLeftForTheDay = slotsFilled.filter(slotTime => slotTime > currentHour*2).length;
+            const activitesLeftForTheDay = slotsFilled.filter(slotTime => slotTime >= currentHour).length;
             const activityLeftUnit = activitesLeftForTheDay > 1 ? 'are' : 'is';
             if (activitesLeftForTheDay) {
                 message += ` Out of which ${activitesLeftForTheDay} ${activityLeftUnit} still pending.`;
