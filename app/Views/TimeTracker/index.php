@@ -474,7 +474,7 @@ function initializeStackChart() {
         tooltip: {
             y: {
                 formatter: function(val) {
-                    return val + "hrs"
+                    return (val*0.5) + "hrs"
                 }
             }
         },
