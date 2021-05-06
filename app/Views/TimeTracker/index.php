@@ -1,0 +1,487 @@
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/time_tracker.css" />
+
+<div class="fluid-container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb  arr-right" style="margin:0px;">
+            <li class="breadcrumb-item text-primary" aria-current="page"> Time Tracker </li>
+        </ol>
+    </nav>
+    <main class="pb-3">
+        <div class="jumbotron jumbotron-fluid p-2 m-0">
+            <div class="container">
+                <p class="lead m-0" id="headerText"></p>
+            </div>
+        </div>
+        <div class=" mt-2">
+            <div class="row justify-content-end">
+                <div class="col-md-3 justify-content-end form-inline">
+                    <div class="form-group mb-2 mr-4">
+                        <input class="form-control form-control-sm" id="tracker_list_date" type="date"
+                            value="<?php echo date("Y-m-d"); ?>" />
+                        <button title="previous" onclick="updateDateCounter('minus')" class="btn-circle btn-sm ml-2"><i
+                                class="fas fa-angle-left fa-2x"></i></button>
+                        <button title="next" onclick="updateDateCounter('plus')" class="btn-circle btn-sm ml-1"><i
+                                class="fas fa-angle-right fa-2x"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-4 pl-4">
+                    <div id="daySummary"></div>
+                    <div class="mt-2" id="weeklySummary"></div>
+                </div>
+                <div class="col-8 pr-4">
+                    <table class="table table-sm table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col" style="width:100px" class="text-center">Time</th>
+                                <th scope="col" class="text-center">Activity </th>
+                            </tr>
+                        </thead>
+                        <tbody id="activity_rows" class="scroll scroll-primary"></tbody>
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+    <div class="edit-modal">
+        <form id="trackerForm" novalidate>
+            <header class="text-center p-2">
+                <span id="editModalTitle" class="item-header font-weight-bold text-secondary">Create Activity</span>
+            </header>
+            <div class="item-body scroll scroll-primary ">
+                <input type="hidden" id="item_id" name="item_id">
+                <input type="hidden" id="slot_id" name="slot_id">
+                <input type="hidden" id="tracker_date" name="tracker_date">
+                <div class="row ">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="text-muted" for="priority">Category</label>
+                            <select class="form-control select-box" name="category" id="category">
+                                <?php foreach ($activityCategory as $key => $name): ?>
+                                <option value="<?=$key?>"><?=$name?></option>;
+                                <?php endforeach;?>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label class="text-muted" for="reoccuring">Reoccuring</label>
+                            <select class="form-control select-box" name="reoccuring" id="reoccuring">
+                                <option value="0">None</option>;
+                                <option value="7">7 days</option>;
+                                <option value="15">15 days</option>;
+                                <option value="30">30 days</option>;
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="form-group">
+                            <label class="text-muted" for="description">Description</label>
+                            <textarea required class="form-control scroll scroll-dark"
+                                placeholder="Describe activity here..." style="height: 165px;" name="description"
+                                id="description"></textarea>
+                            <div class="invalid-feedback">
+                                Please provide some description.
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+
+            <footer class="item-footer">
+                <div class="row">
+                    <div class="col-12 text-center">
+                        <button type="submit" id="btnSave" class="btn btn-primary">Save</button>
+                        <a class="btn btn-danger ml-2 edit-cancel text-white" onclick="hideItemModal()">Cancel</a>
+                    </div>
+                </div>
+            </footer>
+        </form>
+    </div>
+</div>
+
+<script>
+$(document).on({
+    ajaxStart: function() {
+        $("#loading-overlay").show();
+    },
+    ajaxStop: function() {
+        $("#loading-overlay").hide();
+    }
+});
+let TIME_SLOTS = [];
+let TRACKER_LIST = {};
+let DATE_COUNTER = 0;
+let ACTIVITY_CATEGORY;
+let USERNAME = "<?= session()->get('name') ?>";
+let STACK_CHART, PIE_CHART;
+$(document).ready(function() {
+    getTracker();
+    ACTIVITY_CATEGORY = <?= json_encode($activityCategory) ?>;
+    initializePieChart();
+    initializeStackChart();
+});
+
+function getTracker() {
+    const tracker_date = getTrackerDate();
+    const url = "/timeTracker/show?tracker_date=" + tracker_date;
+    makeRequest(url)
+        .then((response) => {
+            // console.log(response);
+            TRACKER_LIST = {};
+            createTracker(response.trackerList);
+            $("#tracker_list_date").val(response.tracker_date);
+        })
+        .catch((err) => {
+            console.log(err);
+            showPopUp('Error', "An unexpected error occured on server.");
+        });
+}
+
+function getTrackerDate() {
+    let tracker_date = new Date();
+    tracker_date.setDate(tracker_date.getDate() + DATE_COUNTER);
+    return formatDate(tracker_date, false).substring(0, 10);
+}
+
+function createTracker(trackerList) {
+
+    const timeSlots = getTimeSlots(1);
+    TIME_SLOTS = timeSlots;
+
+    $("#activity_rows").html("");
+
+    for (var i = 0; i < timeSlots.length; i++) {
+        $("#activity_rows").append(`<tr id="slot_${i}">
+            <th scope="row" style="width:100px">${timeSlots[i]}</th>
+            <td style="padding:0px">
+                <div class="row">
+                    <div class="col-11">
+                        <p style="margin:4px 0px 0px 10px" id="slot_description_${i}">
+                        <span style="color:#ccc">Empty</span>
+                        </p>
+                    </div>
+                    <div class="col-1">
+                        <button class="activity-button" title="Edit" onclick="showItemModal('${i}')"><i class="fa fa-edit"
+                                aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </td>
+        </tr>`)
+    }
+
+    let firstSlot = 9;
+    if (trackerList != null) {
+        TRACKER_LIST = JSON.parse(trackerList.action_list);
+        // console.log(TRACKER_LIST);
+        for (const item in TRACKER_LIST) {
+            updateSlotDescription(item, ACTIVITY_CATEGORY[TRACKER_LIST[item].category], TRACKER_LIST[item].description)
+        }
+        firstSlot = Object.keys(TRACKER_LIST)[0];
+    }
+
+    const offset = $("#slot_" + firstSlot).offset().top;
+
+    createHeaderText();
+
+    const data = getGraphStats();
+    updatePieChartData(data);
+    getStackChartData();
+
+    $('tbody').animate({
+        scrollTop: offset
+    }, 2000);
+}
+
+function updateSlotDescription(slot_id, category, description) {
+    $(`#slot_description_${slot_id}`).html(
+        `<span class="item-label">${category}</span> -  ${description}`);
+}
+
+function getTimeSlots(type) {
+    let timeSlots = [];
+    if (type == 1) {
+        for (var i = 0; i < 24; i++) {
+            if (i == 0) {
+                timeSlots.push("12:00 AM");
+
+            } else if (i == 12) {
+                timeSlots.push("12:00 PM");
+
+            } else {
+                const time = i < 12 ? i + ":00 AM" : (i % 12) + ":00 PM";
+                timeSlots.push(time);
+            }
+        }
+        return timeSlots;
+    }
+
+}
+
+function hideItemModal() {
+    $(".edit-modal").removeClass("show-right");
+    $(".edit-modal").addClass("hide-right");
+}
+
+function showItemModal(slotId) {
+    $(".edit-modal").removeClass("hide-right");
+    $(".edit-modal").addClass("show-right");
+
+    $("#slot_id").val(slotId);
+    const trackerDate = getTrackerDate();
+    $("#tracker_date").val(trackerDate);
+    if (activityExists(slotId)) {
+        $("#item_id").val(TRACKER_LIST[slotId].id);
+        $(".item-header").text("Edit Activity for " + TIME_SLOTS[slotId]);
+        $("#category").val(TRACKER_LIST[slotId].category);
+        $("#reoccuring").val(TRACKER_LIST[slotId].reoccuring);
+        $("#description").val(TRACKER_LIST[slotId].description);
+        $("#reoccuring").attr('disabled', true)
+    } else {
+        $("#item_id").val("");
+        $(".item-header").text("Create Activity for " + TIME_SLOTS[slotId]);
+        $("#category").val(0);
+        $("#reoccuring").val(0);
+        $("#description").val("");
+        $("#reoccuring").attr('disabled', false);
+    }
+}
+
+function updateDateCounter(type) {
+    if (type == "plus") {
+        DATE_COUNTER++;
+    } else {
+        DATE_COUNTER--;
+    }
+    getTracker();
+}
+
+$('form').on('submit', function(e) {
+    e.preventDefault();
+
+    let form = $('form')[0];
+    if (form.checkValidity() === true) {
+
+        let trackerForm = $('form#trackerForm').serialize();
+        makePOSTRequest('/timeTracker/create', trackerForm)
+            .then((response) => {
+                // console.log(response);
+                TRACKER_LIST[response.slot_id] = response.item;
+
+                updateSlotDescription(response.slot_id, ACTIVITY_CATEGORY[response.item.category], response
+                    .item.description);
+
+                createHeaderText();
+                const data = getGraphStats();
+                updatePieChartData(data);
+
+            })
+            .catch((err) => {
+                console.log(err);
+                showPopUp('Error', "An unexpected error occured on server.");
+            })
+        hideItemModal();
+    } else {
+        form.classList.add('was-validated');
+    }
+
+});
+
+function activityExists(slotId) {
+    return Object.keys(TRACKER_LIST).includes(slotId);
+}
+
+function createHeaderText() {
+    const slotsFilled = Object.keys(TRACKER_LIST);
+    const totalActivities = slotsFilled.length;
+    if (totalActivities) {
+        const tracker_date = getTrackerDate();
+        const today = formatDate(new Date(), false).substring(0, 10);
+        const totalActivityUnit = totalActivities > 1 ? 'activites' : 'activity';
+        let message = `Hi ${USERNAME}! You have logged in ${totalActivities} ${totalActivityUnit} for the day.`;
+        if (tracker_date == today) {
+            const currentDate = new Date();
+            const currentHour = currentDate.getHours();
+            const activitesLeftForTheDay = slotsFilled.filter(slotTime => slotTime > currentHour).length;
+            const activityLeftUnit = activitesLeftForTheDay > 1 ? 'are' : 'is';
+            if (activitesLeftForTheDay) {
+                message += ` Out of which ${activitesLeftForTheDay} ${activityLeftUnit} still pending.`;
+            }
+        }
+        $("#headerText").text(message);
+        $(".jumbotron").show();
+    } else {
+        $("#headerText").text("");
+        $(".jumbotron").hide();
+
+    }
+}
+
+function updatePieChartData(data) {
+    PIE_CHART.updateOptions({
+        series: data.series,
+        labels: data.labels
+    });
+}
+
+function getStackChartData() {
+    const tracker_date = getTrackerDate();
+    const url = `/timeTracker/get-weekly-stats?tracker_date=${tracker_date}`;
+    makeRequest(url)
+        .then((response) => {
+            updateStackChartData(response.series, response.categories)
+        })
+        .catch((err) => {
+            console.log(err);
+            showPopUp('Error', "An unexpected error occured on server.");
+        });
+}
+
+function updateStackChartData(series, categories) {
+    STACK_CHART.updateOptions({
+        series: series,
+        xaxis: {
+            categories: categories
+        }
+    });
+
+}
+
+function getGraphStats() {
+    let categoryData = {};
+    for (const item in TRACKER_LIST) {
+        let slot = TRACKER_LIST[item];
+        let category = ACTIVITY_CATEGORY[slot.category];
+        if (!categoryData[category]) {
+            categoryData[category] = 1;
+        } else {
+            categoryData[category] = categoryData[category] + 1;
+        }
+    }
+    return {
+        labels: Object.keys(categoryData),
+        series: Object.values(categoryData)
+    };
+}
+
+function initializePieChart() {
+    var pieOptions = {
+        title: {
+            text: "Summary"
+        },
+        series: [],
+        chart: {
+            id: "daySummary",
+            width: "100%",
+            height: 200,
+            type: "donut",
+            toolbar: {
+                show: true
+            },
+            fontFamily: 'Open Sans, sans-serif'
+        },
+        labels: [],
+        dataLabels: {
+            formatter: function(val, opts) {
+                return opts.w.config.series[opts.seriesIndex]
+            },
+        },
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: {
+                    width: 200
+                },
+                legend: {
+                    position: "bottom"
+                }
+            }
+        }],
+        plotOptions: {
+            pie: {
+                donut: {
+                    size: '65%',
+                    background: 'transparent',
+                    labels: {
+                        show: true,
+                        total: {
+                            show: true,
+                            label: 'Total',
+                            fontSize: '16px',
+                            fontFamily: 'Helvetica, Arial, sans-serif',
+                            fontWeight: 600,
+                            color: '#373d3f',
+                            formatter: function(w) {
+                                return w.globals.seriesTotals.reduce((a, b) => {
+                                    return a + b
+                                }, 0)
+                            }
+                        }
+                    }
+                },
+            }
+        }
+
+    };
+
+    PIE_CHART = new ApexCharts(document.querySelector("#daySummary"), pieOptions);
+    PIE_CHART.render();
+}
+
+function initializeStackChart() {
+    var options = {
+        series: [],
+        chart: {
+            type: 'bar',
+            height: 350,
+            stacked: true,
+            stackType: '100%'
+        },
+        plotOptions: {
+            bar: {
+                horizontal: true,
+            },
+        },
+        stroke: {
+            width: 1,
+            colors: ['#fff']
+        },
+        title: {
+            text: "Last Week Stats"
+        },
+        xaxis: {
+            categories: [],
+        },
+        tooltip: {
+            y: {
+                formatter: function(val) {
+                    return val + "hrs"
+                }
+            }
+        },
+        fill: {
+            opacity: 1
+
+        },
+        legend: {
+            position: 'top',
+            horizontalAlign: 'left',
+            offsetX: 40
+        }
+    };
+
+    STACK_CHART = new ApexCharts(document.querySelector("#weeklySummary"), options);
+    STACK_CHART.render();
+}
+</script>

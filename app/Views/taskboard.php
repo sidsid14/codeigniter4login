@@ -535,6 +535,7 @@ function drawBar(chartContainerId, title, data) {
 }
 
 function drawPie(chartContainerId, title, data, colors) {
+    
     $("#"+chartContainerId).html("");
     var pieOptions = {
         title: {

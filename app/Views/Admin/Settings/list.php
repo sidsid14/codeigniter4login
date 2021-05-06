@@ -77,6 +77,10 @@
                                 <a class="list-group-item list-group-item-action" id="user-role-list"
                                     data-toggle="list" href="#userRoleList" role="tab"
                                     aria-controls="profile">User Role</a>
+
+                                <a class="list-group-item list-group-item-action" id="time-tracker-list"
+                                    data-toggle="list" href="#timeTrackerList" role="tab"
+                                    aria-controls="profile">Time Tracker Category</a>
                             </div>
                         </div>
                         <div class="col-12 col-sm-8 pt-4 pt-sm-0">
@@ -190,6 +194,20 @@
                                         <div class="col-3">
                                             <button class="btn btn-primary"
                                                 onclick="addValue('User Role', 'userRole')">Add</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tab-pane fade" id="timeTrackerList" role="tabpanel"
+                                    aria-labelledby="time-tracker-list">
+                                    
+                                    <div class="row ">
+                                        <div class="col-9">
+                                            <ul class="list-group timeTrackerCategory"></ul>
+                                        </div>
+                                        <div class="col-3">
+                                            <button class="btn btn-primary"
+                                                onclick="addValue('Time Tracker Category', 'timeTrackerCategory')">Add</button>
                                         </div>
                                     </div>
                                 </div>
