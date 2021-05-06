@@ -215,13 +215,17 @@ function getTimeSlots(type) {
         for (var i = 0; i < 24; i++) {
             if (i == 0) {
                 timeSlots.push("12:00 AM");
+                timeSlots.push("12:30 AM");
 
             } else if (i == 12) {
                 timeSlots.push("12:00 PM");
+                timeSlots.push("12:30 PM");
 
             } else {
-                const time = i < 12 ? i + ":00 AM" : (i % 12) + ":00 PM";
-                timeSlots.push(time);
+                const time1 = i < 12 ? i + ":00 AM" : (i % 12) + ":00 PM";
+                const time2 = i < 12 ? i + ":30 AM" : (i % 12) + ":30 PM";
+                timeSlots.push(time1);
+                timeSlots.push(time2);
             }
         }
         return timeSlots;
