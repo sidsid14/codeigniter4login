@@ -413,6 +413,7 @@ function initializePieChart() {
                 }
             }
         },
+        colors:['#008ffb', '#00e396', '#feb019', '#ff4560', '#775dd0', '#e044a7', '#12239e', "#545b62"],
         responsive: [{
             breakpoint: 480,
             options: {
@@ -498,6 +499,7 @@ function initializeStackChart() {
                 }
             }
         },
+        colors:['#008ffb', '#00e396', '#feb019', '#ff4560', '#775dd0', '#e044a7', '#12239e', "#545b62"],
         fill: {
             opacity: 1
 
