@@ -316,7 +316,8 @@ function createHeaderText() {
         if (tracker_date == today) {
             const currentDate = new Date();
             const currentHour = currentDate.getHours();
-            const activitesLeftForTheDay = slotsFilled.filter(slotTime => slotTime > currentHour).length;
+            // console.log(currentHour*2);
+            const activitesLeftForTheDay = slotsFilled.filter(slotTime => slotTime > currentHour*2).length;
             const activityLeftUnit = activitesLeftForTheDay > 1 ? 'are' : 'is';
             if (activitesLeftForTheDay) {
                 message += ` Out of which ${activitesLeftForTheDay} ${activityLeftUnit} still pending.`;
