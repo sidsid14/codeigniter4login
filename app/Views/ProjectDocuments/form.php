@@ -751,7 +751,7 @@ function insertTable(sectionId, tableName, columnValues) {
             indexes.forEach((index, i) => {
                 var value = record[index];
                 if(index == 'risk'){
-                    value= value.replace(/V- |S- |OI- |SI- /g,'');
+                    value= value.replace(/V- |S- |AT- |OI- |SI- /g,'');
                 }
                 content += "|" + ((capitalize(index) == 'Hazard-analysis') ? "Hazard-Analysis & Mitigation" : capitalize(index)) + "|" + ((value != null) ? value.replace(/(\r\n|\n|\r)/gm, "") : "") +
                     "|\r\n";

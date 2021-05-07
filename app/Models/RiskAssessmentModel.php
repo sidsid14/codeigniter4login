@@ -13,9 +13,9 @@ class RiskAssessmentModel extends Model{
         $whereCondition = ""; $riskType = 'Vulnerability';
         $riskType = $type;
         if($status == "All"){
-            $whereCondition = " WHERE risk_type = '".$riskType."' ";
+            $whereCondition = ($riskType == 'Automation') ? " WHERE component = 'vms_automation' AND risk_type = 'Vulnerability' " : " WHERE risk_type = '".$riskType."' ";
         }else{
-            $whereCondition = " WHERE risk_type = '".$riskType."' AND status = '".$status."' ";
+            $whereCondition = ($riskType == 'Automation') ? " WHERE component = 'vms_automation' AND risk_type = 'Vulnerability' AND status = '".$status."' " : " WHERE risk_type = '".$riskType."' AND status = '".$status."' ";
         }
         $sql = "SELECT * from `docsgo-risks` ". $whereCondition . "ORDER BY update_date desc;";
         $query = $db->query($sql);
@@ -71,7 +71,10 @@ class RiskAssessmentModel extends Model{
             $temp['cascade_effect'] = $row['cascade_effect'];
             switch($temp['risk_type']){
                 case 'Vulnerability':
-                    $temp['risk'] = 'V- '.$row['risk'];
+                    if($temp['component'] != 'vms_automation')
+                        $temp['risk'] = 'V- '.$row['risk'];
+                    else
+                        $temp['risk'] = 'AT- '.$row['risk'];
                     break;
                 case 'SOUP':
                     $temp['risk'] = 'S- '.$row['risk'];
