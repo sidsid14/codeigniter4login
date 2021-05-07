@@ -979,6 +979,9 @@ function getTaskHtml(newTask) {
     var assignee = (newTask.task_column == "Under Verification" ? newTask.verifier : newTask.assignee);
     if (assignee != "" && assignee != null) {
         assignee = teamMembers[assignee];
+        if(assignee == undefined){
+            assignee = "User Disabled";
+        }
     } else {
         assignee = "Unassigned";
     }

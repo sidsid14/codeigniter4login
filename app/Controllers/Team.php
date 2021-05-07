@@ -89,6 +89,12 @@ class Team extends BaseController
 					$is_admin = 1;
 				}
 
+				$is_active_text = $this->request->getVar('is-active');
+				$is_active = 0;
+				if($is_active_text == 'on'){
+					$is_active = 1;
+				}
+
 				$defaultPassword = getenv('PASS_CODE');
 
 				$newData = [
@@ -99,6 +105,7 @@ class Team extends BaseController
 					'is-manager' => $is_manager,
 					'is-admin' => $is_admin,
 					'password' => $defaultPassword,
+					'is-active' => $is_active,
 				];
 
 				$data['member'] = $newData;

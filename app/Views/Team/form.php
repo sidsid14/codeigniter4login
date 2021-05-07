@@ -68,7 +68,7 @@
           <!-- </div> -->
 
           <!-- <div class="row mt-sm-2"> -->
-            <div class="col-12 col-sm-10">
+            <div class="col-12 col-sm-8">
                 <div class="form-group">
                   <label class = "font-weight-bold text-muted" for="email">Email address</label>
                   <input 
@@ -84,6 +84,16 @@
                   <label class = "font-weight-bold text-muted" for="is-admin">Admin</label> <br/>
                   <input class="mt-4" type="checkbox" name="is-admin" id="is-admin" 
                           data-on="Yes" data-off="No" <?= isset($member['is-admin']) ? ($member['is-admin'] ? 'checked' : '') : '' ;?> data-toggle="toggle" >
+              
+              </div>
+            </div>
+
+            <div class="col-12 col-sm-2 " >
+              <div class="form-group">
+
+                  <label class = "font-weight-bold text-muted" for="is-active">Active</label> <br/>
+                  <input class="mt-4" type="checkbox" name="is-active" id="is-active" 
+                          data-on="Yes" data-off="No" <?= isset($member['is-active']) ? ($member['is-active'] ? 'checked' : '') : '' ;?> data-toggle="toggle" >
               
               </div>
             </div>
