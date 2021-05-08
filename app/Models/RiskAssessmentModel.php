@@ -13,9 +13,9 @@ class RiskAssessmentModel extends Model{
         $whereCondition = ""; $riskType = 'Vulnerability';
         $riskType = $type;
         if($status == "All"){
-            $whereCondition = ($riskType == 'Automation') ? " WHERE component = 'vms_automation' AND risk_type = 'Vulnerability' " : " WHERE risk_type = '".$riskType."' ";
+            $whereCondition = ($riskType == 'Automation') ? " WHERE component = 'vms_automation' AND risk_type = 'Vulnerability' " : " WHERE risk_type = '".$riskType."' AND component != 'vms_automation' ";
         }else{
-            $whereCondition = ($riskType == 'Automation') ? " WHERE component = 'vms_automation' AND risk_type = 'Vulnerability' AND status = '".$status."' " : " WHERE risk_type = '".$riskType."' AND status = '".$status."' ";
+            $whereCondition = ($riskType == 'Automation') ? " WHERE component = 'vms_automation' AND risk_type = 'Vulnerability' AND status = '".$status."' " : " WHERE risk_type = '".$riskType."' AND status = '".$status."' AND component != 'vms_automation' ";
         }
         $sql = "SELECT * from `docsgo-risks` ". $whereCondition . "ORDER BY update_date desc;";
         $query = $db->query($sql);
