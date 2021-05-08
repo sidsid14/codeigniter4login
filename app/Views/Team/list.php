@@ -33,7 +33,11 @@
                 }else if($row['is-manager']){
                     $rowClass = "table-success";
                     $rowTitle = "Manager";
-                }else{
+                }else if(!$row['is-active']){
+                  $rowClass = "table-dark";
+                  $rowTitle = "Disabled";
+                }
+                else{
                   $rowClass = "";
                   $rowTitle = "User";
                 }
