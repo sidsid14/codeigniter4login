@@ -1,6 +1,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/time_tracker.css" />
+<link rel="stylesheet" href="/assets/css/time_tracker.css?1.1" />
 
 <div class="fluid-container">
     <nav aria-label="breadcrumb">
@@ -36,7 +36,9 @@
                     <table class="table table-sm table-hover">
                         <thead>
                             <tr>
-                                <th scope="col" style="width:100px" class="text-center">Time</th>
+                                <th scope="col" style="width:110px" class="text-center">Time
+                                    <span title="Time format" class="badge badge-pill badge-light ml-1 btnToggle" onclick="toggleTimeFormat()">12hrs</span>
+                                </th>
                                 <th scope="col" class="text-center">Activity </th>
                             </tr>
                         </thead>
@@ -94,14 +96,17 @@
                         </div>
                     </div>
 
-
-
                 </div>
             </div>
 
             <footer class="item-footer">
-                <div class="row">
-                    <div class="col-12 text-center">
+                <div class="row justify-content-between">
+                    <div class="col-3">
+                        <button type="button" title="Reset Activity" id="btnReset" class="btn btn-secondary" onclick="resetActivity()" style="display:none">
+                            <i class="fas fa-sync"></i>
+                        </button>
+                    </div>
+                    <div class="col-6">
                         <button type="submit" id="btnSave" class="btn btn-primary">Save</button>
                         <a class="btn btn-danger ml-2 edit-cancel text-white" onclick="hideItemModal()">Cancel</a>
                     </div>
@@ -126,7 +131,15 @@ let DATE_COUNTER = 0;
 let ACTIVITY_CATEGORY;
 let USERNAME = "<?= session()->get('name') ?>";
 let STACK_CHART, PIE_CHART;
+let TIME_FORMAT = 1;
+
 $(document).ready(function() {
+    let existingFormat = window.localStorage.getItem('TIME_FORMAT');
+    if(existingFormat == null){
+        window.localStorage.setItem('TIME_FORMAT', 1);
+    }else{
+        TIME_FORMAT = existingFormat;
+    }
     getTracker();
     ACTIVITY_CATEGORY = <?= json_encode($activityCategory) ?>;
     initializePieChart();
@@ -138,9 +151,11 @@ function getTracker() {
     const url = "/timeTracker/show?tracker_date=" + tracker_date;
     makeRequest(url)
         .then((response) => {
-            // console.log(response);
             TRACKER_LIST = {};
-            createTracker(response.trackerList);
+            if (response.trackerList != null) {
+                TRACKER_LIST = JSON.parse(response.trackerList);
+            }
+            createTracker();
             $("#tracker_list_date").val(response.tracker_date);
         })
         .catch((err) => {
@@ -155,11 +170,32 @@ function getTrackerDate() {
     return formatDate(tracker_date, false).substring(0, 10);
 }
 
-function createTracker(trackerList) {
+function toggleTimeFormat(){
+    if(TIME_FORMAT == 1){
+        TIME_FORMAT = 2;
+    }else{
+        TIME_FORMAT = 1;   
+    }
+    window.localStorage.setItem('TIME_FORMAT', TIME_FORMAT);
+    drawTrackerHtml(TIME_FORMAT);
+}
 
-    const timeSlots = getTimeSlots(1);
+function updateTimeLabel(){
+    const label = TIME_FORMAT == 1 ? "12hrs" : "24hrs";
+    $(".btnToggle").html(label);  
+}
+
+function createTracker() {
+    drawTrackerHtml(TIME_FORMAT);
+    createHeaderText();
+    updatePieChartData(getGraphStats());
+    getStackChartData();
+}
+
+function drawTrackerHtml(time_format = 1){
+    updateTimeLabel();
+    const timeSlots = getTimeSlots(time_format);
     TIME_SLOTS = timeSlots;
-
     $("#activity_rows").html("");
 
     for (var i = 0; i < timeSlots.length; i++) {
@@ -182,14 +218,16 @@ function createTracker(trackerList) {
     }
 
     let firstSlot = 18;
-    if (trackerList != null) {
-        TRACKER_LIST = JSON.parse(trackerList.action_list);
-        for (const item in TRACKER_LIST) {
-            updateSlotDescription(item, ACTIVITY_CATEGORY[TRACKER_LIST[item].category], TRACKER_LIST[item].description)
+    if (TRACKER_LIST != null) {
+        if(Object.keys(TRACKER_LIST).length){
+            for (const item in TRACKER_LIST) {
+                updateSlotDescription(item, ACTIVITY_CATEGORY[TRACKER_LIST[item].category], TRACKER_LIST[item].description)
+            }
+            firstSlot = Object.keys(TRACKER_LIST)[0];
         }
-        firstSlot = Object.keys(TRACKER_LIST)[0];
+        
     }
-
+    
     setTimeout(function() {
         var elem = document.getElementById("slot_" + firstSlot);
         elem.scrollIntoView({
@@ -197,15 +235,16 @@ function createTracker(trackerList) {
         });
     }, 500);
 
-    createHeaderText();
-    updatePieChartData(getGraphStats());
-    getStackChartData();
-
 }
 
 function updateSlotDescription(slot_id, category, description) {
     $(`#slot_description_${slot_id}`).html(
         `<span class="item-label">${category}</span> -  ${description}`);
+}
+
+function resetSlotDescription(slot_id){
+    $(`#slot_description_${slot_id}`).html(
+        `<span style="color:#ccc">Empty</span>`);
 }
 
 function getTimeSlots(type) {
@@ -226,6 +265,23 @@ function getTimeSlots(type) {
                 timeSlots.push(time1);
                 timeSlots.push(time2);
             }
+        }
+        return timeSlots;
+    }else{
+        for (var i = 0; i < 24; i++) {
+            let time1 = i*100;
+            let time2 = i*100+30;
+            if(i == 0 ){
+                timeSlots.push("0000 hrs");
+                timeSlots.push("0030 hrs");
+            }else if(i>=1 && i<10){
+                timeSlots.push("0"+time1+" hrs");
+                timeSlots.push("0"+time2+" hrs");
+            }else{
+                timeSlots.push(time1+" hrs");
+                timeSlots.push(time2+" hrs");
+            }
+            
         }
         return timeSlots;
     }
@@ -250,7 +306,8 @@ function showItemModal(slotId) {
         $("#category").val(TRACKER_LIST[slotId].category);
         $("#reoccuring").val(TRACKER_LIST[slotId].reoccuring);
         $("#description").val(TRACKER_LIST[slotId].description);
-        $("#reoccuring").attr('disabled', true)
+        $("#reoccuring").attr('disabled', true);
+        $("#btnReset").show();
     } else {
         $("#item_id").val("");
         $(".item-header").text("Create Activity for " + TIME_SLOTS[slotId]);
@@ -258,6 +315,7 @@ function showItemModal(slotId) {
         $("#reoccuring").val(0);
         $("#description").val("");
         $("#reoccuring").attr('disabled', false);
+        $("#btnReset").hide();
     }
 }
 
@@ -270,6 +328,25 @@ function updateDateCounter(type) {
     getTracker();
 }
 
+function resetActivity(){
+    const slot_id = $("#slot_id").val();
+    let activityForm = {slot_id, tracker_date:  getTrackerDate()};
+
+    makePOSTRequest('/timeTracker/delete', activityForm)
+        .then((response) => {
+            delete TRACKER_LIST[response.slot_id];
+            resetSlotDescription(response.slot_id);
+            createHeaderText();
+            const data = getGraphStats();
+            updatePieChartData(data);
+        })
+        .catch((err) => {
+            console.log(err);
+            showPopUp('Error', "An unexpected error occured on server.");
+        })
+        hideItemModal();
+}
+
 $('form').on('submit', function(e) {
     e.preventDefault();
 
@@ -279,7 +356,6 @@ $('form').on('submit', function(e) {
         let trackerForm = $('form#trackerForm').serialize();
         makePOSTRequest('/timeTracker/create', trackerForm)
             .then((response) => {
-                // console.log(response);
                 TRACKER_LIST[response.slot_id] = response.item;
 
                 updateSlotDescription(response.slot_id, ACTIVITY_CATEGORY[response.item.category], response
@@ -320,7 +396,7 @@ function createHeaderText() {
             if(currentMinutes>30){
                 currentHour += 1;
             }
-            // console.log(currentHour*2);
+            
             const activitesLeftForTheDay = slotsFilled.filter(slotTime => slotTime >= currentHour).length;
             const activityLeftUnit = activitesLeftForTheDay > 1 ? 'are' : 'is';
             if (activitesLeftForTheDay) {

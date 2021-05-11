@@ -75,11 +75,34 @@ class TimeTracker extends BaseController
         return $action_list[$props["slot_id"]];
     }
 
+    public function delete()
+    {
+        $slot_id = $this->request->getVar('slot_id');
+        $tracker_date = $this->request->getVar('tracker_date');
+        $trackerList = $this->getTrackerList($tracker_date);
+        $action_list = json_decode($trackerList["action_list"], true);
+
+        unset($action_list[$slot_id]);
+
+        $trackerList["action_list"] = json_encode($action_list);
+        $trackerModel = new TimeTrackerModel();
+        $trackerModel->update($trackerList["id"], $trackerList);
+
+        $response = array("success" => "true");
+        $response["slot_id"] = $slot_id;
+
+        echo json_encode($response);
+    }
+
     public function show()
     {
         $tracker_date = $this->request->getVar('tracker_date');
         $response = array("success" => "true");
-        $response['trackerList'] = $this->getTrackerList($tracker_date);
+        $trackerList = $this->getTrackerList($tracker_date);
+        if($trackerList != null){
+            $trackerList = $trackerList["action_list"];
+        }
+        $response['trackerList'] = $trackerList;
         $response["tracker_date"] = $tracker_date;
         echo json_encode($response);
     }
