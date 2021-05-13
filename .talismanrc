@@ -1,0 +1,3 @@
+fileignoreconfig:
+- filename: app/Controllers/GenerateDocuments.php
+  checksum: dd22e6d2caee119c4183c69b5adb85ea5ec0c90de42a18041d10f321a7cc86d6

@@ -113,7 +113,7 @@ class GenerateDocuments extends BaseController
 			//#-2: Adding image at first page header line
 			$mpdf->WriteHTML('<div style="position: absolute; left:340; right: 0; top: 200; bottom: 0;">
 				<img src="' . $documentIconImage . '" 
-				style="width: 30mm; height: 22mm; margin: 0;" />
+				style="width: 35mm; height: 27mm; margin: 5;" />
 			</div>');
 
 			$DocID = 'Doc ID: ' . $json['cp-line4'];
@@ -203,13 +203,18 @@ class GenerateDocuments extends BaseController
 
 			//#-8 Adding logo left corner section every page
 			$mpdf->SetHTMLHeader('<div style="text-align:left;padding-bottom:30mm;"><img src="'.$documentIconImage.'" style="width: 20mm; height: 17mm; margin: 0;"/></div>','O',true);
-			
+
 			//#-9 Adding sections
 			try{
 				for ($i = 0; $i < count($json['sections']); $i++) {
 					$index = (string)$i+1;
 					$sectionCount = $index.'.0';
-					$mpdf->WriteHTML('<div style="font-family: frutiger; font-weight: bold; font-size: 12pt;"><h1 style="font-size: 12pt;">'.$sectionCount.'&nbsp;&nbsp;'.strtoupper($json['sections'][$i]['title']).'</h1></div>');
+					//Adjusting the space between index number and heading content, some pixels are getting differ compare to single digits and double digits, so added space to fix the issue
+					if($sectionCount > 9)
+						$mpdf->WriteHTML('<div style="font-family: frutiger; font-weight: bold; font-size: 12pt;"><h1 style="font-size: 12pt;">'.$sectionCount.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.strtoupper($json['sections'][$i]['title']).'</h1></div>');
+					else
+						$mpdf->WriteHTML('<div style="font-family: frutiger; font-weight: bold; font-size: 12pt;"><h1 style="font-size: 12pt;">'.$sectionCount.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.strtoupper($json['sections'][$i]['title']).'</h1></div>');
+
 					$contentSection = '<b></b>';
 					$org = $json['sections'][$i]['content'];
 					$contentSection = $pandoc->convert($org, "gfm", "html5");
@@ -231,12 +236,12 @@ class GenerateDocuments extends BaseController
 
 							$mpdf->WriteHTML($html);
 						}else{
-							$mpdf->WriteHTML('<div style="font-family: frutiger; font-weight: normal; font-size: 11pt;margin-left: 0.4in;">
+							$mpdf->WriteHTML('<div style="font-family: frutiger; font-weight: normal; font-size: 11pt;margin-left: 0.55in;">
 							'.$tableContentFormatted.'
 							</div>');
 						}
 					} else {
-						$mpdf->WriteHTML('<div style="font-family: frutiger; font-weight: normal; font-size: 11pt;margin-left: 0.4in;">
+						$mpdf->WriteHTML('<div style="font-family: frutiger; font-weight: normal; font-size: 11pt;margin-left: 0.55in;">
 						'.$contentSection.'
 						</div>');
 					}
@@ -380,6 +385,33 @@ class GenerateDocuments extends BaseController
 		preg_match_all( '|<'.$type.'(.*)>(.*)</'.$type.'>|iU', $orgValString, $orgValMatch);
 		if(!empty($orgValMatch)) {
 			$changeHeader = $orgValMatch[2][0];
+			//Adjusting the space between index number and heading content, some pixels are getting differ compare to single digits and double digits, so added space to fix the issue
+			$indexCount = strlen($incKey)-1;
+			if($incKey < 10){
+				if($indexCount == 3){
+					$incKey = $incKey.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+				}elseif($indexCount == 4){
+					$incKey = $incKey.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+				}elseif($indexCount == 5){
+					$incKey = $incKey.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';						
+				}elseif($indexCount == 6){
+					$incKey = $incKey.'&nbsp;&nbsp;&nbsp;';
+				}else{
+					$incKey = $incKey.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+				}
+			}else{
+				if($indexCount == 4){
+					$incKey = $incKey.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+				}elseif($indexCount == 5){
+					$incKey = $incKey.'&nbsp;&nbsp;&nbsp;';						
+				}elseif($indexCount == 6){
+					$incKey = $incKey.'&nbsp;&nbsp;';
+				}elseif($indexCount == 7){
+					$incKey = $incKey.'&nbsp;';	
+				}else{
+					$incKey = $incKey.'&nbsp;&nbsp;&nbsp;&nbsp;';
+				}
+			}
 			$newValue = '">'.$incKey.$changeHeader;
 			if (!(ctype_upper($changeHeader))) { 
 				$newValue = '">'.$incKey.ucwords($changeHeader);
@@ -392,8 +424,8 @@ class GenerateDocuments extends BaseController
 
 	public function handleSunHeadingAlignments($contentSection){
 		//Adjusting the sub heading content display position, applying the font to code block
-		$contentSection = str_replace("<h2 ", '<h2 style="position: absolute; margin-left: -28pt; font-weight: normal;" ', $contentSection);
-		$contentSection = str_replace("<h3 ", '<h3 style="position: absolute; margin-left: -28pt; font-weight: normal;" ', $contentSection);
+		$contentSection = str_replace("<h2 ", '<h2 style="position: absolute; margin-left: -40pt; font-weight: normal;" ', $contentSection);
+		$contentSection = str_replace("<h3 ", '<h3 style="position: absolute; margin-left: -40pt; font-weight: normal;" ', $contentSection);
 		$contentSection = str_replace("<code>", '<code style="font-family: frutiger;">', $contentSection);
 		return $contentSection;
 	}
