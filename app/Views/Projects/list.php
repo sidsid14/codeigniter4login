@@ -57,9 +57,9 @@
                         <i class="fa fa-edit"></i>
                     </a>
                     <?php if (session()->get('is-admin')): ?>
-                    <a onclick="deleteProject(<?php echo $row['project-id'];?>)" class="btn btn-danger ml-2">
+                    <!-- <a onclick="deleteProject(<?php //echo $row['project-id'];?>)" class="btn btn-danger ml-2">
                         <i class="fa fa-trash text-light"></i>
-                    </a>
+                    </a> -->
                     <?php endif; ?>
                 </td>
             </tr>
