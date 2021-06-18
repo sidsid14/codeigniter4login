@@ -68,8 +68,11 @@ class Documents extends BaseController
             $selectedProject = getActiveProjectId(); //Default project
         }
 
-        $documentModel = new DocumentModel();
-        $data['documentsCount'] = $documentModel->getDocumentsCount($selectedProject, $selectedUser);
+		if($selectedProject != null){
+			$documentModel = new DocumentModel();
+			$data['documentsCount'] = $documentModel->getDocumentsCount($selectedProject, $selectedUser);
+		}
+        
 
         $data['selectedProject'] = $selectedProject;
         $data['selectedStatus'] = $selectedStatus;

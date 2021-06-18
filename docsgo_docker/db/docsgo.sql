@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.2
+-- version 5.0.4
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Dec 06, 2020 at 02:52 PM
--- Server version: 10.4.11-MariaDB
--- PHP Version: 7.2.26
+-- Generation Time: Jun 17, 2021 at 07:01 PM
+-- Server version: 10.4.17-MariaDB
+-- PHP Version: 7.4.15
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -34,6 +33,22 @@ CREATE TABLE `docsgo-acronyms` (
   `description` varchar(1000) NOT NULL,
   `update_date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `docsgo-action-list`
+--
+
+CREATE TABLE `docsgo-action-list` (
+  `id` int(11) NOT NULL,
+  `owner_id` int(11) NOT NULL,
+  `responsible_id` varchar(255) CHARACTER SET utf8mb4 NOT NULL,
+  `sharing` tinyint(1) NOT NULL,
+  `update_date` datetime NOT NULL,
+  `action` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`action`)),
+  `revision_history` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`revision_history`))
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -98,7 +113,8 @@ CREATE TABLE `docsgo-documents` (
   `author-id` int(11) NOT NULL,
   `reviewer-id` int(11) DEFAULT NULL,
   `status` varchar(64) NOT NULL,
-  `revision-history` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`revision-history`))
+  `revision-history` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`revision-history`)),
+  `download-path` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -175,7 +191,7 @@ CREATE TABLE `docsgo-reviews` (
   `review-by` varchar(50) NOT NULL,
   `context` varchar(200) DEFAULT NULL,
   `description` text DEFAULT NULL,
-  `code-diff` text DEFAULT NULL,
+  `code-diff` mediumtext DEFAULT NULL,
   `assigned-to` varchar(50) NOT NULL,
   `status` varchar(64) NOT NULL,
   `category` varchar(60) NOT NULL,
@@ -191,10 +207,13 @@ CREATE TABLE `docsgo-reviews` (
 CREATE TABLE `docsgo-risks` (
   `id` int(11) NOT NULL,
   `project_id` int(11) NOT NULL,
-  `risk_type` enum('Open-Issue','Vulnerability','SOUP') NOT NULL,
+  `risk_type` varchar(100) DEFAULT NULL,
   `risk` varchar(255) NOT NULL,
   `description` longtext NOT NULL,
   `component` varchar(100) NOT NULL,
+  `failure_mode` longtext DEFAULT NULL,
+  `harm` longtext DEFAULT NULL,
+  `cascade_effect` longtext DEFAULT NULL,
   `hazard-analysis` text NOT NULL,
   `assessment` longtext NOT NULL,
   `baseScore_severity` float NOT NULL,
@@ -220,29 +239,17 @@ CREATE TABLE `docsgo-settings` (
 --
 
 INSERT INTO `docsgo-settings` (`id`, `type`, `identifier`, `options`) VALUES
-(1, 'dropdown', 'templateCategory', NULL),
-(2, 'url', 'third-party', '[{\"key\":\"sonar\",\"url\":\"\",\"apiKey\":\"\"},{\"key\":\"testLink\",\"url\":\"\",\"apiKey\":\"\"}]'),
-(3, 'dropdown', 'documentStatus', NULL),
-(6, 'dropdown', 'reviewCategory', NULL),
-(7, 'dropdown', 'userRole', NULL),
-(8, 'dropdown', 'riskCategory', NULL),
-(9, 'dropdown', 'referenceCategory', NULL),
-(10, 'dropdown', 'requirementsCategory', NULL),
-(11, 'dropdown', 'assetsCategory', NULL),
-(12, 'properties', 'documentProperties', NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `docsgo-status-options`
---
-
-CREATE TABLE `docsgo-status-options` (
-  `id` int(11) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `value` int(11) NOT NULL,
-  `update_date` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+(1, 'dropdown', 'templateCategory', '[{\"key\":0,\"value\":\"General\"},{\"key\":1,\"value\":\"Planning\"},{\"key\":2,\"value\":\"Design Input\"},{\"key\":3,\"value\":\"Design Output\"},{\"key\":4,\"value\":\"Design Verification\"},{\"key\":5,\"value\":\"Design Transfer\"},{\"key\":6,\"value\":\"Risk Management\"}]'),
+(2, 'url', 'third-party', '[{\"key\":\"sonar\",\"url\":\"\",\"apiKey\":\"\"},{\"key\":\"testLink\",\"url\":\"\",\"apiKey\":\"\"},{\"key\":\"jenkins\",\"url\":\"\",\"apiKey\":\"\"}]'),
+(3, 'dropdown', 'documentStatus', '[{\"key\":0,\"value\":\"Request Review\"},{\"key\":1,\"value\":\"Request Change\"},{\"key\":2,\"value\":\"Approved\"},{\"key\":3,\"value\":\"Draft\"}]'),
+(6, 'dropdown', 'reviewCategory', '[{\"key\":0,\"value\":\"Code\"},{\"key\":1,\"value\":\"Design\"},{\"key\":2,\"value\":\"Plan\"},{\"key\":3,\"value\":\"Risk Management\"},{\"key\":4,\"value\":\"Release\"},{\"key\":5,\"value\":\"Requirements\"},{\"key\":6,\"value\":\"Traceability\"},{\"key\":7,\"value\":\"User Needs\"},{\"key\":8,\"value\":\"Validation\"},{\"key\":9,\"value\":\"Verification\"},{\"key\":10,\"value\":\"Unit Test\"}]'),
+(7, 'dropdown', 'userRole', '[{\"key\":0,\"value\":\"Application Tester\"},\r\n{\"key\":1,\"value\":\"Consultant\"},\r\n{\"key\":2,\"value\":\"Director Software Engineering\"},\r\n{\"key\":3,\"value\":\"Principal Architect\"},\r\n{\"key\":4,\"value\":\"Principal Engineer\"},\r\n{\"key\":5,\"value\":\"Project Engineer\"},\r\n{\"key\":6,\"value\":\"Senior Engineering Manager\"},\r\n{\"key\":7,\"value\":\"Senior Project Engineer\"},\r\n{\"key\":8,\"value\":\"Test Lead\"},\r\n{\"key\":9,\"value\":\"Vice President, Engineering\"}]'),
+(8, 'dropdown', 'riskCategory', '[{\"key\":0,\"value\":\"Open-Issue\"},{\"key\":1,\"value\":\"Vulnerability\"},{\"key\":2,\"value\":\"SOUP\"},{\"key\":3,\"value\":\"Scope-Items\"},{\"key\":4,\"value\":\"Automation\"}]'),
+(9, 'dropdown', 'referenceCategory', '[{\"key\":0,\"value\":\"Design\"},{\"key\":1,\"value\":\"Impact Analysis\"},{\"key\":2,\"value\":\"Requirement\"},{\"key\":3,\"value\":\"Test\"},{\"key\":4,\"value\":\"Standards\"},{\"key\":5,\"value\":\"Other\"}]'),
+(10, 'dropdown', 'requirementsCategory', '[{\"key\":0,\"value\":\"Subsystem\",\"isRoot\":false},{\"key\":1,\"value\":\"System\",\"isRoot\":false},{\"key\":2,\"value\":\"User Needs\",\"isRoot\":true},{\"key\":3,\"value\":\"Standards\",\"isRoot\":true},{\"key\":4,\"value\":\"Guidance\",\"isRoot\":true},{\"key\":5,\"value\":\"User Needs 2\",\"isRoot\":true}]'),
+(11, 'dropdown', 'assetsCategory', '[{\"key\":0,\"value\":\"Accessory\"},{\"key\":1,\"value\":\"Device Under Test\"},{\"key\":2,\"value\":\"Measuring Instrument\"},{\"key\":3,\"value\":\"Tablet\"},{\"key\":4,\"value\":\"Development System\"}]'),
+(12, 'properties', 'documentProperties', '[{\"key\":\"docTitle\",\"value\":\"\"},{\"key\":\"docIcon\",\"value\":\"https://info.viosrdtest.in/storage/repository/GENERAL/Vios.png\"},{\"key\":\"docConfidential\",\"value\":\"Murata Vios, Inc.  CONFIDENTIAL\"}]'),
+(13, 'dropdown', 'timeTrackerCategory', '[{\"key\":0,\"value\":\"Meeting\"},{\"key\":1,\"value\":\"Development\"},{\"key\":2,\"value\":\"Testing\"},{\"key\":3,\"value\":\"Verification\"},{\"key\":4,\"value\":\"Review\"},{\"key\":5,\"value\":\"Documentation\"},{\"key\":6,\"value\":\"Other\"},{\"key\":7,\"value\":\"Research/Analysis\"}]');
 
 -- --------------------------------------------------------
 
@@ -280,15 +287,16 @@ CREATE TABLE `docsgo-team-master` (
   `is-manager` tinyint(1) NOT NULL DEFAULT 0,
   `is-admin` tinyint(1) NOT NULL DEFAULT 0,
   `created_at` datetime NOT NULL DEFAULT current_timestamp(),
-  `updated_at` datetime NOT NULL DEFAULT current_timestamp()
+  `updated_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `is-active` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Dumping data for table `docsgo-team-master`
 --
 
-INSERT INTO `docsgo-team-master` (`id`, `name`, `email`, `password`, `role`, `responsibility`, `is-manager`, `is-admin`, `created_at`, `updated_at`) VALUES
-(37, 'user', 'user@gmail.com', '$2y$10$QFG0v/fICPHnhHcVWckVcujd0na3M2im/SW6FNhRgcJ0KA3exPD7K', NULL, 'Admin', 1, 1, '2020-12-06 07:47:14', '2020-12-06 19:17:14');
+INSERT INTO `docsgo-team-master` (`id`, `name`, `email`, `password`, `role`, `responsibility`, `is-manager`, `is-admin`, `created_at`, `updated_at`, `is-active`) VALUES
+(1, 'user', 'user@docsgo.com', '$2y$10$QFG0v/fICPHnhHcVWckVcujd0na3M2im/SW6FNhRgcJ0KA3exPD7K', NULL, 'Admin', 1, 1, '2021-06-17 07:47:14', '2021-06-17 19:17:14', 1);
 
 -- --------------------------------------------------------
 
@@ -302,6 +310,21 @@ CREATE TABLE `docsgo-test-cases` (
   `description` longtext DEFAULT NULL,
   `update_date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `docsgo-time-tracker`
+--
+
+CREATE TABLE `docsgo-time-tracker` (
+  `id` int(11) UNSIGNED NOT NULL,
+  `user_id` int(11) UNSIGNED NOT NULL,
+  `tracker_date` date NOT NULL,
+  `action_list` longtext DEFAULT NULL,
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -332,6 +355,22 @@ CREATE TABLE `docsgo-traceability-options` (
   `update_date` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `migrations`
+--
+
+CREATE TABLE `migrations` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `version` varchar(255) NOT NULL,
+  `class` text NOT NULL,
+  `group` varchar(255) NOT NULL,
+  `namespace` varchar(255) NOT NULL,
+  `time` int(11) NOT NULL,
+  `batch` int(11) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 --
 -- Indexes for dumped tables
 --
@@ -340,6 +379,12 @@ CREATE TABLE `docsgo-traceability-options` (
 -- Indexes for table `docsgo-acronyms`
 --
 ALTER TABLE `docsgo-acronyms`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `docsgo-action-list`
+--
+ALTER TABLE `docsgo-action-list`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -403,12 +448,6 @@ ALTER TABLE `docsgo-settings`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `docsgo-status-options`
---
-ALTER TABLE `docsgo-status-options`
-  ADD PRIMARY KEY (`id`);
-
---
 -- Indexes for table `docsgo-taskboard`
 --
 ALTER TABLE `docsgo-taskboard`
@@ -427,6 +466,12 @@ ALTER TABLE `docsgo-test-cases`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `docsgo-time-tracker`
+--
+ALTER TABLE `docsgo-time-tracker`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `docsgo-traceability`
 --
 ALTER TABLE `docsgo-traceability`
@@ -439,6 +484,12 @@ ALTER TABLE `docsgo-traceability-options`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `migrations`
+--
+ALTER TABLE `migrations`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -446,103 +497,115 @@ ALTER TABLE `docsgo-traceability-options`
 -- AUTO_INCREMENT for table `docsgo-acronyms`
 --
 ALTER TABLE `docsgo-acronyms`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `docsgo-action-list`
+--
+ALTER TABLE `docsgo-action-list`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-diagrams`
 --
 ALTER TABLE `docsgo-diagrams`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-document-master`
 --
 ALTER TABLE `docsgo-document-master`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-document-template`
 --
 ALTER TABLE `docsgo-document-template`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-documents`
 --
 ALTER TABLE `docsgo-documents`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-inventory-master`
 --
 ALTER TABLE `docsgo-inventory-master`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=339;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-projects`
 --
 ALTER TABLE `docsgo-projects`
-  MODIFY `project-id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `project-id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-requirements`
 --
 ALTER TABLE `docsgo-requirements`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=422;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-reviews`
 --
 ALTER TABLE `docsgo-reviews`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=247;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-risks`
 --
 ALTER TABLE `docsgo-risks`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=240;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-settings`
 --
 ALTER TABLE `docsgo-settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT for table `docsgo-status-options`
---
-ALTER TABLE `docsgo-status-options`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `docsgo-taskboard`
 --
 ALTER TABLE `docsgo-taskboard`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-team-master`
 --
 ALTER TABLE `docsgo-team-master`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `docsgo-test-cases`
 --
 ALTER TABLE `docsgo-test-cases`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1984;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `docsgo-time-tracker`
+--
+ALTER TABLE `docsgo-time-tracker`
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-traceability`
 --
 ALTER TABLE `docsgo-traceability`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `docsgo-traceability-options`
 --
 ALTER TABLE `docsgo-traceability-options`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2653;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `migrations`
+--
+ALTER TABLE `migrations`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

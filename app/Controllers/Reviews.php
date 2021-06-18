@@ -57,14 +57,15 @@ class Reviews extends BaseController
             $selectedProject = getActiveProjectId(); //Default project
         }
 
-        $reviewModel = new ReviewModel();
-        $data['reviewsCount'] = $reviewModel->getReviewsCount($selectedProject, $selectedUser);
+        if($selectedProject != null){
+            $reviewModel = new ReviewModel();
+            $data['reviewsCount'] = $reviewModel->getReviewsCount($selectedProject, $selectedUser);
+        }
 
         $data['selectedProject'] = $selectedProject;
         $data['selectedStatus'] = $selectedStatus;
         $data['selectedUser'] = $selectedUser;
-        // $this->updateReviewDescription();
-
+       
         echo view('templates/header');
         echo view('templates/pageTitle', $data);
         echo view('Reviews/list', $data);
