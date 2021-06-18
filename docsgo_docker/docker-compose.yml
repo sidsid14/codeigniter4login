@@ -15,8 +15,8 @@ services:
       environment:
             MYSQL_DATABASE: docsgo
             MYSQL_USER: user
-            MYSQL_PASSWORD: test
-            MYSQL_ROOT_PASSWORD: test 
+            MYSQL_PASSWORD: docsgo@123
+            MYSQL_ROOT_PASSWORD: docsgo@123 
       ports:
             - 3306:3306
 
@@ -28,7 +28,7 @@ services:
                   - 8000:80
             environment:
                   MYSQL_USER: user
-                  MYSQL_PASSWORD: test
-                  MYSQL_ROOT_PASSWORD: test 
+                  MYSQL_PASSWORD: docsgo@123
+                  MYSQL_ROOT_PASSWORD: docsgo@123 
 volumes:
     persistent:
