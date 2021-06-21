@@ -33,4 +33,24 @@
         }
     }
 
+    function sendEmail($to, $cc, $subject, $message)
+    {
+		$email = \Config\Services::email();
+
+        $from = getenv('email.SMTPUser');
+		$email->setFrom($from, "DocsGo");
+		$email->setTo($to);
+		$email->setCC($cc);
+		$email->setSubject($subject);
+		$email->setMessage($message);
+
+		if($email->send()){
+			return true;
+		}else{
+			// $data = $email->printDebugger(['headers']);
+			// print_r($data);
+            return false;
+		}
+    }
+
 ?>

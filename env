@@ -17,6 +17,11 @@
 # CI_ENVIRONMENT = production
 
 #--------------------------------------------------------------------
+# DEFAULT PASSWORD FOR USERS
+#--------------------------------------------------------------------
+PASS_CODE = Vios@123
+
+#--------------------------------------------------------------------
 # APP
 #--------------------------------------------------------------------
 
@@ -55,11 +60,28 @@
 # database.default.password = root
 # database.default.DBDriver = MySQLi
 
-# database.tests.hostname = localhost
-# database.tests.database = ci4
-# database.tests.username = root
-# database.tests.password = root
-# database.tests.DBDriver = MySQLi
+#--------------------------------------------------------------------
+# EMAIL
+#--------------------------------------------------------------------
+
+EMAIL_ENABLED = false
+#  email.protocol = smtp
+#  email.SMTPHost = smtp.gmail.com
+#  email.SMTPUser = 
+#  email.SMTPPass = 
+#  email.SMTPPort = 465
+#  email.SMTPTimeout = 60
+#  email.SMTPCrypto = ssl
+#  email.mailType = html
+
+#--------------------------------------------------------------------
+# OPENFIRE SETTINGS
+#--------------------------------------------------------------------
+OF_ENABLED = false
+# OF_HOST = 
+# OF_ADMIN_USERNAME = 
+# OF_SECRET_KEY =  
+# OF_DEFAULT_GROUP = 
 
 #--------------------------------------------------------------------
 # CONTENT SECURITY POLICY
