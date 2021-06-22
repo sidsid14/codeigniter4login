@@ -1,6 +1,8 @@
 <?php
     use App\Models\ProjectModel;
-    
+    use App\Models\TeamModel;
+    use TP\Tools\Openfire;
+
     function setPrevUrl($name, $vars){
         $session = session();
         if(isset($_SESSION['PREV_URL'])){
@@ -32,6 +34,29 @@
             }
         }
     }
+
+    function sendNotification($receiverId, $reviewId, $title, $referenceLink, $notificationMessage)
+	{
+		if (getenv('OF_ENABLED') == "true") {
+			$openfire = new Openfire();
+			$teamModel = new TeamModel();
+			$userName = $teamModel->getUsername($receiverId);
+			$openfireMessage = "$notificationMessage \nLink - " . $referenceLink;
+			$openfire->sendNotification($userName, $openfireMessage);
+		}
+
+		if (getenv('EMAIL_ENABLED') == "true") {
+            $html = getEmailHtml($title, $notificationMessage, $referenceLink, 'View Here', 2);
+
+			$teamModel = new TeamModel();
+			$receiver = $teamModel->where('id', 1)->findColumn('email');
+			$to = $receiver[0];
+			$cc = session()->get('email');
+			$subject = "DocsGo: $title on $reviewId";
+			
+			sendEmail($to,$cc,$subject, $html);
+		}
+	}
 
     function sendEmail($to, $cc, $subject, $message)
     {

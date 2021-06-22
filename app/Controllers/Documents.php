@@ -409,7 +409,8 @@ class Documents extends BaseController
 		$documentModel = new DocumentModel();
 		$id = $this->request->getVar('id');
 		$revision["dateTime"] = $currentTime;
-		$revision["who"] = session()->get("name");
+		$userName = session()->get("name");
+		$revision["who"] = $userName;
 
 		if ($id == "") {
 			//Creating Document Revision JSON
@@ -468,10 +469,11 @@ class Documents extends BaseController
 
 		if ($postData['status'] == 'Request Review') {
 			$baseUrl = getenv('app.baseURL');
-			$notificationMessage = $revision['who'] . " has requested review of D-" . $id;
+			$notificationMessage = "$userName has requested review of D-$id.";
 			$referenceLink = $baseUrl . "/documents/add?id=" . $id;
 
-			$this->sendNotification($postData['reviewer-id'], "D-$id", "Request Review", $referenceLink, $notificationMessage);
+			helper('Helpers\utils');
+			sendNotification($postData['reviewer-id'], "D-$id", "Review Requested", $referenceLink, $notificationMessage);
 		}
 
 		$response["success"] = "True";
@@ -513,31 +515,6 @@ class Documents extends BaseController
 			return $diff;
 		} else {
 			return "";
-		}
-	}
-
-	private function sendNotification($receiverId, $reviewId, $title, $referenceLink, $notificationMessage)
-	{
-		if (getenv('OF_ENABLED') == "true") {
-			$openfire = new Openfire();
-			$teamModel = new TeamModel();
-			$userName = $teamModel->getUsername($receiverId);
-			$openfireMessage = "$notificationMessage \nLink - " . $referenceLink;
-			$openfire->sendNotification($userName, $openfireMessage);
-		}
-
-		if (getenv('EMAIL_ENABLED') == "true") {
-
-			helper('Helpers\utils');
-			$html = getEmailHtml($title, $notificationMessage, $referenceLink, 'View Here', 2);
-
-			$teamModel = new TeamModel();
-			$receiver = $teamModel->where('id', 1)->findColumn('email');
-			$to = $receiver[0];
-			$cc = session()->get('email');
-			$subject = "DocsGo: $title of $reviewId";
-			
-			sendEmail($to,$cc,$subject, $html);
 		}
 	}
 
