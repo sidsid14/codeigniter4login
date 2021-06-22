@@ -163,10 +163,10 @@ class Reviews extends BaseController
             if($commentId == ""){
                 $commentId = uniqid();
                 $response["message"] = "Success! Comment added.";
-                $notificationMessage = $reviewerName.' just added review comments on your document D-'.$docId.'.';
+                $notificationMessage = "$reviewerName just added review comments on your document D-$docId";
             }else{
                 $response["message"] = "Success! Comment updated.";
-                $notificationMessage = $reviewerName.' has updated review comments on your document D-'.$docId.'.';
+                $notificationMessage = "$reviewerName has updated review comments on your document D-$docId";
             }
             
             $reviewModel = new ReviewModel();
@@ -211,7 +211,6 @@ class Reviews extends BaseController
         
             $baseUrl = getenv('app.baseURL');
             $referenceLink = $baseUrl . "/documents/add?id=" . $docId;
-            $notificationMessage = "$reviewerName has reviewed your document D-$docId.";
             
             if ($doc['status'] != $status) {
                 $revision["log"] .= " Document status updated to " . $status;
