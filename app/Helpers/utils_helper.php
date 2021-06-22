@@ -53,4 +53,44 @@
 		}
     }
 
+    function getEmailHtml($emailTitle, $emailBody, $referenceLink, $referenceLinkText ){
+       
+		$doc = new \DOMDocument();
+        $templatePath = './templates/email.html';
+        
+        libxml_use_internal_errors(true);
+        $doc->loadHTMLFile($templatePath);
+        libxml_use_internal_errors(false);
+
+		$baseUrl = base_url();
+		$logo = "http://info.viosrdtest.in/Docsgo-Logo.png";
+		$image_1 =  $baseUrl."/templates/images/image_1.png";
+		$image_2 =  $baseUrl."/templates/images/image_2.png";
+
+		$img = $doc->getElementById('logo');
+		$img->setAttribute('src', $logo);
+
+		$img = $doc->getElementById('image_1');
+		$img->setAttribute('src', $image_1);
+
+		$img = $doc->getElementById('image_2');
+		$img->setAttribute('src', $image_2);
+
+		$title = $doc->getElementById('title');
+		$title->nodeValue = $emailTitle;
+
+		$message_body = $doc->getElementById('message_body');
+		$message_body->nodeValue = $emailBody;
+		
+		$link = $doc->getElementById('link');
+		$link->setAttribute('href', $referenceLink);
+		
+		$link_text = $doc->getElementById('link_text');
+		$link_text->nodeValue = $referenceLinkText;
+
+		$html = $doc->saveHTML();
+		// echo $html;
+		echo $html;
+    }
+
 ?>
