@@ -112,5 +112,24 @@ class Projects extends BaseController
 		}
 	}
 
+	public function checkEmail(){
+
+		$emailTitle = "Review Request";
+		$emailBody = "Sudhanshu Tiwari has requested review of D-316.";
+		$referenceLink = "https://info.viosrdtest.in/documents/add?id=316" ;
+		$referenceLinkText = "RDIO-316";
+		$subject = 'Docsgo '+$emailTitle+'  '+$referenceLinkText;
+
+		helper('Helpers\utils');
+		$html = getEmailHtml($emailTitle, $emailBody, $referenceLink, $referenceLinkText,2);
+		
+		$to = "sidsid14@gmail.com";
+		$cc = "sidsid14@gmail.com";
+		// echo "THis is working";
+		// echo getenv('email.protocol');
+		// helper('Helpers\utils');
+		sendEmail($cc,$cc,$subject, $html);
+	}
+
 
 }

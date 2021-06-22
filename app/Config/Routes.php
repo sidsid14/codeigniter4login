@@ -44,6 +44,7 @@ $routes->post('admin/settings/updateRequirementValues', 'Settings::updateRequire
 $routes->get('dashboard', 'Dashboard::index',['filter' => 'auth']);
 $routes->get('dashboard/getStats', 'Dashboard::getStats',['filter' => 'auth']);
 
+$routes->get('check-email', 'Projects::checkEmail',['filter' => 'auth']);
 $routes->get('projects', 'Projects::index',['filter' => 'auth']);
 $routes->match(['get','post'],'projects/add', 'Projects::add',['filter' => 'auth']);
 // $routes->match(['get','post'],'projects/add/(:num)', 'Projects::add',['filter' => 'auth']);

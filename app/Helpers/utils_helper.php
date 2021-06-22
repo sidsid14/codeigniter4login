@@ -53,29 +53,37 @@
 		}
     }
 
-    function getEmailHtml($emailTitle, $emailBody, $referenceLink, $referenceLinkText ){
+    function getEmailHtml($emailTitle, $emailBody, $referenceLink, $referenceLinkText, $templateType = 2){
        
-		$doc = new \DOMDocument();
-        $templatePath = './templates/email.html';
-        
+		$baseUrl = base_url();
+		$logo = "http://info.viosrdtest.in/Docsgo-Logo.png";
+		
+        if($templateType == 1){
+            $templatePath = './templates/email/email_1.html';
+            $image_1 =  $baseUrl."/templates/images/template1_image_1.png";
+            $image_2 =  $baseUrl."/templates/images/template1_image_2.png";
+        }else{
+            $templatePath = './templates/email/email_2.html';
+            $image_1 =  $baseUrl."/templates/images/template2_image_1.png";
+        }
+       
+        $doc = new \DOMDocument();
+
         libxml_use_internal_errors(true);
         $doc->loadHTMLFile($templatePath);
         libxml_use_internal_errors(false);
 
-		$baseUrl = base_url();
-		$logo = "http://info.viosrdtest.in/Docsgo-Logo.png";
-		$image_1 =  $baseUrl."/templates/images/image_1.png";
-		$image_2 =  $baseUrl."/templates/images/image_2.png";
-
-		$img = $doc->getElementById('logo');
+        $img = $doc->getElementById('logo');
 		$img->setAttribute('src', $logo);
 
 		$img = $doc->getElementById('image_1');
 		$img->setAttribute('src', $image_1);
 
-		$img = $doc->getElementById('image_2');
-		$img->setAttribute('src', $image_2);
-
+        if($templateType == 1){
+	        $img = $doc->getElementById('image_2');
+		    $img->setAttribute('src', $image_2);
+        }
+        
 		$title = $doc->getElementById('title');
 		$title->nodeValue = $emailTitle;
 
