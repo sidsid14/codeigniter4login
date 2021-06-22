@@ -89,8 +89,8 @@
 		$link_text->nodeValue = $referenceLinkText;
 
 		$html = $doc->saveHTML();
-		// echo $html;
-		echo $html;
+		
+		return $html;
     }
 
 ?>
