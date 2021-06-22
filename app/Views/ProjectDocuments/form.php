@@ -1155,8 +1155,6 @@ function showPreview(title, message, width) {
     padding: 10px;
     border: 1px #bbb solid !important;
     border-collapse: collapse;
-    " 
-
 }
 
 .pandoc-mark-css tbody tr:first-child td {
