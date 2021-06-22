@@ -535,7 +535,7 @@ class Documents extends BaseController
 			$receiver = $teamModel->where('id', 1)->findColumn('email');
 			$to = $receiver[0];
 			$cc = session()->get('email');
-			$subject = "DocsGo: $title - $reviewId";
+			$subject = "DocsGo: $title of $reviewId";
 			
 			sendEmail($to,$cc,$subject, $html);
 		}
