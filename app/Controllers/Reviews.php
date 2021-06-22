@@ -238,7 +238,7 @@ class Reviews extends BaseController
 
             $documentModel->update($docId, $docData);
 
-            $notificationMessage  .= "<br/> Comments - $message";
+            $notificationMessage  .= " Comments - $message";
             helper('Helpers\utils');            	
 			sendNotification($doc['author-id'], "D-$docId", "Review Comments Added", $referenceLink, $notificationMessage);
 
@@ -421,7 +421,7 @@ class Reviews extends BaseController
 		if($reviewStatus != ""){
 			$data["status"] = $reviewStatus;
             $response["updateStatus"] = "True";
-            $notificationMessage .= "And also, updated its status to $reviewStatus.";
+            $notificationMessage .= " And also, updated its status to $reviewStatus.";
 		}else{
 			$response["updateStatus"] = "False";
 		}
@@ -430,7 +430,7 @@ class Reviews extends BaseController
         $baseUrl = getenv('app.baseURL');
         $referenceLink = "$baseUrl/reviews/add/$reviewId";
             
-        $notificationMessage  .= "<br/> Comments - $message";
+        $notificationMessage  .= " Comments - $message";
         helper('Helpers\utils');            	
         sendNotification($review['assigned-to'], "R-$reviewId", "Review Comments Added", $referenceLink, $notificationMessage);
 
