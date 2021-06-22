@@ -1,4 +1,6 @@
-<?php namespace App\Controllers;
+<?php
+
+namespace App\Controllers;
 
 use App\Models\DocumentModel;
 use App\Models\ProjectModel;
@@ -12,203 +14,206 @@ use App\Models\RiskAssessmentModel;
 use App\Models\AcronymsModel;
 use App\Models\SettingsModel;
 use TP\Tools\Openfire;
+
 class Documents extends BaseController
 {
 	public function index()
-    {
-        $data = [];
-        $data['pageTitle'] = 'Documents';
-        $data['addBtn'] = False;
-        $data['titleDD'] = True;
+	{
+		$data = [];
+		$data['pageTitle'] = 'Documents';
+		$data['addBtn'] = False;
+		$data['titleDD'] = True;
 		$data['addUrl'] = "/documents/add";
 
-        $selectedStatus = null;
-        $selectedProject = null;
-        $selectedUser = null;
+		$selectedStatus = null;
+		$selectedProject = null;
+		$selectedUser = null;
 
-        if (isset($_SESSION['PREV_URL'])) {
-            $prev_url = $_SESSION['PREV_URL'];
-            if ($prev_url["name"] == "documentsList") {
-                $vars = $prev_url["vars"];
-                $selectedStatus = $vars['view'];
-                $selectedProject = $vars['project_id'];
-                $selectedUser = isset($vars['user_id']) ? $vars['user_id'] : null;
-            }
-        }
+		if (isset($_SESSION['PREV_URL'])) {
+			$prev_url = $_SESSION['PREV_URL'];
+			if ($prev_url["name"] == "documentsList") {
+				$vars = $prev_url["vars"];
+				$selectedStatus = $vars['view'];
+				$selectedProject = $vars['project_id'];
+				$selectedUser = isset($vars['user_id']) ? $vars['user_id'] : null;
+			}
+		}
 
-        if($selectedUser == null ){
-            $selectedUser = session()->get('id');
-        }
+		if ($selectedUser == null) {
+			$selectedUser = session()->get('id');
+		}
 
-        $teamModel = new TeamModel();
+		$teamModel = new TeamModel();
 		$data['teamMembers'] = $teamModel->getMembers();
-		
+
 		//Document Type List for adding new documents
 		$templateModel = new DocumentTemplateModel();
 		$existingTypes = $templateModel->getTypes();
 		$data['documentType'] = $existingTypes;
 
-        $settingsModel = new SettingsModel();
-        $documentStatusOptions = $settingsModel->getConfig("documentStatus");
-        $data["documentStatus"] = $documentStatusOptions; //Status Radio Buttons
+		$settingsModel = new SettingsModel();
+		$documentStatusOptions = $settingsModel->getConfig("documentStatus");
+		$data["documentStatus"] = $documentStatusOptions; //Status Radio Buttons
 
-        if ($selectedStatus == null) {
-            if ($documentStatusOptions != null) {
-                $selectedStatus = $documentStatusOptions[0]; //Default status
-            } else {
-                $selectedStatus = null;
-            }
-        }
+		if ($selectedStatus == null) {
+			if ($documentStatusOptions != null) {
+				$selectedStatus = $documentStatusOptions[0]; //Default status
+			} else {
+				$selectedStatus = null;
+			}
+		}
 
-        $projectModel = new ProjectModel();
-        $data['projects'] = $projectModel->getProjects(); //Projects Dropdown
+		$projectModel = new ProjectModel();
+		$data['projects'] = $projectModel->getProjects(); //Projects Dropdown
 
-        if ($selectedProject == null) {
+		if ($selectedProject == null) {
 			helper('Helpers\utils');
-            $selectedProject = getActiveProjectId(); //Default project
-        }
+			$selectedProject = getActiveProjectId(); //Default project
+		}
 
-		if($selectedProject != null){
+		if ($selectedProject != null) {
 			$documentModel = new DocumentModel();
 			$data['documentsCount'] = $documentModel->getDocumentsCount($selectedProject, $selectedUser);
 		}
-        
 
-        $data['selectedProject'] = $selectedProject;
-        $data['selectedStatus'] = $selectedStatus;
-        $data['selectedUser'] = $selectedUser;
-        // $this->updateReviewDescription();
+
+		$data['selectedProject'] = $selectedProject;
+		$data['selectedStatus'] = $selectedStatus;
+		$data['selectedUser'] = $selectedUser;
+		// $this->updateReviewDescription();
 
 		echo view('templates/header');
 		echo view('templates/pageTitle', $data);
-		echo view('ProjectDocuments/list',$data);
+		echo view('ProjectDocuments/list', $data);
 		echo view('templates/footer');
 	}
-	
+
 	public function getDocumentStats()
-    {
-        $project_id = $this->request->getVar('project_id');
-        $selectedUser =  $this->request->getVar('user_id');
+	{
+		$project_id = $this->request->getVar('project_id');
+		$selectedUser =  $this->request->getVar('user_id');
 
-        $documentModel = new DocumentModel();
-        $documentStats = $documentModel->getDocumentsCount($project_id, $selectedUser);
-        $response["success"] = "True";
-        $response["documentStats"] = $documentStats;
+		$documentModel = new DocumentModel();
+		$documentStats = $documentModel->getDocumentsCount($project_id, $selectedUser);
+		$response["success"] = "True";
+		$response["documentStats"] = $documentStats;
 
-        echo json_encode($response);
+		echo json_encode($response);
 	}
 
 	public function getDocuments()
-    {
-        $view = $this->request->getVar('view');
-        $project_id = $this->request->getVar('project_id');
-        $user_id = $this->request->getVar('user_id');
+	{
+		$view = $this->request->getVar('view');
+		$project_id = $this->request->getVar('project_id');
+		$user_id = $this->request->getVar('user_id');
 
-        $vars['view'] = $view;
-        $vars['project_id'] = $project_id;
-        $vars['user_id'] = $user_id;
+		$vars['view'] = $view;
+		$vars['project_id'] = $project_id;
+		$vars['user_id'] = $user_id;
 
-        helper('Helpers\utils');
-        setPrevUrl('documentsList', $vars);
+		helper('Helpers\utils');
+		setPrevUrl('documentsList', $vars);
 
-        $userCondition = "";
-        if($user_id != "ALL"){
-            $userCondition = " AND ( docs.`reviewer-id` = ".$user_id." OR docs.`author-id` = ".$user_id." ) ";
-        }
+		$userCondition = "";
+		if ($user_id != "ALL") {
+			$userCondition = " AND ( docs.`reviewer-id` = " . $user_id . " OR docs.`author-id` = " . $user_id . " ) ";
+		}
 
 		$documentModel = new DocumentModel();
-        $whereCondition = ' WHERE docs.`status` = "' . $view . '" AND docs.`project-id` = ' . $project_id.$userCondition;
+		$whereCondition = ' WHERE docs.`status` = "' . $view . '" AND docs.`project-id` = ' . $project_id . $userCondition;
 
-        $data = $documentModel->getDocuments($whereCondition);
+		$data = $documentModel->getDocuments($whereCondition);
 
-        $response["success"] = "True";
-        $response["documents"] = $data;
+		$response["success"] = "True";
+		$response["documents"] = $data;
 
-        echo json_encode($response);
+		echo json_encode($response);
+	}
 
-    }
 
-
-	private function getTablesData($tableName, $project_id){
-		if($tableName == 'teams'){
+	private function getTablesData($tableName, $project_id)
+	{
+		if ($tableName == 'teams') {
 			$teamModel = new TeamModel();
-			$data = $teamModel->orderBy('name', 'asc')->findAll();	
+			$data = $teamModel->orderBy('name', 'asc')->findAll();
 			return $data;
-		}else if($tableName == 'reviews'){
-			$condition = " WHERE rev.`project-id` = ".$project_id;
+		} else if ($tableName == 'reviews') {
+			$condition = " WHERE rev.`project-id` = " . $project_id;
 			$reviewModel = new ReviewModel();
 			$data = $reviewModel->getMappedRecords($condition);
 			return $data;
-		}else if($tableName == 'documentMaster'){
+		} else if ($tableName == 'documentMaster') {
 			$references = new DocumentsMasterModel();
-			$data = $references->getRefrences();	
+			$data = $references->getRefrences();
 			return $data;
-		}else if($tableName == 'requirements'){
+		} else if ($tableName == 'requirements') {
 			$requirements = new RequirementsModel();
-			$data = $requirements->findAll();	
+			$data = $requirements->findAll();
 			return $data;
-		}else if($tableName == 'traceabilityMatrix'){
+		} else if ($tableName == 'traceabilityMatrix') {
 			$traceabilityMatrix = new TraceabilityMatrixModel();
-			$data = $traceabilityMatrix->getTraceabilityData();	
+			$data = $traceabilityMatrix->getTraceabilityData();
 			return $data;
-		}else if($tableName == 'documents'){
-			$condition = " WHERE docs.`project-id` = ".$project_id;
+		} else if ($tableName == 'documents') {
+			$condition = " WHERE docs.`project-id` = " . $project_id;
 			$documents = new DocumentModel();
-			$data = $documents->getDocuments($condition);	
+			$data = $documents->getDocuments($condition);
 			return $data;
-		}else if($tableName == 'riskAssessment'){
+		} else if ($tableName == 'riskAssessment') {
 			//Allow to display all open risk irrespective of project
 			$condition = " WHERE `status` = 'Open'";
 			$riskAssessment = new RiskAssessmentModel();
-			$data = $riskAssessment->getRisksForDocuments($condition);	
+			$data = $riskAssessment->getRisksForDocuments($condition);
 			return $data;
-		}else if($tableName == 'acronyms'){
+		} else if ($tableName == 'acronyms') {
 			$acronymsModel = new AcronymsModel();
-			$data = $acronymsModel->orderBy('acronym')->findAll();	
+			$data = $acronymsModel->orderBy('acronym')->findAll();
 			return $data;
-		}
-		else{
+		} else {
 			return [];
 		}
 	}
-    
-	private function getJsonTemplate($type){
-        $templateModel = new DocumentTemplateModel();
-		$data = $templateModel->where('type', $type)->first();	
+
+	private function getJsonTemplate($type)
+	{
+		$templateModel = new DocumentTemplateModel();
+		$data = $templateModel->where('type', $type)->first();
 		$template["name"] = $data["name"];
 		$template["jsonObject"] = json_decode($data['template-json-object'], true);
 		return $template;
 	}
 
-	private function getExistingDocs($type = ""){
+	private function getExistingDocs($type = "")
+	{
 		$documentModel = new DocumentModel();
 		$data = [];
-	
+
 		// Get 10 latest exisiting Docs related to the type
 		//All Documents
 		$limit = "LIMIT 10";
-		$whereCondition = "WHERE docs.`type` = '".$type."' ";
+		$whereCondition = "WHERE docs.`type` = '" . $type . "' ";
 		$existingDocs = $documentModel->getDocuments($whereCondition, $limit);
-		if(!count($existingDocs)) $data["all"] = [];
-		for($i=0; $i<count($existingDocs);$i++){
+		if (!count($existingDocs)) $data["all"] = [];
+		for ($i = 0; $i < count($existingDocs); $i++) {
 			$data["all"][$i]["id"] = $existingDocs[$i]["id"];
 			$data["all"][$i]["title"] = $existingDocs[$i]["title"];
 		}
-		
+
 		//Logged In User Docs
-		$whereCondition .= "AND docs.`author-id` = ".session()->get('id')." ";
+		$whereCondition .= "AND docs.`author-id` = " . session()->get('id') . " ";
 		$existingDocs = $documentModel->getDocuments($whereCondition, $limit);
-		if(!count($existingDocs)) $data["my"] = [];
-		for($i=0; $i<count($existingDocs);$i++){
+		if (!count($existingDocs)) $data["my"] = [];
+		for ($i = 0; $i < count($existingDocs); $i++) {
 			$data["my"][$i]["id"] = $existingDocs[$i]["id"];
 			$data["my"][$i]["title"] = $existingDocs[$i]["title"];
 		}
-			
+
 		return $data;
 	}
-	
-	
-	public function add(){
+
+
+	public function add()
+	{
 		helper(['form']);
 		$documentModel = new DocumentModel();
 		$data = [];
@@ -216,25 +221,25 @@ class Documents extends BaseController
 		$data['addBtn'] = False;
 
 		$teamModel = new TeamModel();
-		$data['teams']= $teamModel->getMembers();	
-		
+		$data['teams'] = $teamModel->getMembers();
+
 		$data['backUrl'] = "/documents";
 
 		$settingsModel = new SettingsModel();
-		
+
 		$data["documentStatus"] =  $settingsModel->getConfig("documentStatus");
 		$data["reviewCategory"] =  $settingsModel->getConfig("reviewCategory");
 
 		if ($this->request->getMethod() == 'get') {
 			$id = $this->request->getVar('id');
-			if($id == ""){
-				
+			if ($id == "") {
+
 				// Request for new document
 				$type = $this->request->getVar('type');
 				$project_id = $this->request->getVar('project_id');
 				$existing_id = $this->request->getVar('existing_id');
 
-				if($project_id == "null"){
+				if ($project_id == "null") {
 					$session = session();
 					$session->setFlashdata('alert', "danger");
 					$session->setFlashdata('message', "Create a project first!");
@@ -242,17 +247,17 @@ class Documents extends BaseController
 				}
 				// Populating Existing Docs Dropdown
 				$existingDocs = $this->request->getVar('allExistingDocs');
-				if($existingDocs == "" || $existingDocs == "no"){
+				if ($existingDocs == "" || $existingDocs == "no") {
 					$data['allExistingDocs'] = "FALSE";
-				}else{
+				} else {
 					$data['allExistingDocs'] = "TRUE";
 				}
 
-				if($existing_id != "" && $project_id != "" ){
+				if ($existing_id != "" && $project_id != "") {
 					// Return requested template
-					$existingDoc = $documentModel->where('id',$existing_id)->first();
+					$existingDoc = $documentModel->where('id', $existing_id)->first();
 					$data['selectedExistingDocId'] = $existing_id;
-					if($existingDoc["author-id"] != session()->get('id')){
+					if ($existingDoc["author-id"] != session()->get('id')) {
 						$data['allExistingDocs'] = "TRUE";
 					}
 					$type = $existingDoc["type"];
@@ -260,49 +265,45 @@ class Documents extends BaseController
 					// $type = $existingDoc["type"];
 					$template = $this->getJsonTemplate($type);
 					$templateName = $template["name"];
-					$existingDoc['json-object'] =json_decode($existingDoc['json-object'],true);
+					$existingDoc['json-object'] = json_decode($existingDoc['json-object'], true);
 					$data['jsonObject'] = $existingDoc['json-object'][$type];
-					
-				}else if($type != "" && $project_id != "" ){
+				} else if ($type != "" && $project_id != "") {
 
 					$template = $this->getJsonTemplate($type);
 					$templateName = $template["name"];
-					
+
 					$data['jsonObject'] = $template['jsonObject'][$type];
-				
-				}else{
-					
+				} else {
+
 					return redirect()->to('/documents');
-					
 				}
 
 				$data["type"] = $type;
-				
+
 				$projectModel = new ProjectModel();
 				$projects = $projectModel->getProjects();
 				$data['project_name'] = $projects[$project_id];
 				$data['project_id'] = $project_id;
 				$data['formTitle'] = $templateName;
-				$data['docTitle'] = $templateName.",".$data['project_name'];
+				$data['docTitle'] = $templateName . "," . $data['project_name'];
 				// Get Lookup tables as per template sections
 				$sections = $data['jsonObject']["sections"];
 				$data["lookUpTables"] = [];
-				foreach ($sections as $section){
-					if(array_key_exists('type', $section)){
-						if($section['type'] == 'database'){
-							if(!array_key_exists($section['tableName'] , $data["lookUpTables"])){
+				foreach ($sections as $section) {
+					if (array_key_exists('type', $section)) {
+						if ($section['type'] == 'database') {
+							if (!array_key_exists($section['tableName'], $data["lookUpTables"])) {
 								$data["lookUpTables"][$section['tableName']] = $this->getTablesData($section['tableName'], $project_id);
 							}
 						}
 					}
 				}
 
-				
+
 				$data['existingDocs'] = $this->getExistingDocs($type);
-				
-			}else{
+			} else {
 				// Return an existing document
-				$data['projectDocument'] = $documentModel->where('id',$id)->first();
+				$data['projectDocument'] = $documentModel->where('id', $id)->first();
 				$type = $data['projectDocument']["type"];
 				$project_id = $data['projectDocument']["project-id"];
 
@@ -310,18 +311,18 @@ class Documents extends BaseController
 				$projects = $projectModel->getProjects();
 				$data['project_name'] = $projects[$project_id];
 				$data['project_id'] = $project_id;
-				
-				
+
+
 				$data['jsonObject'] = json_decode($data['projectDocument']['json-object'], true);
 				$data['jsonObject'] = $data['jsonObject'][$type];
 
 				// Get Lookup tables as per template sections
 				$sections = $data['jsonObject']["sections"];
 				$data["lookUpTables"] = [];
-				foreach ($sections as $section){
-					if(array_key_exists('type', $section)){
-						if($section['type'] == 'database'){
-							if(!array_key_exists($section['tableName'] , $data["lookUpTables"])){
+				foreach ($sections as $section) {
+					if (array_key_exists('type', $section)) {
+						if ($section['type'] == 'database') {
+							if (!array_key_exists($section['tableName'], $data["lookUpTables"])) {
 								$data["lookUpTables"][$section['tableName']] = $this->getTablesData($section['tableName'], $project_id);
 							}
 						}
@@ -330,7 +331,7 @@ class Documents extends BaseController
 
 				//Get Review Comment
 				$reviewModel = new ReviewModel();
-				$data['documentReview'] = $reviewModel->where('id',$data['projectDocument']['review-id'])->first();
+				$data['documentReview'] = $reviewModel->where('id', $data['projectDocument']['review-id'])->first();
 				$data['nearByDocuments'] = $this->getNearByDocuments($data['projectDocument']['update-date']);
 			}
 		}
@@ -342,30 +343,31 @@ class Documents extends BaseController
 	}
 
 	private function getNearByDocuments($id)
-    {
-        $prevId = null;
-        $nextId = null;
+	{
+		$prevId = null;
+		$nextId = null;
 
-        if (isset($_SESSION['PREV_URL'])) {
-            $prev_url = $_SESSION['PREV_URL'];
-            if ($prev_url["name"] == "documentsList") {
-                $vars = $prev_url["vars"];
-                $status = $vars['view'];
-                $project_id = $vars['project_id'];
-                $user_id = isset($vars['user_id']) ? ( ($vars['user_id'] != 'ALL') ? $vars['user_id'] : '' ): '';
+		if (isset($_SESSION['PREV_URL'])) {
+			$prev_url = $_SESSION['PREV_URL'];
+			if ($prev_url["name"] == "documentsList") {
+				$vars = $prev_url["vars"];
+				$status = $vars['view'];
+				$project_id = $vars['project_id'];
+				$user_id = isset($vars['user_id']) ? (($vars['user_id'] != 'ALL') ? $vars['user_id'] : '') : '';
 				$documentModel = new DocumentModel();
-                $prevId = $documentModel->getPrevDocId($id, $project_id, $status, $user_id);
-                $nextId = $documentModel->getNextDocId($id, $project_id, $status, $user_id);
-            }
-        }
+				$prevId = $documentModel->getPrevDocId($id, $project_id, $status, $user_id);
+				$nextId = $documentModel->getNextDocId($id, $project_id, $status, $user_id);
+			}
+		}
 
-        $rev["prevId"] = $prevId;
-        $rev["nextId"] = $nextId;
+		$rev["prevId"] = $prevId;
+		$rev["nextId"] = $nextId;
 
-        return $rev;
+		return $rev;
 	}
-	
-	public function save(){
+
+	public function save()
+	{
 		$response = array();
 
 		$fileName =  $this->request->getVar('cp-line3');
@@ -377,16 +379,16 @@ class Documents extends BaseController
 		$type = $this->request->getVar('type');
 		$template = $this->getJsonTemplate($type);
 		$jsonObject = $template['jsonObject'];
-		
-		$jsonObject[$type]['cp-line3'] =$this->request->getVar('cp-line3');
-		$jsonObject[$type]['cp-line4'] =$this->request->getVar('cp-line4');
-		$jsonObject[$type]['cp-line5'] =$this->request->getVar('cp-line5');
-		$jsonObject[$type]['cp-change-history'] =$this->request->getVar('cp-change-history');
-		$jsonObject[$type]['cp-approval-matrix'] =$this->request->getVar('cp-approval-matrix');
+
+		$jsonObject[$type]['cp-line3'] = $this->request->getVar('cp-line3');
+		$jsonObject[$type]['cp-line4'] = $this->request->getVar('cp-line4');
+		$jsonObject[$type]['cp-line5'] = $this->request->getVar('cp-line5');
+		$jsonObject[$type]['cp-change-history'] = $this->request->getVar('cp-change-history');
+		$jsonObject[$type]['cp-approval-matrix'] = $this->request->getVar('cp-approval-matrix');
 		$sections = $jsonObject[$type]['sections'];
 
-		
-		foreach($sections as $key=>$section){
+
+		foreach ($sections as $key => $section) {
 			$sectionId = $sections[$key]["id"];
 			$sections[$key]["content"] = $this->request->getVar($sectionId);
 		}
@@ -408,137 +410,146 @@ class Documents extends BaseController
 		$id = $this->request->getVar('id');
 		$revision["dateTime"] = $currentTime;
 		$revision["who"] = session()->get("name");
-		
-		if($id == ""){
+
+		if ($id == "") {
 			//Creating Document Revision JSON
 			$revision["type"] = "Created";
 			$revision["log"] = "Document created.";
 			$revisionHistory["revision-history"] = array();
-			
+
 			array_push($revisionHistory["revision-history"], $revision);
 
 			$postData["revision-history"] = json_encode($revisionHistory);
-			
+
 			//Insert
 			$id = $documentModel->insert($postData);
 			$session = session();
 			$session->setFlashdata('success', "Document Created successfully!");
-		}else{
+		} else {
 			//Updating Document Revision
-			$doc = $documentModel->where('id',$id)->first();
-			
-			$oldJsonObject = json_decode($doc['json-object'], true);
-			$diff = $this->arrayDiff( $jsonObject[$type], $oldJsonObject[$type]);
+			$doc = $documentModel->where('id', $id)->first();
 
-			if($doc["reviewer-id"] != $postData["reviewer-id"]){
-				if(strlen($diff)){
+			$oldJsonObject = json_decode($doc['json-object'], true);
+			$diff = $this->arrayDiff($jsonObject[$type], $oldJsonObject[$type]);
+
+			if ($doc["reviewer-id"] != $postData["reviewer-id"]) {
+				if (strlen($diff)) {
 					$diff .= ", ";
 				}
 				$diff .= "Reviewer";
 			}
 
-			if($doc["status"] != $postData["status"]){
-				if(strlen($diff)){
+			if ($doc["status"] != $postData["status"]) {
+				if (strlen($diff)) {
 					$diff .= ", ";
 				}
 				$diff .= "Status";
 			}
 
 			$revisionHistory = $doc["revision-history"];
-			if($revisionHistory != null){
+			if ($revisionHistory != null) {
 				$revisionHistory = json_decode($revisionHistory, true);
-			}else{
+			} else {
 				$revisionHistory["revision-history"] = array();
 			}
-			if(strlen($diff)){
+			if (strlen($diff)) {
 				$revision["type"] = "Edited";
-				$revision["log"] = $diff." was updated.";
+				$revision["log"] = $diff . " was updated.";
 				array_push($revisionHistory["revision-history"], $revision);
 			}
-	
+
 
 			$postData["revision-history"] = json_encode($revisionHistory);
 			$response["revisionHistory"] = json_encode($revisionHistory);
-			
+
 			//Update Document
 			$documentModel->update($id, $postData);
 		}
-		
-		if($postData['status'] == 'Request Review'){
+
+		if ($postData['status'] == 'Request Review') {
 			$baseUrl = getenv('app.baseURL');
-			$notificationMessage = $revision['who']." has requested review of D-".$id;
-			$notificationMessage .= "\nLink - ".$baseUrl."/documents/add?id=".$id;
-			
-			$this->sendOpenfireNotification($postData['reviewer-id'], $notificationMessage);
+			$notificationMessage = $revision['who'] . " has requested review of D-" . $id;
+			$referenceLink = $baseUrl . "/documents/add?id=" . $id;
+
+			$this->sendNotification($postData['reviewer-id'], "D-$id", "Request Review", $referenceLink, $notificationMessage);
 		}
-		
+
 		$response["success"] = "True";
 		$response["id"] = $id;
 		$response["fileName"] = $fileName;
-		
+
 		echo json_encode($response);
-		
 	}
 
-	public function arrayDiff($aArray1, $aArray2) { 
-		$aReturn = array(); 
-	
-		foreach ($aArray1 as $mKey => $mValue) { 
-			if (array_key_exists($mKey, $aArray2)) { 
-				if (is_array($mValue)) { 
-					foreach ($mValue as $sKey => $sValue){
-						if ($sValue != $aArray2[$mKey][$sKey]) { 
-							array_push($aReturn, $aArray2[$mKey][$sKey]["title"]. " Section" );
-						} 
+	public function arrayDiff($aArray1, $aArray2)
+	{
+		$aReturn = array();
+
+		foreach ($aArray1 as $mKey => $mValue) {
+			if (array_key_exists($mKey, $aArray2)) {
+				if (is_array($mValue)) {
+					foreach ($mValue as $sKey => $sValue) {
+						if ($sValue != $aArray2[$mKey][$sKey]) {
+							array_push($aReturn, $aArray2[$mKey][$sKey]["title"] . " Section");
+						}
 					}
-					
-				} else { 
-					if ($mValue != $aArray2[$mKey]) { 
-						array_push($aReturn, $mKey );
-					} 
-				} 
-			} else { 
-				array_push($aReturn, $mKey );
-			} 
-		} 
-
-		if(count($aReturn)){
-			$diff = implode(", ",$aReturn);
-			$diff = str_replace("cp-line3","Title",$diff);
-			$diff = str_replace("cp-line4","Document ID",$diff);
-			$diff = str_replace("cp-line5","Revision",$diff);
-			$diff = str_replace("cp-approval-matrix","Approval Matrix",$diff);
-			$diff = str_replace("cp-change-history","Change History",$diff);
-			return $diff;
-		}else{
-			return ""; 
+				} else {
+					if ($mValue != $aArray2[$mKey]) {
+						array_push($aReturn, $mKey);
+					}
+				}
+			} else {
+				array_push($aReturn, $mKey);
+			}
 		}
-	
-		
+
+		if (count($aReturn)) {
+			$diff = implode(", ", $aReturn);
+			$diff = str_replace("cp-line3", "Title", $diff);
+			$diff = str_replace("cp-line4", "Document ID", $diff);
+			$diff = str_replace("cp-line5", "Revision", $diff);
+			$diff = str_replace("cp-approval-matrix", "Approval Matrix", $diff);
+			$diff = str_replace("cp-change-history", "Change History", $diff);
+			return $diff;
+		} else {
+			return "";
+		}
 	}
 
-	 //This code sends a notification message to openfire
-    //Author of the document is updated about new comments.
-    private function sendOpenfireNotification($userId, $message){
-        if(getenv('OF_ENABLED') == "true"){
-            $openfire = new Openfire();
-            $teamModel = new TeamModel();
-            $userName = $teamModel->getUsername($userId);
-            $openfire->sendNotification($userName, $message);
-        }
+	private function sendNotification($receiverId, $reviewId, $title, $referenceLink, $notificationMessage)
+	{
+		if (getenv('OF_ENABLED') == "true") {
+			$openfire = new Openfire();
+			$teamModel = new TeamModel();
+			$userName = $teamModel->getUsername($receiverId);
+			$openfireMessage = "$notificationMessage \nLink - " . $referenceLink;
+			$openfire->sendNotification($userName, $openfireMessage);
+		}
+
+		if (getenv('EMAIL_ENABLED') == "true") {
+
+			helper('Helpers\utils');
+			$html = getEmailHtml($title, $notificationMessage, $referenceLink, 'View Here', 2);
+
+			$teamModel = new TeamModel();
+			$receiver = $teamModel->where('id', 1)->findColumn('email');
+			$to = $receiver[0];
+			$cc = session()->get('email');
+			$subject = "DocsGo: $title - $reviewId";
+			
+			sendEmail($to,$cc,$subject, $html);
+		}
 	}
-	
-	public function delete(){
-		
+
+	public function delete()
+	{
+
 		$uri = $this->request->uri;
 		$id = $uri->getSegment(3);
 
 		$model = new DocumentModel();
 		$model->delete($id);
 		$response = array('success' => "True");
-		echo json_encode( $response );
-		
+		echo json_encode($response);
 	}
-
-
 }

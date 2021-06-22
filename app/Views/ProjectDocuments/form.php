@@ -589,6 +589,14 @@ var commentEditId = "",
     toggleReviewBox = true,
     reviewComments = [];
 
+$(document).on({
+    ajaxStart: function() {
+        $("#loading-overlay").show();
+    },
+    ajaxStop: function() {
+        $("#loading-overlay").hide();
+    }
+});
 
 $(document).ready(function() {
     $('[data-toggle="popover"]').popover({
