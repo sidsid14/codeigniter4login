@@ -117,8 +117,8 @@ class Projects extends BaseController
 		$emailTitle = "Review Request";
 		$emailBody = "Sudhanshu Tiwari has requested review of D-316.";
 		$referenceLink = "https://info.viosrdtest.in/documents/add?id=316" ;
-		$referenceLinkText = "RDIO-316";
-		$subject = 'Docsgo '+$emailTitle+'  '+$referenceLinkText;
+		$referenceLinkText = "D-316";
+		$subject = 'Docsgo '.$emailTitle.'  '.$referenceLinkText;
 
 		helper('Helpers\utils');
 		$html = getEmailHtml($emailTitle, $emailBody, $referenceLink, $referenceLinkText,2);
