@@ -50,7 +50,7 @@
 }
 
 .reviewDiv {
-    max-width: 450px;
+    max-width: 500px;
 }
 
 .sectionLinks{
@@ -71,11 +71,11 @@
     background-color: #007bff !important;
 }
 
-@media (max-width: 1480px){
+/* @media (max-width: 1480px){
     .reviewDiv{
         max-width:412px;
     }
-}
+} */
 
 </style>
 
@@ -90,7 +90,7 @@
             <?php endif; ?>
         </div>
 
-        <div class="col-12 col-lg-8 ml-3 pr-0 pl-0">
+        <div class="col-12 col-lg-7 ml-3 pr-0 pl-0">
 
             <!-- Form starts here -->
             <form id="documentForm" action="/documents/save" method="post">
@@ -483,7 +483,7 @@
                         </div>
                     </div>
                     <div class="">
-                        <ul class="commentsList list-group scroll scroll-primary withoutReviewBox"></ul>
+                        <ul class="commentsList list-group scroll scroll-primary withoutReviewBox" style="margin-right:-4px"></ul>
                     </div>
                     <div>
                         <div class="form-group hide reviewbox p-2">

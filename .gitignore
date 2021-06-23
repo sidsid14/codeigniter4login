@@ -6,5 +6,6 @@ public/taskboard/
 public/diagrams/
 public/storage/repository/
 public/uploads/
+public/PreviewDocx/
 .gitignore
 .vscode
