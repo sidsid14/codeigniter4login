@@ -49,7 +49,7 @@
             $html = getEmailHtml($title, $notificationMessage, $referenceLink, 'View Here', 2);
 
 			$teamModel = new TeamModel();
-			$receiver = $teamModel->where('id', 1)->findColumn('email');
+			$receiver = $teamModel->where('id', $receiverId)->findColumn('email');
 			$to = $receiver[0];
 			$cc = session()->get('email');
 			$subject = "DocsGo: $title on $reviewId";
