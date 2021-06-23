@@ -1,6 +1,7 @@
 <?php
     use App\Models\ProjectModel;
     use App\Models\TeamModel;
+    use App\Models\QueueModel;
     use TP\Tools\Openfire;
 
     function setPrevUrl($name, $vars){
@@ -46,15 +47,30 @@
 		}
 
 		if (getenv('EMAIL_ENABLED') == "true") {
-            $html = getEmailHtml($title, $notificationMessage, $referenceLink, 'View Here', 2);
-
-			$teamModel = new TeamModel();
+            $teamModel = new TeamModel();
 			$receiver = $teamModel->where('id', $receiverId)->findColumn('email');
 			$to = $receiver[0];
 			$cc = session()->get('email');
 			$subject = "DocsGo: $title on $reviewId";
-			
-			sendEmail($to,$cc,$subject, $html);
+
+            $queueJson = [
+                'to' => $to,
+                'cc' => $cc,
+                'subject' => $subject,
+                'title' => $title,
+                'message' => $notificationMessage,
+                'url' => $referenceLink,
+            ];
+
+            $queueData = [
+                'type' => 'email',
+                'status' => 'SUBMITTED',
+                'json' => json_encode($queueJson)
+            ];
+
+            $queueModel = new QueueModel();
+            $queueModel->insert($queueData);
+
 		}
 	}
 

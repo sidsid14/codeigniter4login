@@ -148,6 +148,8 @@ $routes->get('timeTracker/show', 'TimeTracker::show',['filter' => 'auth']);
 $routes->post('timeTracker/create', 'TimeTracker::create',['filter' => 'auth']);
 $routes->post('timeTracker/delete', 'TimeTracker::delete',['filter' => 'auth']);
 $routes->get('timeTracker/get-weekly-stats', 'TimeTracker::getWeeklyStats', ['filter' => 'auth']);
+
+$routes->get('emailQueue', 'Queue::emailQueue');
 /**
  * --------------------------------------------------------------------
  * Additional Routing
