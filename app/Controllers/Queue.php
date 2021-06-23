@@ -18,31 +18,30 @@ class Queue extends BaseController
     }
     public function emailQueue()
     {
-        echo "Queue called";
-        // $queue = $this->getSubmittedJobs("email");
-        // $jobIds = array_column($queue, "id");
+        $queue = $this->getSubmittedJobs("email");
+        $jobIds = array_column($queue, "id");
 
-        // if (count($jobIds)) {
-        //     $this->updateQueueStatus($jobIds, $this->PROCESSING);
+        if (count($jobIds)) {
+            $this->updateQueueStatus($jobIds, $this->PROCESSING);
 
-        //     helper('Helpers\utils');
-        //     foreach ($queue as $job) {
-        //         $jobId = $job["id"];
-        //         $json = json_decode($job['json'], true);
+            helper('Helpers\utils');
+            foreach ($queue as $job) {
+                $jobId = $job["id"];
+                $json = json_decode($job['json'], true);
 
-        //         $html = getEmailHtml($json["title"], $json["message"], $json["url"], 'View Here', 2);
+                $html = getEmailHtml($json["title"], $json["message"], $json["url"], 'View Here', 2);
 
-        //         $emailSent = sendEmail($json["to"], $json["cc"], $json["subject"], $html);
+                $emailSent = sendEmail($json["to"], $json["cc"], $json["subject"], $html);
 
-        //         if ($emailSent) {
-        //             $this->updateQueueStatus($jobId, $this->SUCCESS);
-        //         } else {
-        //             $this->updateQueueStatus($jobId, $this->FAILED);
-        //         }
-        //     }
-        // }
+                if ($emailSent) {
+                    $this->updateQueueStatus($jobId, $this->SUCCESS);
+                } else {
+                    $this->updateQueueStatus($jobId, $this->FAILED);
+                }
+            }
+        }
 
-        // $this->cleanUp();
+        $this->cleanUp();
     }
 
     private function getSubmittedJobs($type)

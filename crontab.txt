@@ -1,0 +1,7 @@
+# m h  dom mon dow   command
+
+#For DB Backup
+0 6,13 * * * mysqldump -u 'docsgo_admin' -p'docsgo@123' docsgo | gzip > /home/ubuntu/backup/docsgo/database/docsgo_`date +"\%m_\%d_\%Y_\%R"`.sql.gz
+
+#For Email Queue
+*/2 * * * * /usr/bin/curl --silent https://info.viosrdtest.in/emailQueue &>/dev/null
