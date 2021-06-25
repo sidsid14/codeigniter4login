@@ -102,7 +102,7 @@ ul li>p::before {
         </ol>
     </nav>
     <main class="pt-3 pb-3">
-        <div class="stats-container row"></div>
+        <div class="stats-container row justify-content-center"></div>
 
     </main>
 </div>
