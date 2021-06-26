@@ -18,16 +18,17 @@ class Dashboard extends BaseController
         $settingsModel = new SettingsModel();
 		$thirdParty = $settingsModel->getThirdPartyConfig();
 
-        $response["sonar_stats"] = $this->getSonarStats($thirdParty["sonar"]["url"]);
+        $response["sonar_stats"] = $this->getSonarStats($thirdParty["sonar"]["url"], $thirdParty["sonar"]["key"]);
         $response["jenkins_stats"] = $this->getJenkinsStats($thirdParty["jenkins"]["url"], $thirdParty["jenkins"]["key"]);
    
         return json_encode($response);
     }
 
-    private function getSonarStats($sonar_ip)
+    private function getSonarStats($sonar_ip, $authentication_token)
     {
+        helper('Helpers\utils');
         $sonar_projects_url = $sonar_ip . "/api/components/search?qualifiers=TRK";
-        $sonar_stats = $this->getReq($sonar_projects_url);
+        $sonar_stats = curlGETRequest($sonar_projects_url,  $authentication_token);
         $sonar_projects = [];
 
         if ($sonar_stats != null) {
@@ -39,7 +40,8 @@ class Dashboard extends BaseController
                     }
                     $sonar_metric_keys = "&metricKeys=alert_status,bugs,vulnerabilities,code_smells";
                     $sonar_metrics_url = $sonar_ip . "/api/measures/search?projectKeys=" . join(",", $sonar_projects) . $sonar_metric_keys;
-                    $sonar_metrics = $this->getReq($sonar_metrics_url);
+                    
+                    $sonar_metrics = curlGETRequest($sonar_metrics_url,  $authentication_token);
                     if (count($sonar_metrics["measures"])) {
                         $measures = $sonar_metrics["measures"];
                         $stats = array();
@@ -78,7 +80,8 @@ class Dashboard extends BaseController
     private function getJenkinsStats($jenkins_ip, $jenkins_job_name)
     {
         $jenkins_api = $jenkins_ip."/job/".$jenkins_job_name."/lastBuild/api/json";
-        $jenkins_stats = $this->getReq($jenkins_api);
+        helper('Helpers\utils');
+        $jenkins_stats = curlGETRequest($jenkins_api);
 
         if ($jenkins_stats != null) {
             $buildInfo = array(
@@ -110,25 +113,7 @@ class Dashboard extends BaseController
         }
     }
 
-    private function getReq($url)
-    {
-        $curl = curl_init();
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_TIMEOUT => 5,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'GET',
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
-        return json_decode($response, true);
-    }
 
 
 }

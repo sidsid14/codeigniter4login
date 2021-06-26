@@ -144,22 +144,16 @@ class RiskAssessmentModel extends Model{
         $settingsModel = new SettingsModel();
         $sonarQubeObj = new SonarQube();
 
-        $serverConfig = $settingsModel->getSettings("third-party");
-        
-        $serverDetails = json_decode($serverConfig[0]['options']);
-        $BaseURL = "";
-        foreach( $serverDetails as $server ){
-            if($server->key == "sonar"){
-                $BaseURL= $server->url;
-            }
-        }
+        $thirdParty = $settingsModel->getThirdPartyConfig();
+        $BaseURL = $thirdParty["sonar"]["url"];
+        $authentication_token = $thirdParty["sonar"]["key"];
         
         $vulnerabilities = [];
         if( $BaseURL){
             try {
                 $vulnerabilitiesAPIURL = "$BaseURL/api/issues/search?types=VULNERABILITY&statuses=OPEN";
                 
-                $vulnerabilities = $sonarQubeObj->getVulnerabilities($vulnerabilitiesAPIURL);
+                $vulnerabilities = $sonarQubeObj->getVulnerabilities($vulnerabilitiesAPIURL, $authentication_token);
                 return $vulnerabilities;
             } catch(Exception $e){
                 error_log($e);

@@ -142,4 +142,34 @@
 		return $html;
     }
 
+    function curlGETRequest($url, $authentication_token = "", $inArray=true)
+    {
+        $curl = curl_init();
+        $curl_options = array(
+            CURLOPT_URL => $url,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_TIMEOUT => 5,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+        );
+
+        if($authentication_token != ""){
+            $baseEncodedToken = base64_encode("$authentication_token:");
+            $curl_options[CURLOPT_MAXREDIRS] = 10;
+            $curl_options[CURLOPT_HTTPHEADER] = array(
+                "Authorization: Basic $baseEncodedToken"
+            );
+        }
+
+        curl_setopt_array($curl, $curl_options);
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        return json_decode($response, $inArray);
+    }
+
 ?>
