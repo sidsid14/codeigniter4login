@@ -225,7 +225,7 @@ function getJenkinsLinks(url){
     const day = today.getDate() < 10 ? '0'+today.getDate() : today.getDate();
 
     const date = year+'-'+month+'-'+day;
-    const buildLocation = jenkins_ip+"/builds/"+date;
+    const buildLocation = jenkins_ip+"/filemanager/index.php?p=builds/"+date;
 
     return { buildLocation : buildLocation,
              liveInstance: jenkins_ip.replace('http', 'https')+"/webservices",
