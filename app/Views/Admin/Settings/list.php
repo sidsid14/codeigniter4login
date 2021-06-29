@@ -218,9 +218,10 @@
                 </div>
                 <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
                     <div class="alertDiv"></div>
+                    <div class="input-group-text" style="display:flow-root">Sonarqube</div>&nbsp;
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" >Sonar url</span>
+                            <span class="input-group-text" >URL</span>
                         </div>
                         <input type="text" class="form-control" id="sonar" >&nbsp;
 
@@ -229,9 +230,10 @@
                         </div>
                         <input type="text" class="form-control" id="apiKey-sonar" >                                              
                     </div>
+                    <div class="input-group-text" style="display:flow-root">TestLink</div>&nbsp;
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" >TestLink url</span>
+                            <span class="input-group-text" >URL</span>
                         </div>
                         <input type="text" class="form-control" id="testLink" >&nbsp;
 
@@ -240,17 +242,28 @@
                         </div>
                         <input type="text" class="form-control" id="apiKey-testLink" >                                             
                     </div>
-
+                    <div class="input-group-text" style="display:flow-root">Jenkins</div>&nbsp;
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" >Jenkins url</span>
+                            <span class="input-group-text" >URL</span>
                         </div>
-                        <input type="text" class="form-control" id="jenkins" >&nbsp;
+                        <input type="text" class="form-control" id="jenkins" >&nbsp;  
 
                         <div class="input-group-prepend">
                             <span class="input-group-text" >Job Name</span>
                         </div>
-                        <input type="text" class="form-control" id="apiKey-jenkins" >                                             
+                        <input type="text" class="form-control" id="job-jenkins" >&nbsp;                                             
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" >Username</span>
+                        </div>
+                        <input type="text" class="form-control" id="user-jenkins" >&nbsp;  
+
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Key</span>
+                        </div>
+                        <input type="text" class="form-control" id="apiKey-jenkins" >&nbsp;                                         
                     </div>
 
                     <div class="row">
@@ -331,6 +344,10 @@
                     if (options != null) {
                         $("#"+options[j].key).val(options[j].url);
                         $("#apiKey-"+options[j].key).val(options[j].apiKey);
+                        if(options[j].key == "jenkins"){
+                            $("#user-"+options[j].key).val(options[j].user);
+                            $("#job-"+options[j].key).val(options[j].job);
+                        }
 
                     }
                 }
@@ -459,6 +476,8 @@
         var testUrlKey = $("#apiKey-testLink").val();
         var jenkinsUrl = $("#jenkins").val();
         var jenkinsKey = $("#apiKey-jenkins").val();
+        var jenkinsUser = $("#user-jenkins").val();
+        var jenkinsJob = $("#job-jenkins").val();
 
         if(sonarUrl  != "" || testUrl != ""){
             var configIndex = configData.findIndex(x => x.identifier === identifier);
@@ -476,6 +495,8 @@
                 if(existingOptions[z]["key"] == "jenkins"){
                     existingOptions[z]["url"] = jenkinsUrl;
                     existingOptions[z]["apiKey"] = jenkinsKey;
+                    existingOptions[z]["user"] = jenkinsUser;
+                    existingOptions[z]["job"] = jenkinsJob;
                 }
             }
             

@@ -51,10 +51,15 @@ class SettingsModel extends Model{
         $thirdParty = json_decode($thirdParty["options"], true);
         $thirdPartyObj = array();
         foreach($thirdParty as $details){
-             $thirdPartyObj[$details["key"]] = array(
+              $temp = array(
                 "url" => $details["url"],
-                "key" => $details["apiKey"]
+                "key" => $details["apiKey"],
              );
+             if($details["key"] == "jenkins"){
+                $temp["user"] = $details["user"];
+                $temp["job"] = $details["job"];
+            }
+            $thirdPartyObj[$details["key"]] = $temp;
             // $thirdPartyObj[$details["key"]]=array($details["url"], $details["apiKey"]);
         }
         if($key != ""){

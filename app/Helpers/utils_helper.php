@@ -157,7 +157,7 @@
         );
 
         if($authentication_token != ""){
-            $baseEncodedToken = base64_encode("$authentication_token:");
+            $baseEncodedToken = base64_encode($authentication_token);
             $curl_options[CURLOPT_MAXREDIRS] = 10;
             $curl_options[CURLOPT_HTTPHEADER] = array(
                 "Authorization: Basic $baseEncodedToken"

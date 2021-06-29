@@ -18,8 +18,15 @@ class Dashboard extends BaseController
         $settingsModel = new SettingsModel();
 		$thirdParty = $settingsModel->getThirdPartyConfig();
 
-        $response["sonar_stats"] = $this->getSonarStats($thirdParty["sonar"]["url"], $thirdParty["sonar"]["key"]);
-        $response["jenkins_stats"] = $this->getJenkinsStats($thirdParty["jenkins"]["url"], $thirdParty["jenkins"]["key"]);
+        $sonarURL = $thirdParty["sonar"]["url"];
+        $sonarKey = $thirdParty["sonar"]["key"];
+        $response["sonar_stats"] = $this->getSonarStats($sonarURL, $sonarKey);
+
+        $jenkinsURL = $thirdParty["jenkins"]["url"];
+        $jenkinsKey = $thirdParty["jenkins"]["key"];
+        $jenkinsJob = $thirdParty["jenkins"]["job"];
+        $jenkinsUser = $thirdParty["jenkins"]["user"];
+        $response["jenkins_stats"] = $this->getJenkinsStats($jenkinsURL, $jenkinsKey, $jenkinsJob, $jenkinsUser);
    
         return json_encode($response);
     }
@@ -28,7 +35,7 @@ class Dashboard extends BaseController
     {
         helper('Helpers\utils');
         $sonar_projects_url = $sonar_ip . "/api/components/search?qualifiers=TRK";
-        $sonar_stats = curlGETRequest($sonar_projects_url,  $authentication_token);
+        $sonar_stats = curlGETRequest($sonar_projects_url,  "$authentication_token:");
         $sonar_projects = [];
 
         if ($sonar_stats != null) {
@@ -41,7 +48,7 @@ class Dashboard extends BaseController
                     $sonar_metric_keys = "&metricKeys=alert_status,bugs,vulnerabilities,code_smells";
                     $sonar_metrics_url = $sonar_ip . "/api/measures/search?projectKeys=" . join(",", $sonar_projects) . $sonar_metric_keys;
                     
-                    $sonar_metrics = curlGETRequest($sonar_metrics_url,  $authentication_token);
+                    $sonar_metrics = curlGETRequest($sonar_metrics_url,  "$authentication_token:");
                     if (count($sonar_metrics["measures"])) {
                         $measures = $sonar_metrics["measures"];
                         $stats = array();
@@ -77,11 +84,11 @@ class Dashboard extends BaseController
 
     }
 
-    private function getJenkinsStats($jenkins_ip, $jenkins_job_name)
+    private function getJenkinsStats($jenkins_ip,$jenkins_key, $jenkins_job_name, $jenkins_user)
     {
         $jenkins_api = $jenkins_ip."/job/".$jenkins_job_name."/lastBuild/api/json";
         helper('Helpers\utils');
-        $jenkins_stats = curlGETRequest($jenkins_api);
+        $jenkins_stats = curlGETRequest($jenkins_api, "$jenkins_user:$jenkins_key");
 
         if ($jenkins_stats != null) {
             $buildInfo = array(
