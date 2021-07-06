@@ -23,6 +23,7 @@ class SonarQube
             
             helper('Helpers\utils');
             $data = curlGETRequest($URL,  $authentication_token, false);
+            
             if( $data->total ){
                 $count = $data->total;  
                 $pageCount = floor($count/100);

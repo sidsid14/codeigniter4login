@@ -69,20 +69,20 @@ class RiskAssessmentModel extends Model{
             $temp['failure_mode'] = $row['failure_mode'];
             $temp['harm'] = $row['harm'];
             $temp['cascade_effect'] = $row['cascade_effect'];
-            switch($temp['risk_type']){
-                case 'Vulnerability':
+            switch(strtolower($temp['risk_type'])){
+                case 'vulnerability':
                     if($temp['component'] != 'vms_automation')
                         $temp['risk'] = 'V- '.$row['risk'];
                     else
                         $temp['risk'] = 'AT- '.$row['risk'];
                     break;
-                case 'SOUP':
+                case 'soup':
                     $temp['risk'] = 'S- '.$row['risk'];
                     break;
-                case 'Open-Issue':
+                case 'open-issue':
                     $temp['risk'] = 'OI- '.$row['risk'];
                     break;
-                case 'Scope-Items':
+                case 'scope-items':
                     $temp['risk'] = 'SI- '.$row['risk'];
                     break;
             }
@@ -153,7 +153,7 @@ class RiskAssessmentModel extends Model{
             try {
                 $vulnerabilitiesAPIURL = "$BaseURL/api/issues/search?types=VULNERABILITY&statuses=OPEN";
                 
-                $vulnerabilities = $sonarQubeObj->getVulnerabilities($vulnerabilitiesAPIURL, $authentication_token);
+                $vulnerabilities = $sonarQubeObj->getVulnerabilities($vulnerabilitiesAPIURL, "$authentication_token:");
                 return $vulnerabilities;
             } catch(Exception $e){
                 error_log($e);

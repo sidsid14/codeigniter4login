@@ -698,8 +698,11 @@ function goToDiv(e, target){
 } 
 
 const capitalize = (s) => {
-    if (typeof s !== 'string') return ''
-    return s.charAt(0).toUpperCase() + s.slice(1)
+    if (typeof s !== 'string') return '';
+    // return  s.charAt(0).toUpperCase() + s.slice(1);
+    const stringArr = s.split("_");
+    const capitalizedArr = stringArr.map(function(s){return  s.charAt(0).toUpperCase() + s.slice(1)});
+    return capitalizedArr.join(" ");
 }
 
 function insertTable(sectionId, tableName, columnValues) {
@@ -761,7 +764,7 @@ function insertTable(sectionId, tableName, columnValues) {
                 if(index == 'risk'){
                     value= value.replace(/V- |S- |AT- |OI- |SI- /g,'');
                 }
-                content += "|" + ((capitalize(index) == 'Hazard-analysis') ? "Hazard-Analysis & Mitigation" : capitalize(index)) + "|" + ((value != null) ? value.replace(/(\r\n|\n|\r)/gm, "") : "") +
+                content += "|" + ((capitalize(index) == 'Hazard Analysis') ? "Hazard-Analysis & Mitigation" : capitalize(index)) + "|" + ((value != null) ? value.replace(/(\r\n|\n|\r)/gm, "") : "") +
                     "|\r\n";
                 if (i == 0) {
                     content += "|---------|---------|\r\n";
