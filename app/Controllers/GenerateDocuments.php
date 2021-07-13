@@ -596,7 +596,7 @@ class GenerateDocuments extends BaseController
 			$params = $this->returnParams();
 			$projectId = $params[0];
 			$fileName = $params[1];
-			$projectDocsRootDir = "/var/www/html/public";
+			$projectDocsRootDir = "/var/www/html/docsgo/public";
 			$directoryName = "Project_Word_Documents_".$projectId;
 			$outputFilePath = $projectDocsRootDir . "/" . $directoryName . "/" . str_replace('.pdf', '.docx', $fileName);
 			#create folder for saving the docx files		
@@ -610,9 +610,9 @@ class GenerateDocuments extends BaseController
 			}
 
 			$logFileName = "log-" . gmdate("Y-m-d") . ".log";
-			file_put_contents("/var/www/html/writable/logs/" . $logFileName, "\r\nExporting pdf to docx: ". $fileName . "\r\n", FILE_APPEND);
-			exec("cd /var/www/html/public/pdf-to-docx-converter; node export-pdf-to-docx.js " . $projectDocsRootDir . "/Project_Documents_" . $projectId . "/" . $fileName
-			. " " . $outputFilePath . " >>" . " /var/www/html/writable/logs/" . $logFileName . " 2>&1; cd /var/www/html/public");
+			file_put_contents("/var/www/html/docsgo/writable/logs/" . $logFileName, "\r\nExporting pdf to docx: ". $fileName . "\r\n", FILE_APPEND);
+			exec("cd /var/www/html/docsgo/public/pdf-to-docx-converter; node export-pdf-to-docx.js " . $projectDocsRootDir . "/Project_Documents_" . $projectId . "/" . $fileName
+			. " " . $outputFilePath . " >>" . " /var/www/html/docsgo/writable/logs/" . $logFileName . " 2>&1; cd /var/www/html/docsgo/public");
 			
 			$response = array('success' => "True", "status"=>"Converted pdf file to docx successfully", "fileName" => $fileName, "fileDownloadUrl" => $directoryName . "/" . str_replace('.pdf', '.docx', $fileName));
 			echo json_encode( $response );
