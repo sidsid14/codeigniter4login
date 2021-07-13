@@ -221,10 +221,15 @@ class GenerateDocuments extends BaseController
 					//Adding the sub,sub-sub indexing values
 					$contentSection = $this->handleSubIndexNumbers($contentSection, $index);
 					$contentSection = $this->handleSunHeadingAlignments($contentSection);
+					$contentSection = $this->formatUnorderedLists($contentSection);
 					if (strpos($contentSection, '<table>') !== false) {
 						if(strtolower($json['sections'][$i]['title']) == 'traceability matrix'){
 							$contentSection = str_replace('<br/>', '; ', $contentSection);
 						}
+						// add a newline before table which comes immediately after the section header
+						if( substr($contentSection,0,7) == '<table>'){
+							$contentSection = str_replace('<table>', '<br/><table>', $contentSection);
+						}						
 						$contentSection = str_replace('</table>', '</table><br/>', $contentSection);
 						$contentSection = str_replace('</table><br/><strong>', '</table><strong>', $contentSection);
 						$tableContentFormatted = $this->addTableStylesToContent($contentSection, '100');
@@ -513,13 +518,13 @@ class GenerateDocuments extends BaseController
 				font-size: 11pt  !important;
 			}
 			table{
-				border-spacing: 0 10pt !important; layout: fixed !important; font-family:frutiger !important; font-size: 11pt !important; table-layout: fixed !important; word-wrap: break-word !important; padding: 50px !important; border: 1px #000000 solid !important; border-collapse: collapse !important;
+				border-spacing: 0 10pt !important; layout: fixed !important; font-family:frutiger !important; font-size: 10pt !important; table-layout: fixed !important; word-wrap: break-word !important; padding: 50px !important; border: 1px #000000 solid !important; border-collapse: collapse !important;
 			}
 			th{
-				font-weight: bold !important; padding-left:10pt !important; background-color:#d9d9d9 !important; font-size: 11pt !important; text-align:left !important; font-family: frutiger !important; height: 30px !important;
+				font-weight: bold !important; padding-left:7pt !important;background-color:#d9d9d9 !important; font-size: 10pt !important; text-align:left !important; font-family: frutiger !important;
 			}
 			td{
-				padding-left:10pt !important; font-size: 11pt !important; font-family: frutiger !important;
+				padding-left:7pt !important; font-size: 10pt !important; font-family: frutiger !important;
 			}
 			table td {
 				word-wrap:break-word;
@@ -587,41 +592,37 @@ class GenerateDocuments extends BaseController
 	}
 
 	public function startPDFDocxConvertion() {
-		$filePath = '';
-		$params = $this->returnParams();
-		$projectId = $params[0];
-		$fileName = $params[1];
-		
-		//PDF to DOCX Convertion
-		$url = 'https://api2.docconversionapi.com/jobs/create';
-		$filePath = 'https://info.viosrdtest.in/Project_Documents_'.$projectId.'/'.$fileName;
-		$fields = array(
-			'inputFile' => $filePath,
-			'conversionParameters' => '{"pdfType" : "1B", "fitToPage" : true}',
-			'outputFormat' => 'docx',
-			'async' => 'false'
-		);
-		//url-ify the data for the POST
-		$fields_string = '';
-		foreach ($fields as $key => $value) {
-			$fields_string .= $key . '=' . $value . '&';
+		try {
+			$params = $this->returnParams();
+			$projectId = $params[0];
+			$fileName = $params[1];
+			$projectDocsRootDir = "/var/www/html/public";
+			$directoryName = "Project_Word_Documents_".$projectId;
+			$outputFilePath = $projectDocsRootDir . "/" . $directoryName . "/" . str_replace('.pdf', '.docx', $fileName);
+			#create folder for saving the docx files		
+			if (!is_dir($directoryName)) {
+				mkdir($directoryName, 0777);
+			} else {
+				// remove old docx file if it exists
+				if(file_exists($outputFilePath)){
+					exec("rm " . $outputFilePath);
+				}
+			}
+
+			$logFileName = "log-" . gmdate("Y-m-d") . ".log";
+			file_put_contents("/var/www/html/writable/logs/" . $logFileName, "\r\nExporting pdf to docx: ". $fileName . "\r\n", FILE_APPEND);
+			exec("cd /var/www/html/public/pdf-to-docx-converter; node export-pdf-to-docx.js " . $projectDocsRootDir . "/Project_Documents_" . $projectId . "/" . $fileName
+			. " " . $outputFilePath . " >>" . " /var/www/html/writable/logs/" . $logFileName . " 2>&1; cd /var/www/html/public");
+			
+			$response = array('success' => "True", "status"=>"Converted pdf file to docx successfully", "fileName" => $fileName, "fileDownloadUrl" => $directoryName . "/" . str_replace('.pdf', '.docx', $fileName));
+			echo json_encode( $response );
+		} catch (Exception $e) {
+			// echo "Error on converting pdf to docx file " . $e->getMessage();
+			$response = array('success' => "False", "status"=>"failed to convert pdf to docx file", "fileName" => $fileName);
+			echo json_encode( $response );
 		}
-		$fields_string = rtrim($fields_string, '&');
-		//open connection
-		$ch = curl_init();
-		//set the url, number of POST vars, POST data
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-			'X-ApplicationID: 7976cebc-cf1c-41bc-89c1-bd12f32c43a9',
-			'X-SecretKey: e1a11159-daad-4949-8112-1b13a9bb84de'
-		));
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_POST, count($fields));
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $fields_string);
-		//execute post
-		$result = curl_exec($ch);
-		echo '';
-		return false;	
-	}
+
+		}
 
 	public function updateDownloadUrl() {
 		$id = $this->request->getVar('id');
@@ -630,71 +631,69 @@ class GenerateDocuments extends BaseController
 		$fileName = $this->request->getVar('name');
 		$isDBUpdate = $this->request->getVar('isDBUpdate');
 		$lastItem = $this->request->getVar('lastItem');
-		if($isDBUpdate){
-			$model = new DocumentModel();
-			$documentData = $model->updateDownloadUrl($projectId, $id, $path); 
-		}
+		$fileNames = $this->request->getVar('fileNames');
+
+		// if($isDBUpdate == "true"){
+		// 	$model = new DocumentModel();
+		// 	$documentData = $model->updateDownloadUrl($projectId, $id, $path); 
+		// }
 		$directoryName = "Project_Word_Documents_".$projectId;		
-		if (!is_dir($directoryName)) {
-			mkdir($directoryName, 0777);
-		}
-		$fileName = preg_replace('/[^A-Za-z0-9\-]/', '_', $fileName);
-		$fileName = $fileName.'.docx';
-		$lastItem = preg_replace('/[^A-Za-z0-9\-]/', '_', $lastItem);
-		$lastItem = $lastItem.'.docx';
 
-		$output_filename = $directoryName."/".$fileName;
-		$output_filename = str_replace('_pdf', '', $output_filename);
-
-		$host = $path;
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $host);
-		curl_setopt($ch, CURLOPT_VERBOSE, 1);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_AUTOREFERER, false);
-		curl_setopt($ch, CURLOPT_REFERER, "http://www.xcontest.org");
-		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		$result = curl_exec($ch);
-		curl_close($ch);
-
-		// the following lines write the contents to a file in the same directory (provided permissions etc)
-		$fp = fopen($output_filename, 'w');
-		fwrite($fp, $result);
-		fclose($fp);
 		//Goto zip folder download //Write zip code:
 		if($lastItem == $fileName){
-			$id = $this->request->getVar('id');
-			$projectId = $this->request->getVar('project-id');
-			$path = $this->request->getVar('path');
-			$fileName = $this->request->getVar('name');
-			$isDBUpdate = $this->request->getVar('isDBUpdate');
-			$lastItem = $this->request->getVar('lastItem');	
-
+			// wait 30s for completion of all the reports conversion
+			$now = time(); 
+        	while ($now + 30 > time()){};
 			$zip = new ZipArchive();
-			$filename = $directoryName.".zip";
-			if ($zip->open($filename, ZipArchive::CREATE)!==TRUE) {
-				exit("cannot open <$filename>\n");
+			$downloadFilename = $directoryName.".zip";
+			if ($zip->open($downloadFilename, ZipArchive::CREATE)!==TRUE) {
+				exit("cannot open <$downloadFilename>\n");
 			}
 			$dir = $directoryName.'/';
-			// Create zip
-			if (is_dir($dir)){
-				if ($dh = opendir($dir)){
-					while (($file = readdir($dh)) !== false){
-						// If file
-						if (is_file($dir.$file)) {
-							if($file != '' && $file != '.' && $file != '..'){
-								$zip->addFile($dir.$file);
-							}
-						}
+			$isAllFilesExists = true;
+			$documentModel = new DocumentModel();
+			if($isDBUpdate == "false"){
+				foreach($fileNames as $outputFile){
+					if(!file_exists($outputFile["download-path"])){
+						$isAllFilesExists = false;
+						$documentData = $documentModel->updateDownloadUrl($outputFile["project-id"], $outputFile["id"], NULL); 
+					} else {
+						$documentData = $documentModel->updateDownloadUrl($outputFile["project-id"], $outputFile["id"], $outputFile["download-path"]); 
 					}
-					closedir($dh);
+				}
+			} else {
+				foreach($fileNames as $file => $id) {
+					$file = str_replace(".pdf", ".docx", $file);
+					if(!file_exists($directoryName . "/" . $file)){
+						$isAllFilesExists = false;
+						$documentData = $documentModel->updateDownloadUrl($projectId, $id, NULL); 
+					} else {
+						$documentData = $documentModel->updateDownloadUrl($projectId, $id, $directoryName . "/" . $file); 
+					}
 				}
 			}
-			$zip->close();
-			echo $filename;
+			if($isAllFilesExists){
+				if (is_dir($dir)){
+					if ($dh = opendir($dir)){
+						while (($file = readdir($dh)) !== false){
+							if (is_file($dir.$file)) {
+								if($file != '' && $file != '.' && $file != '..'){
+									$zip->addFile($dir.$file);
+								}
+							}
+						}
+						closedir($dh);
+					}
+				}
+				$zip->close();
+				$response = array('success' => "True", "status"=>'Download-zip-file', "downloadFile"=>$downloadFilename);
+				echo json_encode( $response );
+			} else {
+				$response = array('success' => "False", "status"=>'Some docx files are missing in download directory');
+				echo json_encode( $response );
+			}			
 		}else{
-			$response = array('success' => "True", "status"=>'single-Download-zip', "name"=>$fileName, 'lastName' => $lastItem, "data"=>$documentData, "path"=>$path, "proId"=>$projectId, "id"=>$id);
+			$response = array('success' => "True", "status"=>'single-Download-zip', "name"=>$fileName, 'lastName' => $lastItem, "path"=>$path, "proId"=>$projectId, "id"=>$id);
 			echo json_encode( $response );	
 		}
 	}
@@ -781,10 +780,10 @@ class GenerateDocuments extends BaseController
 	function addTableStylesToContent($rawContent, $tablewidth)
 	 {
 		$fontFamily = 'frutiger, sans-serif';
-		$fontSize = '11pt';
-		$replaceContent = str_replace("<table>", '<table style="overflow: wrap; font-family:' . $fontFamily . '; font-size: ' . $fontSize . '; width: '.$tablewidth.'%; table-layout: fixed; word-wrap: break-word; padding: 50pt; border: 1pt #000000 solid; border-collapse: collapse;" border="1" cellpadding="5">', $rawContent);
-		$replaceContent = str_replace("<th>", "<th style='font-weight: bold; padding-left:10pt; background-color:#d9d9d9;word-wrap: break-word'>", $replaceContent);
-		$replaceContent = str_replace("<td>", "<td style='padding-left:10pt; font-size:11pt; word-wrap: font-size:20pt; break-word'>", $replaceContent);
+		$fontSize = '10pt';
+		$replaceContent = str_replace("<table>", '<table style="overflow: wrap; font-family:' . $fontFamily . '; font-size: ' . $fontSize . '; width: '.$tablewidth.'%; table-layout: fixed; word-wrap: break-word; padding: 50pt; border: 1pt #000000 solid; border-collapse: collapse;" border="1">', $rawContent);
+		$replaceContent = str_replace("<th>", "<th style='font-weight: bold; padding-left:7pt; background-color:#d9d9d9;word-wrap: break-word'>", $replaceContent);
+		$replaceContent = str_replace("<td>", "<td style='padding-left:7pt; font-size:10pt; word-wrap: break-word'>", $replaceContent);
 		$replaceContent = str_replace("<br/>", " <br/> ", $replaceContent);
 		return $replaceContent;
 	}
@@ -866,4 +865,71 @@ class GenerateDocuments extends BaseController
 		return $id;
 	}
 	
+	public function formatUnorderedLists($data){
+		try {
+			if(strpos($data, '<ul>') !== false){
+				$listsDataArray = explode("<ul>",$data);
+				$updatedDataArray[0] = $listsDataArray[0];
+				for($i=1; $i < count($listsDataArray); $i++ ){
+					if(strpos($listsDataArray[$i],'</ul>') !== false && strpos($listsDataArray[$i],'</ul></li>') === false){
+						# add a bullet dot symbol for regular unordered lists
+						$tmp = $listsDataArray[$i];
+						$tmpArray = explode('</ul>', $tmp);
+						$tmpArray[0] = str_replace('<li>', '<div style="padding-left: 20pt;"><div style="width:15px;float: left;"><span style="font-size: 11pt;"><strong>&#8226;</strong></span></div><div style="margin-left: 15px;">', $tmpArray[0]);
+						$tmpArray[0] = str_replace('</li>', '</div></div><div style="clear:both;"></div>', $tmpArray[0]);
+						$updatedDataArray[$i] = implode('',$tmpArray); 
+					} else if(strpos($listsDataArray[$i], '</ul>') === false) {
+						# add symbols for unorder nested lists
+						if(strpos($listsDataArray[$i+1], '</ul>') !== false && strpos($listsDataArray[$i+1],'</ul></li>') !== false){
+							$tmp = $listsDataArray[$i];
+							# add bullet circle symbol for second level list in nested lists
+							$tmp = str_replace('<li>', '<div style="padding-left: 30pt;"><div style="width:15px;float: left;"><span style="font-size: 12pt;"><strong>&#9702;</strong></span></div><div style="margin-left: 15px;">', $tmp);
+							$tmp = str_replace('</li>', '</div></div><div style="clear:both;"></div>', $tmp);
+							$updatedDataArray[$i] = $tmp;
+						} else if(strpos($listsDataArray[$i+1], '</ul>') === false && strpos($listsDataArray[$i+2], '</ul></li>') !== false ){
+							$tmp = $listsDataArray[$i];
+							# add bullet dot symbol for main list in nested lists
+							$tmp = str_replace('<li>', '<div style="padding-left: 20pt;"><div style="width:15px;float: left;"><span style="font-size: 11pt;"><strong>&#8226;</strong></span></div><div style="margin-left: 15px;">', $tmp);
+							$tmp = str_replace('</li>', '</div></div><div style="clear:both;"></div>', $tmp);
+							$updatedDataArray[$i] = $tmp; 
+						} else {
+							$updatedDataArray[$i] = '<ul>' . $listsDataArray[$i]; 
+						}
+					} else if(strpos($listsDataArray[$i],'</ul></li>') !== false) {
+						if(strpos($listsDataArray[$i-1],'</ul>') === false) {
+							$tmp = $listsDataArray[$i];
+							$tmpArray = explode('</ul></li>', $tmp);
+							# add bullet squre symbol for third level list in the unordered nested lists
+							$tmpArray[0] = str_replace('<li>', '<div style="padding-left: 35pt;"><div style="width:15px;float: left;"><span style="font-size: 7pt;"><strong>&#9632;</strong></span></div><div style="margin-left: 15px;">', $tmpArray[0]);
+							$tmpArray[0] = str_replace('</li>', '</div></div><div style="clear:both;"></div>', $tmpArray[0]);
+							$updatedDataArray[$i] = implode('',$tmpArray);
+							$updatedDataArray[$i] = str_replace('</ul>','',$updatedDataArray[$i]);
+						} else {
+							$tmp = $listsDataArray[$i];
+							$tmpArray = explode('</ul></li>', $tmp);
+							# add bullet circle symbol for uroder list in the ordered nested lists
+							$tmpArray[0] = str_replace('<li>', '<div style="padding-left: 20pt;"><div style="width:15px;float: left;"><span style="font-size: 12pt;"><strong>&#9702;</strong></span></div><div style="margin-left: 15px;">', $tmpArray[0]);
+							$tmpArray[0] = str_replace('</li>', '</div></div><div style="clear:both;"></div>', $tmpArray[0]);
+							$updatedDataArray[$i] = implode('',$tmpArray);
+							$updatedDataArray[$i] = str_replace('</ul>','',$updatedDataArray[$i]);
+						}	
+					} 
+					else {
+						$updatedDataArray[$i] = '<ul>' . $listsDataArray[$i];
+					}
+				}
+			
+				$updatedListsData = implode("", $updatedDataArray);
+				return $updatedListsData;
+	
+			} else {
+				return $data;
+			}
+		} catch (Error $e) {
+			echo "Error on formatting un order lists caught: " . $e->getMessage();
+			return $data;
+		}
+		
+	}
+
 }

@@ -205,7 +205,7 @@ function getWordDocumentFileList(e, id) {
               var name = downloadPaths[key]['file-name'];
               var id = downloadPaths[key]['id'];
               var projectId = downloadPaths[key]['project-id'];
-              updateDownloadUrl(projectId, id, path, name, false, lastItem['file-name'], e);
+              updateDownloadUrl(projectId, id, path, name, false, lastItem['file-name'], downloadPaths, e);
             });
           }
         }
@@ -239,12 +239,18 @@ function startPDFDocxConvertion(e, id, fileNames){
           console.log("complete startPDFDocxConvertion");
         },
         success: function(response){
-          var response, originalFile, downloadUrl;
-          response = JSON.parse(response)
-          $('#wordDownload').attr('href', response.fileDownloadUrl);
-          originalFile = response.fileName;
-          downloadUrl = response.fileDownloadUrl;
-          updateDownloadUrl(id, fileNames[originalFile], downloadUrl, originalFile, true, lastItem, e);
+          var data = JSON.parse(response);
+          if(data.success == 'True'){
+            originalFile = data.fileName;
+            downloadUrl = data.fileDownloadUrl;
+            updateDownloadUrl(id, fileNames[originalFile], downloadUrl, originalFile, true, lastItem, fileNames, e);
+          } else {
+            $(anchor).removeClass('disabled');
+            $(iTag).removeClass('fa-spinner fa-spin');
+            $(iTag).addClass('fa-file-word');
+            showPopUp("Error", data.status + " : " + data.fileName);
+          }
+        
         },
         ajaxError: function (error) {
           $(anchor).removeClass('disabled');
@@ -260,10 +266,10 @@ function startPDFDocxConvertion(e, id, fileNames){
 }
 
 
-function updateDownloadUrl(projectId, id, path, name, check, lastItem, e) {
+function updateDownloadUrl(projectId, id, path, name, check, lastItem, fileNames, e) {
   var url = 'generate-documents/updateDownloadUrl';
   var formData = {
-    'id': id, 'project-id': projectId, 'path': path, 'name': name, 'isDBUpdate' : check, 'lastItem': lastItem
+    'id': id, 'project-id': projectId, 'path': path, 'name': name, 'isDBUpdate' : check, 'lastItem': lastItem, 'fileNames': fileNames
   }
   var anchor = $(e);
   var iTag  = anchor.find('i');
@@ -272,17 +278,24 @@ function updateDownloadUrl(projectId, id, path, name, check, lastItem, e) {
       url: 'generate-documents/updateDownloadUrl',
       data: formData,
       success: function(response, textStatus, jqXHR){
-        if((jqXHR.responseText).indexOf('success') >= 0){
-            console.log("display success blocks msgs");
-        }else{
-            console.log("else case to zip file:");
+        data = JSON.parse(response);
+        if(data.success == "True"){
+          if(data.status == "Download-zip-file"){
+            console.log("case to zip file:");
             $(anchor).removeClass('disabled');
             $(iTag).removeClass('fa-spinner fa-spin');
             $(iTag).addClass('fa-file-word');
             console.log("completed updateDownloadUrl");
-            window.location = response;
+            window.location = data.downloadFile;
             showPopUp("Project Word Documents", "File downloaded successfully");  
           }
+        } else {
+          $(anchor).removeClass('disabled');
+          $(iTag).removeClass('fa-spinner fa-spin');
+          $(iTag).addClass('fa-file-word');
+          console.log("Unalbe to create zip file due to some docx files missing.");
+          showPopUp("Error", "Unable create word documents zip file: Some document files are not coverted. Please try again.");     
+        }
       },
       error: function(err) {
           showPopUp("Error", "Error occured on server.");

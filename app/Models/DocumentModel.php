@@ -198,7 +198,11 @@ class DocumentModel extends Model{
 
     public function updateDownloadUrl($projectId, $id, $path) {
         $db = \Config\Database::connect();
-        $sql = "UPDATE `docsgo-documents` SET `download-path` = '".$path."' WHERE `id` = '".$id."' AND `project-id` = '".$projectId."' ";
+        if( $path != NULL ){
+            $sql = "UPDATE `docsgo-documents` SET `download-path` = '".$path."' WHERE `id` = '".$id."' AND `project-id` = '".$projectId."' ";
+        } else {
+            $sql = "UPDATE `docsgo-documents` SET `download-path` = NULL WHERE `id` = '".$id."' AND `project-id` = '".$projectId."' ";
+        }
 
         $query = $db->query($sql);
         $data = $query->getResult('array');
