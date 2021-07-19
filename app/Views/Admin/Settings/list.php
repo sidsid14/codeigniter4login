@@ -294,7 +294,8 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" >Text</span>
                         </div>
-                        <input type="text" class="form-control" id="docConfidential" >                                             
+                        <input type="text" class="form-control" id="docConfidential" >  
+                        <i class="fa fa-info-circle" style="font-size:25px; padding-top:5px; color:#FFFFF" title="Add footer, version text differentiate with semicolon. ex: Murata;QFT Rev C"></i>                                         
                     </div>
 
                     <div class="input-group-text" style="display:flow-root">Docs Download Permissions</div>&nbsp;

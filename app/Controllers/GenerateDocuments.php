@@ -49,6 +49,12 @@ class GenerateDocuments extends BaseController
 
 		$docData = $this->getDocumentProperties();
 		$documentTitle = $docData['title']; $documentIcon = $docData["image"]; $documentFooterMsg = $docData["footer"];
+		$documentFooterVersion = "";
+		if (strpos($docData["footer"], ';') !== false) {
+			$footerData = (explode(";", $docData["footer"]));
+				$documentFooterMsg = $footerData[0];
+				$documentFooterVersion = $footerData[1];
+		}
 		$documentObject = array_keys($documentData);
 		$count = 0;
 		foreach ($documentObject as $id) {
@@ -97,6 +103,9 @@ class GenerateDocuments extends BaseController
 			if($documentFooterMsg == ''){
 				$documentFooterMsg = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
 			}
+			if($documentFooterVersion == ''){
+				$documentFooterVersion = '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+			}
 
 			//#-1 Footer for all pages
 			$mpdf->SetHTMLFooter('
@@ -105,7 +114,7 @@ class GenerateDocuments extends BaseController
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 				Page<span style="font-weight: bold;"> {PAGENO} </span> of <span style="font-weight: bold;">{nb}</span> 
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-				<span>QFT-01-00 Rev. C</span>
+				<span>' . $documentFooterVersion . '</span>
 			</div>');
 
 			$mpdf->WriteHTML('&nbsp;');
@@ -117,7 +126,7 @@ class GenerateDocuments extends BaseController
 			</div>');
 
 			$DocID = 'Doc ID: ' . $json['cp-line4'];
-			
+
 			//#-3 Adding Document title
 			$mpdf->WriteHTML('<div style="position: absolute; left:0; right: 0; top: 360;text-align: center;font-family: frutiger; font-weight: bold; font-size: 16pt;">
 			' . $json['cp-line3'] . '
@@ -152,6 +161,8 @@ class GenerateDocuments extends BaseController
 			);
 
 			//#-7 Adding TOC
+			$mainWord = $json['cp-line3']; $searchWord = "MeetingMinutes,ReleaseReview";  
+			if(!(strpos($mainWord, $searchWord) !== false)){
 			$mpdf->TOCpagebreakByArray(array(
 				'tocfont' => 'frutiger',
 				'tocfontsize' => '10',
@@ -200,6 +211,7 @@ class GenerateDocuments extends BaseController
 				'sheetsize' => '',
 				'toc_sheetsize' => '',
 			));
+		}
 
 			//#-8 Adding logo left corner section every page
 			$mpdf->SetHTMLHeader('<div style="text-align:left;padding-bottom:30mm;"><img src="'.$documentIconImage.'" style="width: 20mm; height: 17mm; margin: 0;"/></div>','O',true);
@@ -211,11 +223,11 @@ class GenerateDocuments extends BaseController
 					$sectionCount = $index.'.0';
 					//Adjusting the space between index number and heading content, some pixels are getting differ compare to single digits and double digits, so added space to fix the issue
 					if($sectionCount > 9)
-						$mpdf->WriteHTML('<div style="font-family: frutiger; font-weight: bold; font-size: 12pt;"><h1 style="font-size: 12pt;">'.$sectionCount.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.strtoupper($json['sections'][$i]['title']).'</h1></div>');
-					else
-						$mpdf->WriteHTML('<div style="font-family: frutiger; font-weight: bold; font-size: 12pt;"><h1 style="font-size: 12pt;">'.$sectionCount.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.strtoupper($json['sections'][$i]['title']).'</h1></div>');
+							$mpdf->WriteHTML('<div style="font-family: frutiger; font-weight: bold; font-size: 12pt;"><h1 style="font-size: 12pt;">'.$sectionCount.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.strtoupper($json['sections'][$i]['title']).'</h1></div>');
+						else
+							$mpdf->WriteHTML('<div style="font-family: frutiger; font-weight: bold; font-size: 12pt;"><h1 style="font-size: 12pt;">'.$sectionCount.'&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'.strtoupper($json['sections'][$i]['title']).'</h1></div>');						
 
-					$contentSection = '<b></b>';
+							$contentSection = '<b></b>';
 					$org = $json['sections'][$i]['content'];
 					$contentSection = $pandoc->convert($org, "gfm", "html5");
 					//Adding the sub,sub-sub indexing values
