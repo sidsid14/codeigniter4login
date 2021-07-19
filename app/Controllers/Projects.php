@@ -2,6 +2,7 @@
 
 use App\Models\ProjectModel;
 use App\Models\TeamModel;
+use App\Models\DocumentModel;
 
 class Projects extends BaseController
 {
@@ -17,6 +18,15 @@ class Projects extends BaseController
 
 		if($view == ''){
 			$view = 'Active';			
+		}
+
+		$userId = session()->get('id');
+		$documentModel = new DocumentModel();
+		$userPermissions = $documentModel->getUserPermissions($userId);
+		if($userPermissions){
+			$data['isAllowedToDownload'] = "True";
+		} else {
+			$data['isAllowedToDownload'] = "False";
 		}
 
 		$data['data'] = $model->where('status', $view)->orderBy('start-date', 'desc')->findAll();	

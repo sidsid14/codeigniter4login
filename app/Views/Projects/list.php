@@ -47,7 +47,7 @@
                       class="btn btn-primary ml-2">
                         <i class="fa fa-download"></i>
                     </a>
-                    <a title="Docx" href="#" onclick="getWordDocumentFileList(this, <?php echo $row['project-id'];?>)" 
+                    <a title="Docx" <?php echo ($isAllowedToDownload == "True") ? '' : 'hidden';?> href="#" onclick="getWordDocumentFileList(this, <?php echo $row['project-id'];?>)" 
                       class="btn btn-primary ml-2">
                         <i class="fa fa-file-word"></i>
                     </a>

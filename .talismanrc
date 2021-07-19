@@ -1,3 +1,7 @@
 fileignoreconfig:
 - filename: app/Controllers/GenerateDocuments.php
   checksum: dd22e6d2caee119c4183c69b5adb85ea5ec0c90de42a18041d10f321a7cc86d6
+- filename: app/Models/DocumentModel.php
+  checksum: 2950c7f1cf2e56bd24d223933a420380974d45ca4432644e743e997b319ee571
+- filename: app/Views/Admin/Settings/list.php
+  checksum: 6180e85c3eedd398da4aba6283a9f9c6430400474813125d106c8911bf80e4c3

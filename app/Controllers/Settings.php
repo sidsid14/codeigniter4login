@@ -1,6 +1,7 @@
 <?php namespace App\Controllers;
 
 use App\Models\SettingsModel;
+use App\Models\TeamModel;
 
 class Settings extends BaseController
 {
@@ -16,6 +17,9 @@ class Settings extends BaseController
         $data['dropdownData'] = $model->where('type', 'dropdown')->findAll();		
         $data['configData'] = $model->where('type', 'url')->findAll();	
         $data['propertiesData'] = $model->where('type', 'properties')->findAll();
+
+        $teamModel = new TeamModel();
+        $data['teamMembers'] = $teamModel->getMembers();
 
         echo view('templates/header');
         echo view('templates/pageTitle', $data);

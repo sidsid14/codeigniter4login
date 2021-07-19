@@ -115,7 +115,7 @@ function getTableRecords(updateStats = false) {
     const selectedView = $("input[name='view']:checked").val();
     const selectedProjectId = $("#projects").val();
     const selectedUsers = $("#selectedUser").val();
-    var url = `/documents/getDocuments?view=${selectedView}&project_id=${selectedProjectId}&user_id=${selectedUsers}`;
+    var url = `/documents/getDocuments?view=${selectedView}&project_id=${selectedProjectId}&user_id=${selectedUsers}&loggedInUserId=${userId}`;
 
     $(".btn-group label").removeClass("btn-primary").addClass("btn-secondary");
     $(`.lbl_${selectedView.replace(/\s/g, '_')}`).removeClass("btn-secondary").addClass("btn-primary");
@@ -177,7 +177,7 @@ function populateTable(documentsList) {
                 clickParams: ['id']
             },
             {
-                title: "Download",
+                title: "Download-PDF",
                 buttonClass: "btn btn-primary",
                 iconClass: "fa fa-download",
                 clickTrigger: "generateDocuments",
@@ -186,6 +186,23 @@ function populateTable(documentsList) {
                     on: 'status',
                     with: 'Approved'
                 }
+            },
+            {
+                title: "Download-Word-Document",
+                buttonClass: "btn btn-primary ml-2",
+                iconClass: "fa fa-file-word",
+                clickTrigger: "generateWordDocument",
+                clickParams: ['id'],
+                condition: [
+                    {
+                        on: 'status',
+                        with: 'Approved'
+                    },
+                    {
+                        on: 'is-allowed',
+                        with: 'True'
+                    }
+                ]
             },
             {
                 title: "Delete",
@@ -310,6 +327,61 @@ function generateDocuments(id) {
         }
     });
 
+}
+
+function generateWordDocument(id) {
+    var url = '/generate-documents/downloadDocuments/3/' + id;
+
+    $.ajax({
+        url: url,
+        success: function(response) {
+            // console.log("response response", response);
+            if (response == "no data") {
+                showPopUp("Project Documents", "No file is available to download");
+            } else {
+                data = JSON.parse(response)
+                if(data.success == "True") {
+                    var fileName = data.fileName;
+                    downloadWordDocument(data.projectId, data.fileName.split('/')[1]);
+                    // showFloatingAlert("Success: File downloaded!");
+                } else {
+                    showErrorPopup("Download Error", "Unable to download the file", 'lg');
+                }
+            }
+        },
+        error: function(error) {
+            if (error.responseJSON && error.responseJSON['message'] != '') {
+                showErrorPopup("Download Error", "Please remove custom tags if any exists. <br/> " + error
+                    .responseJSON['message'], 'lg');
+            } else if (error.responseText && error.responseText != '') {
+                showErrorPopup("Download Error", "Please remove custom tags if any exists. <br/>" + error
+                    .responseText, 'lg');
+            } else {
+                showErrorPopup("Download Error", "Unable to download the file", 'lg');
+            }
+        }
+    });
+
+}
+
+function downloadWordDocument(projectId, fileName) {
+    var url = '/generate-documents/downloadWordDocument/' + projectId + '/' + fileName;
+
+    $.ajax({
+        url: url,
+        success: function(response) {
+            data = JSON.parse(response)
+            if (data.success == "True") {
+                window.location = data.fileDownloadUrl;
+                showFloatingAlert("Success: File downloaded!");
+            } else {
+                showErrorPopup("Download Error", "Unable to download the file", 'lg');
+            }
+        },
+        error: function(error) {
+            showErrorPopup("Download Error", "Unable to download the file", 'lg');
+        }
+    });
 }
 
 function showErrorPopup(title, message, width) {

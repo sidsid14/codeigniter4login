@@ -106,6 +106,7 @@ class Documents extends BaseController
 		$view = $this->request->getVar('view');
 		$project_id = $this->request->getVar('project_id');
 		$user_id = $this->request->getVar('user_id');
+		$logged_in_user_id = $this->request->getVar('loggedInUserId');
 
 		$vars['view'] = $view;
 		$vars['project_id'] = $project_id;
@@ -122,7 +123,7 @@ class Documents extends BaseController
 		$documentModel = new DocumentModel();
 		$whereCondition = ' WHERE docs.`status` = "' . $view . '" AND docs.`project-id` = ' . $project_id . $userCondition;
 
-		$data = $documentModel->getDocuments($whereCondition);
+		$data = $documentModel->getDocuments($whereCondition, "", $logged_in_user_id);
 
 		$response["success"] = "True";
 		$response["documents"] = $data;

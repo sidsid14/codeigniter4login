@@ -89,6 +89,7 @@ $routes->match(['get','post'],'generate-documents/updateGenerateDocumentPath/(:n
 $routes->match(['get','post'],'generate-documents/startPDFDocxConvertion/(:num)/(:any)', 'GenerateDocuments::startPDFDocxConvertion',['filter' => 'auth']);
 $routes->match(['get','post'],'generate-documents/getWordDocumentFileList/(:num)', 'GenerateDocuments::getWordDocumentFileList',['filter' => 'auth']);
 $routes->post('generate-documents/updateDownloadUrl', 'GenerateDocuments::updateDownloadUrl',['filter' => 'auth']);
+$routes->get('generate-documents/downloadWordDocument/(:num)/(:any)', 'GenerateDocuments::downloadWordDocument',['filter' => 'auth']);
 
 
 $routes->get('reviews', 'Reviews::index',['filter' => 'auth']);

@@ -48,7 +48,7 @@ class DocumentModel extends Model{
         return $data;
     }
 
-    public function getDocuments($whereCondition = "", $limit = ""){
+        public function getDocuments($whereCondition = "", $limit = "", $loggedInUserId = ""){    
         $db      = \Config\Database::connect();
         
         $sql = "SELECT  CONCAT('D','-',docs.`id`) as documentId, docs.`id`,docs.`project-id`,docs.`review-id`,docs.`type`,docs.`author-id`, author.`name` as `author`, reviewer.`name` as `reviewer`, docs.`update-date`,docs.`json-object`,docs.`file-name`,docs.`status`
@@ -62,10 +62,17 @@ class DocumentModel extends Model{
 
         $data = $query->getResult('array');
 
+        if( $loggedInUserId != "") {
+            $isUserAllowed = $this->getUserPermissions($loggedInUserId);
+        }
+
         for($i=0; $i<count($data);$i++){
 			$decodedJson = json_decode($data[$i]['json-object'], true);
 			$data[$i]['title'] = $decodedJson[$data[$i]['type']]['cp-line3'];
-		}
+            if( $loggedInUserId != "") {
+                $data[$i]['is-allowed'] = $isUserAllowed ? "True" : "False";
+            }
+        }
         
         return $data;
 
@@ -209,6 +216,32 @@ class DocumentModel extends Model{
         return $data;
     }
 
+    public function getUserPermissions($userId){
+        $db = \Config\Database::connect();
+        $sql = "SELECT `is-manager`, `is-admin` FROM `docsgo-team-master` WHERE `id` = '".$userId."'";
+        $query = $db->query($sql);
+        $data = $query->getResult('array');
+        if(count($data)>0){
+            if($data[0]['is-admin'] == "1" || $data[0]['is-manager'] == "1"){
+                return true;
+            };
+        }
 
+        $whereCondition = " WHERE settings.identifier = 'documentProperties' ";
+        $sql = "SELECT settings.options FROM `docsgo-settings` settings ".$whereCondition.";";
+        $query = $db->query($sql);
+        $docProperties = json_decode($query->getResult('array')[0]['options'], true);
+        $userIds = [];
+        foreach($docProperties as $key => $val){
+            if($val["key"] == "docsDownloadPermissions"){
+                $userIds = $val["value"];
+            }
+        }
 
+        if(in_array("$userId", $userIds)){
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

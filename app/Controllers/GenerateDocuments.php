@@ -327,7 +327,7 @@ class GenerateDocuments extends BaseController
 							mkdir($dir, 0777);
 						}
 						$mpdf->Output($dir.'/'.$fileName);
-						$response = array('success' => "True", "fileName"=>$dir.'/'.$fileName);
+						$response = array('success' => "True", "fileName"=>$dir.'/'.$fileName, "projectId" => $documentData[0]['project-id']);
 						echo json_encode( $response );	
 						return false;
 					}
@@ -932,4 +932,39 @@ class GenerateDocuments extends BaseController
 		
 	}
 
+	public function downloadWordDocument(){
+		try {
+			$params = $this->returnParams();
+			$projectId = $params[0];
+			$fileName = $params[1];
+			$projectDocsRootDir = "/var/www/html/docsgo/public";
+			$directoryName = "Project_Word_Documents_".$projectId;
+			$outputFilePath = $projectDocsRootDir . "/" . $directoryName . "/" . str_replace('.pdf', '.docx', $fileName);			
+			$logFileName = "log-" . gmdate("Y-m-d") . ".log";
+			#create folder for saving the docx files		
+			if (!is_dir("Project_Word_Documents_" . $projectId)) {
+				mkdir("Project_Word_Documents_" . $projectId, 0777);
+			} else {
+				// remove old docx file if it exists
+				if(file_exists($outputFilePath)){
+					exec("rm " . $outputFilePath);
+				}
+			}
+			
+			file_put_contents("/var/www/html/docsgo/writable/logs/" . $logFileName, "\r\nWord document download - Exporting pdf to docx: ". $fileName . "\r\n", FILE_APPEND);
+			exec("cd ". $projectDocsRootDir ."/pdf-to-docx-converter; node export-pdf-to-docx.js " . $projectDocsRootDir . "/PreviewDocx/" . $fileName
+			. " " . $outputFilePath . " >>" . " /var/www/html/docsgo/writable/logs/" . $logFileName . " 2>&1; cd /var/www/html/docsgo/public");
+			
+			// wait 15s for completion of reports conversion
+			$now = time(); 
+        	while ($now + 15 > time()){};
+			$response = array('success' => "True", "status"=>"Converted pdf file to docx successfully", "fileName" => $fileName, "fileDownloadUrl" => $directoryName . "/" . str_replace('.pdf', '.docx', $fileName));
+			echo json_encode( $response );
+		} catch (Exception $e) {
+			// echo "Error on converting pdf to docx file " . $e->getMessage();
+			$response = array('success' => "False", "status"=>"failed to convert pdf to docx file", "fileName" => $fileName);
+			echo json_encode( $response );
+		}
+	}
+	
 }

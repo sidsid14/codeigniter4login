@@ -8,7 +8,7 @@
         counter-increment: my-awesome-counter;
     }
 
-    .tab-content ul li::before {
+    .tab-content .add-serial-number ul li::before {
         content: counter(my-awesome-counter) ". ";
         color: "#6c757d";
         font-weight: bold;
@@ -39,7 +39,7 @@
                 </li>
             </ul>
             <div class="tab-content  p-md-4 p-2" id="myTabContent">
-                <div class="tab-pane fade  show active " id="enum" role="tabpanel" aria-labelledby="enum-tab">
+                <div class="tab-pane fade  show active add-serial-number" id="enum" role="tabpanel" aria-labelledby="enum-tab">
                     <div class="row">
                         <div class="col-12" id="enumAlert">
                             <div class="alertDiv"></div>
@@ -216,7 +216,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="tab-pane fade" id="config" role="tabpanel" aria-labelledby="config-tab">
+                <div class="tab-pane fade add-serial-number" id="config" role="tabpanel" aria-labelledby="config-tab">
                     <div class="alertDiv"></div>
                     <div class="input-group-text" style="display:flow-root">Sonarqube</div>&nbsp;
                     <div class="input-group mb-3">
@@ -296,7 +296,21 @@
                         </div>
                         <input type="text" class="form-control" id="docConfidential" >                                             
                     </div>
-                    
+
+                    <div class="input-group-text" style="display:flow-root">Docs Download Permissions</div>&nbsp;
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Users</span>
+                        </div>
+                        <select class="form-control  selectpicker" data-live-search="true" multiple id="docsDownloadPermissions">
+                            <?php foreach ($teamMembers as $key=>$value): ?>
+                            <option 
+				                <?= json_decode($propertiesData[0]['options'], true)[3]["value"] != null ? (in_array("$key",json_decode($propertiesData[0]['options'], true)[3]["value"]) ? 'selected' : '') : '' ?>
+                                value="<?=  $key ?>"><?=  $value ?>
+                            </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
                     <div class="row">
                         <div class="col text-center">
                             <button class="btn btn-primary" onclick="saveDocx()">Save</button>
@@ -538,9 +552,11 @@
         docTitle = $("#docTitle").val();
         docIcon = $("#docIcon").val();
         docConfidential = $("#docConfidential").val();
+        docsDownloadPermsData = $("#docsDownloadPermissions").val();
         propertiesIndex = propertiesData.findIndex(x => x.identifier === identifier);
         existingOptions = JSON.parse(propertiesData[propertiesIndex]["options"]);
 
+        var isDocsDownloadPermsExist = false;
         for(var z = 0 ; z< existingOptions.length ; z++){
             if(existingOptions[z]["key"] == "docTitle"){
                 existingOptions[z]["value"] = docTitle;
@@ -551,8 +567,17 @@
             if(existingOptions[z]["key"] == "docConfidential"){
                 existingOptions[z]["value"] = docConfidential;
             }
+            if(existingOptions[z]["key"] == "docsDownloadPermissions"){
+                existingOptions[z]["value"] = docsDownloadPermsData;
+                isDocsDownloadPermsExist = true;
+            }
         }
-        
+        if(! isDocsDownloadPermsExist){
+            existingOptions[existingOptions.length] = {
+                "key": "docsDownloadPermissions",
+                "value": docsDownloadPermsData
+            }
+        }
         var updatedOptions = JSON.stringify(existingOptions);
         propertiesData[propertiesIndex]["options"] = updatedOptions;
         
